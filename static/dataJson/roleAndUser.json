@@ -1,0 +1,67 @@
+{
+  "resultCode": "0",
+  "resultMsg": "",
+  "data": {
+    "currPage": 1,
+    "total": 2,
+    
+    "pageSize": 10,
+    "data": [
+        {
+           "smRoleBeanDto": {
+             "id": "4906915d8d464769a76dd765c46304df",
+             "orgId": "1",
+             "hospitalId": "1",
+             "roleName": "南阳理工学院",
+             "remark": "",
+             "seqno": 1,
+             "activeFlag": "Y",
+             "creatorId": "997a4bce5a744389aeb3a54ca1480195",
+             "creatorCode": "test",
+             "creatorName": "测试",
+             "createTime": "2017-05-31 18:08:16",
+             "lastUpdId": null,
+             "lastUpdCode": null,
+             "lastUpdName": null,
+             "lastTime": null
+           },
+           "userbaseinfoList": [
+             {
+               "id": "1",
+               "userCode": "lss",
+               "userName": "本科",
+               "gender": 4173,
+               "birthday": null,
+               "pinyinCode": null,
+               "wubiCode": null,
+               "spellingCode": null,
+               "identifierId": "无",
+               "phone": null,
+               "careerTitle": null,
+               "userType": 5850,
+               "orgId": "1",
+               "hospitalId": "1",
+               "operationDept": "1401",
+               "remark": null,
+               "seqno": null,
+               "creatorId": "0",
+               "creatorCode": "admin",
+               "creatorName": "管理员",
+               "createTime": null,
+               "lastUpdId": null,
+               "lastUpdCode": null,
+               "lastUpdName": null,
+               "lastTime": null,
+               "operationDeptId": "13",
+               "regType": null,
+               "headPhoto": null,
+               "resume": null,
+               "email": "81438234@qq.com"
+             }
+             
+           ]
+        }
+       
+    ]
+  }
+}
