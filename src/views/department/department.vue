@@ -4,7 +4,7 @@
       <div style="height:120px;padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">学科列表</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">科室列表</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
         <!-- 搜索条件 -->
@@ -14,7 +14,7 @@
                      style="width: 280px"
                      v-model="listQuery.type"
                      size="small"
-                     placeholder="按类型筛选">
+                     placeholder="按科室类型筛选">
             <el-option v-for="item in  typeOptions"
                        :key="item.key"
                        :label="item.display_name+'('+item.key+')'"
@@ -31,7 +31,7 @@
                      type="primary"
                      @click="handleCreate"
                      size="small"
-                     icon="edit">添加学科</el-button>
+                     icon="edit">添加科室</el-button>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
@@ -56,14 +56,14 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="学科名称"
+        <el-table-column label="科室名称"
                          width="">
           <template slot-scope="scope">
             {{scope.row.smRoleBeanDto.roleName}}
           </template>
         </el-table-column>
 
-        <el-table-column label="学科类型"
+        <el-table-column label="科室人数"
                          width="100">
           <template slot-scope="scope">
             <template v-for="item in scope.row.userbaseinfoList">
@@ -112,8 +112,8 @@
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">学科列表</el-breadcrumb-item>
-            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">添加学科</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">科室列表</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">添加科室</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
       </div>
@@ -125,11 +125,7 @@
                  label-width="100px"
                  style='width: 400px; margin-left:50px;'>
 
-          <el-form-item label="学科名称：">
-            <el-input placeholder="请输入"
-                      v-model="roleTemp.roleName"></el-input>
-          </el-form-item>
-          <el-form-item label="学科类型：">
+          <el-form-item label="科室名称：">
             <el-input placeholder="请输入"
                       v-model="roleTemp.roleName"></el-input>
           </el-form-item>
@@ -306,7 +302,7 @@ export default {
       console.log('编辑的row：', index, '-----', row);
       // 跳页面进行修改
       // this.$router.push('/example/form');
-      this.$router.push({ path: '/subject/subject', query: { id: row.chnlId } }); // 带参跳转
+      this.$router.push({ path: '/department/department', query: { id: row.chnlId } }); // 带参跳转
     },
     // 单个删除
     handleDelete(index, row) {
@@ -338,7 +334,7 @@ export default {
     // 新增
     handleCreate() {
       // this.dialogFormVisible = true;
-      this.$router.push({ path: '/subject/subject', query: { extra: 'add' } }); // 带参跳转
+      this.$router.push({ path: '/department/department', query: { extra: 'add' } }); // 带参跳转
     },
     // 设置权限
     setPermissions(index, item) {

@@ -40,13 +40,13 @@ const Mixin = _import('example/mixin');
 /* 系统管理*/
 const PermissionsManage = _import('systemSet/permissionsManage');
 /* 年级管理 */
-const SchoolManage = _import('school-manage/permissionsManage');
+const SchoolManage = _import('class-manage/permissionsManage');
 // 班级管理
-const PrintManage = _import('print-manage/permissionsManage');
+const PrintManage = _import('classRoom-manage/permissionsManage');
 // 科室管理
-const Department = _import('price-manage/priceManage');
+const Department = _import('department/department');
 // 教师管理
-const AccountManage = _import('account-info/accountInfo');
+const AccountManage = _import('teacherManage/teacherManage');
 // 学科管理
 const Subject = _import('subject/subjects');
 
@@ -59,7 +59,6 @@ const StudentUpdate = _import('student/studentInfo/modal/studentUpdate');
 /* 机构管理*/
 const OrgManager = _import('org-manage/org-manager/index');
 
-// const SchoolManager = _import('school-manage/org-manager/index');
 
 Vue.use(Router);
 

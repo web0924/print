@@ -4,7 +4,7 @@
       <div style="height:120px;padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">学科列表</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/classManage/permissionsManage' }">年级列表</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
         <!-- 搜索条件 -->
@@ -14,7 +14,7 @@
                      style="width: 280px"
                      v-model="listQuery.type"
                      size="small"
-                     placeholder="按类型筛选">
+                     placeholder="按年级名称筛选">
             <el-option v-for="item in  typeOptions"
                        :key="item.key"
                        :label="item.display_name+'('+item.key+')'"
@@ -31,10 +31,11 @@
                      type="primary"
                      @click="handleCreate"
                      size="small"
-                     icon="edit">添加学科</el-button>
+                     icon="edit">添加年级</el-button>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
+
       <!-- 表格 -->
       <el-table ref="multipleTable"
                 @selection-change="handleSelectionChange"
@@ -56,14 +57,14 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="学科名称"
+        <el-table-column label="年级名称"
                          width="">
           <template slot-scope="scope">
             {{scope.row.smRoleBeanDto.roleName}}
           </template>
         </el-table-column>
 
-        <el-table-column label="学科类型"
+        <el-table-column label="班级数量"
                          width="100">
           <template slot-scope="scope">
             <template v-for="item in scope.row.userbaseinfoList">
@@ -84,8 +85,7 @@
             <el-button icon="edit"
                        size="small"
                        type="text"
-                       @click="handleEdit(scope.$index,
-                       scope.row)">编辑</el-button>
+                       @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
             <el-button icon="delete"
                        size="small"
                        type="text"
@@ -112,37 +112,32 @@
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">学科列表</el-breadcrumb-item>
-            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">添加学科</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/classManage/permissionsManage' }">年级列表</el-breadcrumb-item>
+            <el-breadcrumb-item>添加年级</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
-      <div style="padding:20px">
+      <div style="padding:50px">
         <el-form class="small-space"
                  :model="roleTemp"
                  label-position="left"
-                 label-width="100px"
+                 label-width="120px"
                  style='width: 400px; margin-left:50px;'>
 
-          <el-form-item label="学科名称：">
-            <el-input placeholder="请输入"
-                      v-model="roleTemp.roleName"></el-input>
+          <el-form-item label="年级名称：">
+            <el-input v-model="roleTemp.roleName"></el-input>
           </el-form-item>
-          <el-form-item label="学科类型：">
-            <el-input placeholder="请输入"
-                      v-model="roleTemp.roleName"></el-input>
-          </el-form-item>
-
           <el-form-item>
-            <el-button type="primary">上传</el-button>
-
+            <el-button type="primary"
+                       @click="onSubmit">上传</el-button>
           </el-form-item>
+
         </el-form>
       </div>
     </div>
     <div v-show="viewType==='edit'">
-
+      edit
     </div>
     <!-- 新增弹窗 -->
     <el-dialog title="表单新增"
@@ -306,7 +301,7 @@ export default {
       console.log('编辑的row：', index, '-----', row);
       // 跳页面进行修改
       // this.$router.push('/example/form');
-      this.$router.push({ path: '/subject/subject', query: { id: row.chnlId } }); // 带参跳转
+      this.$router.push({ path: '/classManage/permissionsManage', query: { id: row.chnlId } }); // 带参跳转
     },
     // 单个删除
     handleDelete(index, row) {
@@ -338,7 +333,7 @@ export default {
     // 新增
     handleCreate() {
       // this.dialogFormVisible = true;
-      this.$router.push({ path: '/subject/subject', query: { extra: 'add' } }); // 带参跳转
+      this.$router.push({ path: '/classManage/permissionsManage', query: { extra: 'add' } }); // 带参跳转
     },
     // 设置权限
     setPermissions(index, item) {

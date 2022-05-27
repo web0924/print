@@ -4,30 +4,43 @@
       <div style="height:120px;padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">班级列表</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">教师列表</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
         <!-- 搜索条件 -->
         <div class="filter-container">
+
+          <el-input @keyup.enter.native="handleFilter"
+                    size="small"
+                    style="width: 280px;"
+                    class="filter-item"
+                    placeholder="关键字"
+                    v-model="listQuery.title">
+          </el-input>
           <el-select clearable
                      class="filter-item"
                      style="width: 280px"
                      v-model="listQuery.type"
                      size="small"
-                     placeholder="输入管理员姓名搜索">
+                     placeholder="选择年级">
             <el-option v-for="item in  typeOptions"
                        :key="item.key"
                        :label="item.display_name+'('+item.key+')'"
                        :value="item.key">
             </el-option>
           </el-select>
-          <el-input @keyup.enter.native="handleFilter"
-                    size="small"
-                    style="width: 280px;"
-                    class="filter-item"
-                    placeholder="输入文印室名称搜索"
-                    v-model="listQuery.title">
-          </el-input>
+          <el-select clearable
+                     class="filter-item"
+                     style="width: 280px"
+                     v-model="listQuery.type"
+                     size="small"
+                     placeholder="选择班级">
+            <el-option v-for="item in  typeOptions"
+                       :key="item.key"
+                       :label="item.display_name+'('+item.key+')'"
+                       :value="item.key">
+            </el-option>
+          </el-select>
           <el-button class="filter-item"
                      type="primary"
                      @click="handleCreate"
@@ -38,7 +51,7 @@
                      type="primary"
                      @click="handleCreate"
                      size="small"
-                     icon="edit">添加文印室</el-button>
+                     icon="edit">添加教师</el-button>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
@@ -63,14 +76,14 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="文印室名称"
+        <el-table-column label="教师名称"
                          width="">
           <template slot-scope="scope">
             {{scope.row.smRoleBeanDto.roleName}}
           </template>
         </el-table-column>
 
-        <el-table-column label="管理员姓名"
+        <el-table-column label="联系电话"
                          width="100">
           <template slot-scope="scope">
             <template v-for="item in scope.row.userbaseinfoList">
@@ -78,7 +91,7 @@
             </template>
           </template>
         </el-table-column>
-        <el-table-column label="管理员手机号"
+        <el-table-column label="所属学科"
                          width="">
           <template slot-scope="scope">
             <template v-for="item in scope.row.userbaseinfoList">
@@ -87,16 +100,7 @@
 
           </template>
         </el-table-column>
-        <el-table-column label="所在地"
-                         width="">
-          <template slot-scope="scope">
-            <template v-for="item in scope.row.userbaseinfoList">
-              <span :key="item">{{ item.identifierId  }} &nbsp; &nbsp;</span>
-            </template>
-
-          </template>
-        </el-table-column>
-        <el-table-column label="所属学校"
+        <el-table-column label="是否注册小程序"
                          width="">
           <template slot-scope="scope">
             <template v-for="item in scope.row.userbaseinfoList">
@@ -117,10 +121,12 @@
                      @click="setUser(scope.$index, scope.row)">设置成员</el-button> -->
             <el-button icon="edit"
                        size="small"
-                       @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                       type="text"
+                       @click="handleEdit(scope.$index,
+                       scope.row)">编辑</el-button>
             <el-button icon="delete"
                        size="small"
-                       type="danger"
+                       type="text"
                        @click="handleDelete(scope.$index, scope.row)">删除</el-button>
 
           </template>
@@ -144,8 +150,8 @@
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">班级列表</el-breadcrumb-item>
-            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">添加文印室</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">教师列表</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">添加教师</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
       </div>
@@ -157,31 +163,17 @@
                  label-width="100px"
                  style='width: 400px; margin-left:50px;'>
 
-          <el-form-item label="文印室名称">
-            <el-input placeholder="输入文印室名称"
+          <el-form-item label="教师名称：">
+            <el-input placeholder="请输入"
                       v-model="roleTemp.roleName"></el-input>
           </el-form-item>
-
-          <el-form-item label="所在地">
-            <el-input placeholder="输入文印室所在地址"
-                      v-model="roleTemp.remark"></el-input>
+          <el-form-item label="联系电话：">
+            <el-input placeholder="请输入"
+                      v-model="roleTemp.roleName"></el-input>
           </el-form-item>
-          <el-form-item label="所属学校">
-            <el-input placeholder="选择所属学校/输入学校名模糊搜索"
-                      v-model="roleTemp.remark"></el-input>
-          </el-form-item>
-          <p style="height:1px;background:#F5F5F5;margin:50px 0"></p>
-          <el-form-item label="管理员姓名">
-            <el-input placeholder="输入管理员姓名"
-                      v-model="roleTemp.remark"></el-input>
-          </el-form-item>
-          <el-form-item label="管理员手机号">
-            <el-input placeholder="输入管理员手机号"
-                      v-model="roleTemp.remark"></el-input>
-          </el-form-item>
-          <el-form-item label="密码">
-            <el-input placeholder="输入密码"
-                      v-model="roleTemp.remark"></el-input>
+          <el-form-item label="所属学科：">
+            <el-input placeholder="请输入"
+                      v-model="roleTemp.roleName"></el-input>
           </el-form-item>
 
           <el-form-item>
@@ -356,7 +348,7 @@ export default {
       console.log('编辑的row：', index, '-----', row);
       // 跳页面进行修改
       // this.$router.push('/example/form');
-      this.$router.push({ path: '/classManage/form', query: { id: row.chnlId } }); // 带参跳转
+      this.$router.push({ path: '/teacherManage/teacherManage', query: { id: row.chnlId } }); // 带参跳转
     },
     // 单个删除
     handleDelete(index, row) {
@@ -388,7 +380,7 @@ export default {
     // 新增
     handleCreate() {
       // this.dialogFormVisible = true;
-      this.$router.push({ path: '/classRoomManage/permissionsManage', query: { extra: 'add' } }); // 带参跳转
+      this.$router.push({ path: '/teacherManage/teacherManage', query: { extra: 'add' } }); // 带参跳转
     },
     // 设置权限
     setPermissions(index, item) {

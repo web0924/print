@@ -4,30 +4,43 @@
       <div style="height:120px;padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/classManage/permissionsManage' }">年级列表</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">班级列表</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
         <!-- 搜索条件 -->
         <div class="filter-container">
+          <el-input @keyup.enter.native="handleFilter"
+                    size="small"
+                    style="width: 280px;"
+                    class="filter-item"
+                    placeholder="关键字"
+                    v-model="listQuery.title">
+          </el-input>
           <el-select clearable
                      class="filter-item"
                      style="width: 280px"
                      v-model="listQuery.type"
                      size="small"
-                     placeholder="选择学校层次">
+                     placeholder="选择年级">
             <el-option v-for="item in  typeOptions"
                        :key="item.key"
                        :label="item.display_name+'('+item.key+')'"
                        :value="item.key">
             </el-option>
           </el-select>
-          <el-input @keyup.enter.native="handleFilter"
-                    size="small"
-                    style="width: 280px;"
-                    class="filter-item"
-                    placeholder="输入学校名称搜索"
-                    v-model="listQuery.title">
-          </el-input>
+          <el-select clearable
+                     class="filter-item"
+                     style="width: 280px"
+                     v-model="listQuery.type"
+                     size="small"
+                     placeholder="选择类型">
+            <el-option v-for="item in  typeOptions"
+                       :key="item.key"
+                       :label="item.display_name+'('+item.key+')'"
+                       :value="item.key">
+            </el-option>
+          </el-select>
+
           <el-button class="filter-item"
                      type="primary"
                      @click="handleCreate"
@@ -38,11 +51,10 @@
                      type="primary"
                      @click="handleCreate"
                      size="small"
-                     icon="edit">添加学校</el-button>
+                     icon="edit">添加班级</el-button>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
-
       <!-- 表格 -->
       <el-table ref="multipleTable"
                 @selection-change="handleSelectionChange"
@@ -64,14 +76,14 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="学校名称"
+        <el-table-column label="年级"
                          width="">
           <template slot-scope="scope">
             {{scope.row.smRoleBeanDto.roleName}}
           </template>
         </el-table-column>
 
-        <el-table-column label="学校层次"
+        <el-table-column label="班级"
                          width="100">
           <template slot-scope="scope">
             <template v-for="item in scope.row.userbaseinfoList">
@@ -79,7 +91,25 @@
             </template>
           </template>
         </el-table-column>
-        <el-table-column label="所在地"
+        <el-table-column label="人数"
+                         width="">
+          <template slot-scope="scope">
+            <template v-for="item in scope.row.userbaseinfoList">
+              <span :key="item">{{ item.identifierId  }} &nbsp; &nbsp;</span>
+            </template>
+
+          </template>
+        </el-table-column>
+        <el-table-column label="类型"
+                         width="">
+          <template slot-scope="scope">
+            <template v-for="item in scope.row.userbaseinfoList">
+              <span :key="item">{{ item.identifierId  }} &nbsp; &nbsp;</span>
+            </template>
+
+          </template>
+        </el-table-column>
+        <el-table-column label="所属学校"
                          width="">
           <template slot-scope="scope">
             <template v-for="item in scope.row.userbaseinfoList">
@@ -100,10 +130,12 @@
                      @click="setUser(scope.$index, scope.row)">设置成员</el-button> -->
             <el-button icon="edit"
                        size="small"
-                       @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                       type="text"
+                       @click="handleEdit(scope.$index,
+                       scope.row)">编辑</el-button>
             <el-button icon="delete"
                        size="small"
-                       type="danger"
+                       type="text"
                        @click="handleDelete(scope.$index, scope.row)">删除</el-button>
 
           </template>
@@ -127,39 +159,42 @@
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/classManage/permissionsManage' }">年级列表</el-breadcrumb-item>
-            <el-breadcrumb-item>添加学校</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">班级列表</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">添加班级</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
-      <div style="padding:50px">
+      <div style="padding:20px">
         <el-form class="small-space"
                  :model="roleTemp"
                  label-position="left"
-                 label-width="70px"
+                 label-width="100px"
                  style='width: 400px; margin-left:50px;'>
 
-          <el-form-item label="学校名称">
-            <el-input v-model="roleTemp.roleName"></el-input>
+          <el-form-item label="班级名称：">
+            <el-input placeholder="请输入"
+                      v-model="roleTemp.roleName"></el-input>
           </el-form-item>
 
-          <el-form-item label="学校层次">
-            <el-input v-model="roleTemp.remark"></el-input>
+          <el-form-item label="所属年级：">
+            <el-input placeholder="请输入"
+                      v-model="roleTemp.remark"></el-input>
           </el-form-item>
-          <el-form-item label="所在地">
-            <el-input v-model="roleTemp.remark"></el-input>
+          <el-form-item label="班级类型：">
+            <el-input placeholder="请输入"
+                      v-model="roleTemp.remark"></el-input>
           </el-form-item>
+
           <el-form-item>
-            <el-button type="primary"
-                       @click="onSubmit">上传</el-button>
-          </el-form-item>
+            <el-button type="primary">上传</el-button>
 
+          </el-form-item>
         </el-form>
       </div>
     </div>
     <div v-show="viewType==='edit'">
-      edit
+
     </div>
     <!-- 新增弹窗 -->
     <el-dialog title="表单新增"
@@ -323,7 +358,7 @@ export default {
       console.log('编辑的row：', index, '-----', row);
       // 跳页面进行修改
       // this.$router.push('/example/form');
-      this.$router.push({ path: '/classManage/permissionsManage', query: { id: row.chnlId } }); // 带参跳转
+      this.$router.push({ path: '/classManage/form', query: { id: row.chnlId } }); // 带参跳转
     },
     // 单个删除
     handleDelete(index, row) {
@@ -355,7 +390,7 @@ export default {
     // 新增
     handleCreate() {
       // this.dialogFormVisible = true;
-      this.$router.push({ path: '/classManage/permissionsManage', query: { extra: 'add' } }); // 带参跳转
+      this.$router.push({ path: '/classRoomManage/permissionsManage', query: { extra: 'add' } }); // 带参跳转
     },
     // 设置权限
     setPermissions(index, item) {
