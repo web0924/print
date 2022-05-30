@@ -23,8 +23,7 @@
         </el-form-item>
         <el-form-item prop="password">
           <div style="font-size: 16rem;">密码</div>
-          <el-input
-                    name="password"
+          <el-input name="password"
                     type="password"
                     @keyup.enter.native="handleLogin"
                     v-model="loginForm.password"
@@ -32,7 +31,7 @@
                     placeholder="请输入密码"></el-input>
         </el-form-item>
         <el-form-item style="margin-top: 50rem;">
-          <el-button  type="primary"
+          <el-button type="primary"
                      style="width:100%"
                      :loading="loading"
                      @click.native.prevent="handleLogin">
@@ -171,7 +170,7 @@ export default {
             this.loading = false;
 
             console.log('登陆成功即将跳转--------')
-            this.$router.push({ path: '/class-manage/permissionsManage' });
+            this.$router.push({ path: '/classManage/permissionsManage' });
 
 
             // this.showDialog = true;
@@ -221,7 +220,6 @@ export default {
   margin-bottom: 5rem;
 }
 .login-container {
-
   @include relative;
   height: 100vh;
   /*background-color: #2d3a4b;*/
@@ -252,7 +250,7 @@ export default {
     width: 85%;
     font-size: 14rem;
   }
-  .el-form-item__content{
+  .el-form-item__content {
     line-height: 30rem;
   }
   .svg-container {
@@ -279,7 +277,7 @@ export default {
     top: 15%;
     right: 24%;
     // width: 400rem;
-        width: 450rem;
+    width: 450rem;
     padding: 35rem 35rem 15rem 35rem;
     margin: 40rem auto 0;
     // margin: 0 auto;
