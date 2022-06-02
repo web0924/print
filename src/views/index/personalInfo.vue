@@ -28,7 +28,7 @@
 
             <el-col :span="16">
                 <div class="user_info">
-                    <h2>教师管理 <el-button size="small" v-if="!editable" @click="editable = true" style="float:right;" icon="edit">编辑</el-button> </h2>
+                    <h2>教职工管理 <el-button size="small" v-if="!editable" @click="editable = true" style="float:right;" icon="edit">编辑</el-button> </h2>
                     <div class="user_info_form" v-if="editable">
                       
                         <el-form label-position="right" label-width="100px" :model="personalInfo">

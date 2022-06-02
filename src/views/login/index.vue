@@ -13,20 +13,19 @@
           style="font-size:38rem;color:#0053b5">文印室管理系统</h2>
       <p style="text-align:center;font-size: 16rem;margin-top: 30rem;">{{loginType===1?'密码登录':'验证码登录'}}</p>
       <div v-if="loginType===1">
-        <el-form-item prop="email">
+        <el-form-item prop="account">
           <div style="font-size: 16rem;">账号</div>
-          <el-input name="email"
+          <el-input name="account"
                     type="text"
-                    v-model="loginForm.email"
+                    v-model="loginForm.account"
                     autoComplete="off"
                     placeholder="请输入您的账号/手机号"></el-input>
         </el-form-item>
-        <el-form-item prop="password">
+        <el-form-item prop="pwd">
           <div style="font-size: 16rem;">密码</div>
-          <el-input name="password"
+          <el-input name="pwd"
                     type="password"
-                    @keyup.enter.native="handleLogin"
-                    v-model="loginForm.password"
+                    v-model="loginForm.pwd"
                     autoComplete="off"
                     placeholder="请输入密码"></el-input>
         </el-form-item>
@@ -41,42 +40,43 @@
         <el-form-item>
           <el-button type="text"
                      style="width:100%;color:#000;border: 1rem solid #333333;"
-                     :loading="loading"
                      @click.native.prevent="loginType=2">
             验证码登录
           </el-button>
         </el-form-item>
       </div>
       <div v-if="loginType===2">
-        <el-form-item prop="email">
+        <el-form-item prop="account">
           <div style="font-size: 16rem;">手机号</div>
-          <el-input name="email"
+          <el-input name="account"
                     type="text"
-                    v-model="loginForm.email"
+                    v-model="loginForm.phone"
                     autoComplete="off"
-                    placeholder="请输入您的账号/手机号"></el-input>
+                    placeholder="请输入您的手机号"></el-input>
         </el-form-item>
-        <el-form-item prop="password">
+        <el-form-item prop="vcode">
           <div style="font-size: 16rem;">验证码</div>
-          <el-input name="password"
-                    type="password"
-                    @keyup.enter.native="handleLogin"
-                    v-model="loginForm.password"
+          <el-input style="width:60%"
+                    name="vcode"
+                    type="vcode"
+                    v-model="loginForm.vcode"
                     autoComplete="off"
-                    placeholder="请输入密码"></el-input>
+                    placeholder="请输入验证码"></el-input>
+          <div style="display:inline-block;width:30%">
+            <vccode :phone="loginForm.phone" />
+          </div>
         </el-form-item>
         <el-form-item style="margin-top: 50rem;">
           <el-button type="primary"
                      style="width:100%;"
                      :loading="loading"
-                     @click.native.prevent="handleLogin">
+                     @click.native.prevent="handleLoginBysms">
             登录
           </el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="text"
                      style="width:100%;color:#000;border: 1rem solid #333333;"
-                     :loading="loading"
                      @click.native.prevent="loginType=1">
             密码登录
           </el-button>
@@ -89,67 +89,77 @@
         忘记密码?(或首次登录)
       </router-link> -->
     </el-form>
+
   </div>
 </template>
 
 <script>
 // import { mapGetters } from 'vuex';
-import { isEmail } from 'utils/validate';
 import md5 from 'blueimp-md5';
+import { global } from 'src/global/global';
+import { api } from 'src/global/api';
+import axios from 'axios'
+import qs from 'qs'
+
+
+import vccode from '../../components/vccode'
 // import { getQueryObject } from 'utils';
 
 
 export default {
   name: 'login',
+  components: {
+    vccode
+  },
   data() {
     const validateEmail = (rule, value, callback) => {
-      if (!isEmail(value)) {
-        callback(new Error('请输入正确的合法邮箱'));
+      if (!value) {
+        callback(new Error('请输入账号/手机号'));
       } else {
         callback();
       }
     };
-    const validateAccount = (rule, value, callback) => {
-      if (value !== '81438234@qq.com') {
-        callback(new Error('帐号不存在！'));
-      } else {
-        callback();
-      }
-    };
+    // const validateAccount = (rule, value, callback) => {
+    //   if (value !== '81438234@qq.com') {
+    //     callback(new Error('帐号不存在！'));
+    //   } else {
+    //     callback();
+    //   }
+    // };
     const validatePass = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('密码不能小于6位'));
+      if (!value) {
+        callback(new Error('请输入验证码/密码'));
       } else {
         callback();
       }
     };
-    const validatePass2 = (rule, value, callback) => {
-      if (md5('@lss' + value) !== md5('@lss123456')) {
-        callback(new Error('密码错误！'));
-      } else {
-        callback();
-      }
-    };
+    // const validatePass2 = (rule, value, callback) => {
+    //   if (md5('@lss' + value) !== md5('@lss123456')) {
+    //     callback(new Error('密码错误！'));
+    //   } else {
+    //     callback();
+    //   }
+    // };
 
     return {
       loginType: 1,
       loginForm: {
-        email: '81438234@qq.com',
-        password: ''
+        // account: '81438234@qq.com',
+        account: '',
+        pwd: '',
+        phone: '',
+        vcode: ''
       },
       loginRules: {
-        email: [
-          { required: true, trigger: 'blur', validator: validateEmail },
-          { trigger: 'blur', validator: validateAccount }
+        account: [
+          { required: true, trigger: 'blur', validator: validateEmail }
         ],
-        password: [
-          { required: true, trigger: 'blur', validator: validatePass },
-          { trigger: 'blur', validator: validatePass2 }
+        pwd: [
+          { required: true, trigger: 'blur', validator: validatePass }
         ]
       },
       loading: false,
       showDialog: false
-
     }
   },
   computed: {
@@ -158,31 +168,60 @@ export default {
     //   'auth_type'
     // ])
   },
+  mounted() {
+    const vm = this
+  },
   methods: {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;
           const par = JSON.parse(JSON.stringify(this.loginForm));
-          par.password = md5('@lss' + par.password);
+          par.pwd = md5(md5(par.pwd));
+          axios.post('/smartprint/login-by-pwd', qs.stringify(par))
+            .then(response => {
+              this.loading = false;
+              if (response.data.code !== 0) return this.$message.error(response.data.msg);
+              axios.post('/smartprint/me/refresh').then(res2 => {
+                if (res2.data.code !== 0) return vm.$message.error(res2.data.msg)
+                this.$store.dispatch('LoginByEmail', par).then(() => {
+                  this.loading = false;
+                  this.$router.push({ path: '/classManage/permissionsManage' });
+                  // this.$store.commit('SET_ACCOUNTINFO', res2.data.login.user);
+                  // this.showDialog = true;
+                })
+              }).catch(err => err)
 
-          this.$store.dispatch('LoginByEmail', par).then(() => {
-            this.loading = false;
+                .catch(err => {
+                  this.$message.error(err);
+                  this.loading = false;
+                });
+            })
+            .catch(error => {
+              console.log('错误信息')
+              console.log(error);
+            })
+          // this.$store.dispatch('LoginByEmail', par).then(() => {
+          //   this.loading = false;
 
-            console.log('登陆成功即将跳转--------')
-            this.$router.push({ path: '/classManage/permissionsManage' });
+          //   console.log('登陆成功即将跳转--------')
+          //   this.$router.push({ path: '/schoolManage/permissionsManage' });
 
 
-            // this.showDialog = true;
-          }).catch(err => {
-            this.$message.error(err);
-            this.loading = false;
-          });
+          //   // this.showDialog = true;
+          // })
+          //   .catch(err => {
+          //     this.$message.error(err);
+          //     this.loading = false;
+          //   });
         } else {
           console.log('error submit!!');
           return false;
         }
       });
+    },
+    handleLoginBysms() {
+
     },
     afterQRScan() {
       // const hash = window.location.hash.slice(1);
@@ -205,6 +244,7 @@ export default {
   },
   created() {
     // window.addEventListener('hashchange', this.afterQRScan);
+    window.axios = axios
   },
   destroyed() {
     // window.removeEventListener('hashchange', this.afterQRScan);
@@ -276,7 +316,6 @@ export default {
     // left: 0;
     top: 15%;
     right: 24%;
-    // width: 400rem;
     width: 450rem;
     padding: 35rem 35rem 15rem 35rem;
     margin: 40rem auto 0;

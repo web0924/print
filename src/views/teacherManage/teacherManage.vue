@@ -1,21 +1,21 @@
 <template>
   <div class="app-container">
-    <div v-show="viewType===0">
+    <div v-show="viewType===0"
+         style="padding-bottom:30px">
       <div style="height:120px;padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">教师列表</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/teacherManage/teacherManage' }">教职工列表</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
         <!-- 搜索条件 -->
         <div class="filter-container">
-
-          <el-input @keyup.enter.native="handleFilter"
+          <el-input @keyup.enter.native="handleSearch"
                     size="small"
                     style="width: 280px;"
                     class="filter-item"
-                    placeholder="关键字"
-                    v-model="listQuery.title">
+                    placeholder="输入教职工名称搜索"
+                    v-model="listQuery.kw">
           </el-input>
           <el-select clearable
                      class="filter-item"
@@ -41,9 +41,10 @@
                        :value="item.key">
             </el-option>
           </el-select>
+
           <el-button class="filter-item"
                      type="primary"
-                     @click="handleCreate"
+                     @click="handleSearch"
                      size="small"
                      icon="edit">搜索</el-button>
           <el-button class="filter-item"
@@ -51,10 +52,11 @@
                      type="primary"
                      @click="handleCreate"
                      size="small"
-                     icon="edit">添加教师</el-button>
+                     icon="edit">添加教职工</el-button>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
+
       <!-- 表格 -->
       <el-table ref="multipleTable"
                 @selection-change="handleSelectionChange"
@@ -72,26 +74,47 @@
                          label='序号'
                          width="100">
           <template slot-scope="scope">
-            {{scope.$index}}
+            {{scope.$index+1}}
           </template>
         </el-table-column>
 
-        <el-table-column label="教师名称"
+        <el-table-column label="教职工名称"
                          width="">
           <template slot-scope="scope">
-            {{scope.row.smRoleBeanDto.roleName}}
+            {{scope.row.userName}}
+          </template>
+        </el-table-column>
+        <el-table-column label="联系电话"
+                         width="">
+          <template slot-scope="scope">
+            {{scope.row.userPhone}}
+          </template>
+        </el-table-column>
+        <el-table-column label="所属学科"
+                         width="">
+          <template slot-scope="scope">
+            {{scope.row.subjectName}}
           </template>
         </el-table-column>
 
-        <el-table-column label="联系电话"
+        <!-- <el-table-column label="教职工名称"
                          width="100">
           <template slot-scope="scope">
             <template v-for="item in scope.row.userbaseinfoList">
               <span :key="item">{{ item.userName  }} &nbsp; &nbsp;</span>
             </template>
           </template>
-        </el-table-column>
-        <el-table-column label="所属学科"
+        </el-table-column> -->
+        <!-- <el-table-column label="联系电话"
+                         width="">
+          <template slot-scope="scope">
+            <template v-for="item in scope.row.userPhone">
+              <span :key="item">{{ item.identifierId  }} &nbsp; &nbsp;</span>
+            </template>
+
+          </template>
+        </el-table-column> -->
+        <!-- <el-table-column label="所属学科"
                          width="">
           <template slot-scope="scope">
             <template v-for="item in scope.row.userbaseinfoList">
@@ -99,7 +122,7 @@
             </template>
 
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="是否注册小程序"
                          width="">
           <template slot-scope="scope">
@@ -121,12 +144,10 @@
                      @click="setUser(scope.$index, scope.row)">设置成员</el-button> -->
             <el-button icon="edit"
                        size="small"
-                       type="text"
-                       @click="handleEdit(scope.$index,
-                       scope.row)">编辑</el-button>
+                       @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
             <el-button icon="delete"
                        size="small"
-                       type="text"
+                       type="danger"
                        @click="handleDelete(scope.$index, scope.row)">删除</el-button>
 
           </template>
@@ -139,8 +160,8 @@
         <el-pagination @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"
                        :current-page.sync="listQuery.currPage"
-                       :page-sizes="[10,20,30, 50]"
-                       :page-size="listQuery.pageSize"
+                       :page-sizes="[5,10,20,30, 50]"
+                       :page-size="listQuery.count"
                        layout="total, sizes, prev, pager, next, jumper"
                        :total="total">
         </el-pagination>
@@ -150,69 +171,112 @@
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">教师列表</el-breadcrumb-item>
-            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">添加教师</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/teacherManage/teacherManage' }">教职工列表</el-breadcrumb-item>
+            <el-breadcrumb-item>添加教职工</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
-      <div style="padding:20px">
+      <div style="padding:50px">
         <el-form class="small-space"
                  :model="roleTemp"
                  label-position="left"
-                 label-width="100px"
+                 label-width="70px"
                  style='width: 400px; margin-left:50px;'>
 
-          <el-form-item label="教师名称：">
-            <el-input placeholder="请输入"
-                      v-model="roleTemp.roleName"></el-input>
+          <el-form-item label="教职工名称">
+            <el-input v-model="roleTemp.userName"></el-input>
           </el-form-item>
-          <el-form-item label="联系电话：">
-            <el-input placeholder="请输入"
-                      v-model="roleTemp.roleName"></el-input>
+          <el-form-item label="联系电话">
+            <el-input v-model="roleTemp.userPhone"></el-input>
           </el-form-item>
-          <el-form-item label="所属学科：">
-            <el-input placeholder="请输入"
-                      v-model="roleTemp.roleName"></el-input>
+          <el-form-item label="所属学科">
+            <el-select clearable
+                       class="filter-item"
+                       v-model="roleTemp.subjectId">
+              <el-option v-for="item in  subjectList"
+                         :key="item.id"
+                         :label="item.name"
+                         :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <p style="width:200%;height:1px; background: #eee;margin:50px 0"></p>
+          <el-form-item label="账号">
+            <el-input v-model="roleTemp.userAccount"></el-input>
+          </el-form-item>
+          <el-form-item label="密码">
+            <el-input v-model="roleTemp.userPwd"></el-input>
           </el-form-item>
 
+          <!-- <el-form-item label="教职工层次">
+            <el-input v-model="roleTemp.remark"></el-input>
+          </el-form-item>
+          <el-form-item label="所在地">
+            <el-input v-model="roleTemp.remark"></el-input>
+          </el-form-item> -->
           <el-form-item>
-            <el-button type="primary">上传</el-button>
-
+            <el-button type="primary"
+                       @click="onAddSubmit">上传</el-button>
           </el-form-item>
+
         </el-form>
       </div>
     </div>
     <div v-show="viewType==='edit'">
-
-    </div>
-    <!-- 新增弹窗 -->
-    <el-dialog title="表单新增"
-               :visible.sync="dialogFormVisible">
-      <el-form class="small-space"
-               :model="roleTemp"
-               label-position="left"
-               label-width="70px"
-               style='width: 400px; margin-left:50px;'>
-
-        <el-form-item label="角色名称">
-          <el-input v-model="roleTemp.roleName"></el-input>
-        </el-form-item>
-
-        <el-form-item label="备注">
-          <el-input v-model="roleTemp.remark"></el-input>
-        </el-form-item>
-
-      </el-form>
-
-      <div slot="footer"
-           class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-
-        <el-button type="primary"
-                   @click="handleCreateSubmit">确 定</el-button>
+      <div style="padding-left:20px">
+        <div style="height:60px;display:flex;align-items:center">
+          <el-breadcrumb separator-class="el-icon-arrow-right">
+            <el-breadcrumb-item :to="{ path: '/teacherManage/teacherManage' }">教职工列表</el-breadcrumb-item>
+            <el-breadcrumb-item>编辑教职工</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
       </div>
-    </el-dialog>
+      <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
+      <div style="padding:50px">
+        <el-form class="small-space"
+                 :model="roleTemp2"
+                 label-position="left"
+                 label-width="70px"
+                 style='width: 400px; margin-left:50px;'>
+
+          <el-form-item label="教职工名称">
+            <el-input v-model="roleTemp2.userName"></el-input>
+          </el-form-item>
+          <el-form-item label="联系电话">
+            <el-input v-model="roleTemp2.userPhone"></el-input>
+          </el-form-item>
+          <el-form-item label="所属学科">
+            <el-select clearable
+                       class="filter-item"
+                       v-model="roleTemp2.subjectId">
+              <el-option v-for="item in  subjectList"
+                         :key="item.id"
+                         :label="item.name"
+                         :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <p style="width:200%;height:1px; background: #eee;margin:50px 0"></p>
+          <el-form-item label="账号">
+            <el-input v-model="roleTemp2.userAccount"></el-input>
+          </el-form-item>
+          <el-form-item label="密码">
+            <el-input v-model="roleTemp2.userPwd"></el-input>
+          </el-form-item>
+          <!-- <el-form-item label="教职工层次">
+            <el-input v-model="roleTemp.remark"></el-input>
+          </el-form-item>
+          <el-form-item label="所在地">
+            <el-input v-model="roleTemp.remark"></el-input>
+          </el-form-item> -->
+          <el-form-item>
+            <el-button type="primary"
+                       @click="onEditSubmit">上传</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
 
     <!-- 设置权限 -->
     <el-dialog title="设置权限"
@@ -234,7 +298,6 @@
         <!-- </el-checkbox-group> -->
 
       </el-form>
-
       <div slot="footer"
            class="dialog-footer">
         <el-button @click="dialogPermissionsVisible = false">取 消</el-button>
@@ -243,14 +306,14 @@
                    @click="setPermissionsSubmit">确 定</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
-
 <script>
 // import { getList } from 'api/article';
 import { global } from 'src/global/global';
 import { api } from 'src/global/api';
+import axios from 'axios'
+import qs from 'qs'
 
 import store from '@/store';
 
@@ -258,7 +321,7 @@ export default {
   data() {
     return {
       // list: null,
-      // listLoading: true,
+      listLoading: false,
 
       list: null, // 表格list
       smMenuBeanDtoList: null, // 菜单
@@ -266,17 +329,18 @@ export default {
       // listLoading: true,
       listQuery: {
         currPage: 1,
-        pageSize: 10,
+        count: 10,
+        start: 1,
 
         // importance: undefined,
-        title: '',
+        kw: '',
         type: null // 类型
 
       },
       roleTemp: {
-        roleName: '',
-        remark: ''
 
+      },
+      roleTemp2: {
       },
       ruleForm: {
         permissions: []
@@ -285,23 +349,35 @@ export default {
         { key: '001', display_name: '类型1' },
         { key: '002', display_name: '类型2' },
         { key: '003', display_name: '类型3' }
-
       ],
       dialogFormVisible: false,
       dialogPermissionsVisible: false,
       multipleSelection: [],
 
-      viewType: 0 // 0 | add | edit
-
+      viewType: 0, // 0 | add | edit
+      gradeList: []
     }
   },
   mounted() {
     const vm = this;
 
     vm.getList();
+    this.getListLen()
     this.setViewByQuery()
+    this.editView()
+    this.getgradeList()
   },
   methods: {
+    // 获取学科数据
+    getgradeList() {
+      const vm = this;
+      axios.post('/smartprint/print-room/grade/get-grades', qs.stringify(vm.listQuery))
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          vm.gradeList = res.data.data.grades;
+        })
+        .catch(err => err)
+    },
     // 获取列表数据
     getList() {
       const vm = this;
@@ -312,29 +388,50 @@ export default {
       //   this.total = response.data.total;
       //   this.listLoading = false;
       // })
-      global.get(api.roleAndUser, { params: vm.listQuery }, res => {
-        // console.log('-------获取到数据：',JSON.stringify(res) )
-        const data = res.body;
-        if (data.resultCode == 0) {
-          vm.list = data.data.data;
+      axios.post('/smartprint/print-room/staff/get-staffs', qs.stringify(vm.listQuery))
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          vm.list = res.data.data.staffs;
           console.log('列表数据：', vm.list);
-          vm.listQuery.currPage = data.data.currPage;
-          vm.listQuery.pageSize = data.data.pageSize;
-          vm.total = data.data.total;
+          // vm.listQuery.currPage = data.data.currPage;
+          // vm.listQuery.count = data.data.count;
+          // vm.total = data.data.total;
+        })
+        .catch(err => err)
+      // return
+      // global.get(api.roleAndUser, { params: vm.listQuery }, res => {
+      //   // console.log('-------获取到数据：',JSON.stringify(res) )
+      //   const data = res.body;
+      //   if (data.resultCode == 0) {
+      //     vm.list = data.data.data;
+      //     console.log('列表数据：', vm.list);
+      //     vm.listQuery.currPage = data.data.currPage;
+      //     vm.listQuery.count = data.data.count;
+      //     vm.total = data.data.total;
 
-          vm.listLoading = false;
-        } else {
-          // alert(res.body.resultMsg)
-          Message({
-            showClose: true,
-            message: res.body.resultMsg,
-            type: 'error'
-          });
-          vm.listLoading = false;
-        }
-      }, res => {
-        vm.listLoading = false;
-      }, false)
+      //     vm.listLoading = false;
+      //   } else {
+      //     // alert(res.body.resultMsg)
+      //     Message({
+      //       showClose: true,
+      //       message: res.body.resultMsg,
+      //       type: 'error'
+      //     });
+      //     vm.listLoading = false;
+      //   }
+      // }, res => {
+      //   vm.listLoading = false;
+      // }, false)
+      vm.listLoading = false;
+    },
+    // 获取列表数据总数
+    getListLen() {
+      const params = JSON.parse(JSON.stringify(this.listQuery))
+      params.isSum = 1
+      axios.post('/smartprint/print-room/staff/get-staffs', qs.stringify(params)).then(res => {
+        this.total = res.data.data.sum.count
+        console.log(this.total)
+      }).catch(err => console.log(err))
     },
     // 根据当前路由参数切换视图
     setViewByQuery() {
@@ -342,20 +439,43 @@ export default {
       if (!extra) this.viewType = 0
       else this.viewType = extra
     },
+    // 编辑回显
+    editView() {
+      const { id } = this.$route.query
+      if (id) {
+        axios.post('/smartprint/print-room/staff/get-staff', qs.stringify({ staffId: id })).then(res => {
+          console.log(res)
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          this.roleTemp2 = res.data.data.staff
+        }).catch(err => console.log(err))
+      }
+    },
     // 编辑
-    handleEdit(index, row) {
+    handleEdit(index, { id }) {
       const vm = this;
-      console.log('编辑的row：', index, '-----', row);
+      console.log('编辑的row：', index, '-----', id);
       // 跳页面进行修改
       // this.$router.push('/example/form');
-      this.$router.push({ path: '/teacherManage/teacherManage', query: { id: row.chnlId } }); // 带参跳转
+      this.$router.push({ path: '/teacherManage/teacherManage', query: { extra: 'edit', id } }); // 带参跳转
+    },
+    // 编辑上传
+    onEditSubmit() {
+      this.roleTemp2.staffId = this.roleTemp2.id
+      axios.post('/smartprint/print-room/staff/update-staff', qs.stringify(this.roleTemp2)).then(res => {
+        if (res.data.code !== 0) return this.$message.error(res.data.msg)
+        this.$message.success('修改成功')
+      }).catch(err => err)
     },
     // 单个删除
-    handleDelete(index, row) {
+    handleDelete(index, { id }) {
       const vm = this;
-      console.log('单个删除选择的row：', index, '-----', row);
-      // 前端删除。
-      vm.list.splice(index, 1)
+      console.log('单个删除选择的row：', index, '-----', id);
+      axios.post('/smartprint/print-room/staff/delete-staff', qs.stringify({ staffId: id })).then(res => {
+        if (res.data.code !== 0) return this.$message.error(res.data.msg)
+        this.$message.success('删除成功')
+        // 前端删除。
+        vm.list.splice(index, 1)
+      }).then(err => err)
     },
     // 批量删除
     handleDelAll() {
@@ -368,13 +488,17 @@ export default {
     },
     // 操作分页
     handleSizeChange(val) {
-      this.listQuery.pageSize = val;
+      this.listQuery.count = val;
+
       this.getList();
     },
     // 操作分页
     handleCurrentChange(val) {
       console.log('--------', val)
       this.listQuery.currPage = val;
+      this.listQuery.start = this.listQuery.count * (val - 1) + 1;
+
+
       this.getList();
     },
     // 新增
@@ -411,33 +535,25 @@ export default {
 
       console.log(JSON.stringify(vm.smMenuBeanDtoList));
 
-      // 周转成前端所需格式 提交到vuex中。实际开发去掉以下代码，把以上参数提交给接口即可。2017-7-9
-      const permissions = {};
-
-      for (let i = 0, len = vm.smMenuBeanDtoList.length; i < len; i++) {
-        permissions[vm.smMenuBeanDtoList[i].url] = vm.smMenuBeanDtoList[i].set;
-      }
 
       vm.$message({
         showClose: true,
         message: '动态修改权限成功！实际开发请把参数提交给后端接口！',
         type: 'success'
       });
-      store.dispatch('GenerateRoutes', permissions);
     },
     // 新增提交
-    handleCreateSubmit() {
+    onAddSubmit() {
       const vm = this;
       console.log('新增入参：', vm.roleTemp)
-
-      const item = {
-        smRoleBeanDto: { roleName: vm.roleTemp.roleName }
-      }
-      // 这里作演示用，正式新增 请提交到接口
-      vm.list.push(item)
-      console.log('新增后', vm.list)
-
-      this.dialogFormVisible = false;
+      axios.post('/smartprint/print-room/staff/create-staff', qs.stringify(vm.roleTemp)).then(res => {
+        console.log(res.data.code)
+        if (res.data.code !== 0) return vm.$message.error(res.data.msg)
+        vm.$message.success('新增成功')
+        for (const key in this.roleTemp) {
+          this.roleTemp[key] = ''
+        }
+      }).catch(err => console.log(err))
     },
     setUser() {
       const vm = this;
@@ -466,6 +582,10 @@ export default {
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]))
+    },
+    handleSearch() {
+      this.getList()
+      this.getListLen()
     }
   }
 };

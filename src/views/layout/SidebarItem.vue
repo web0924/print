@@ -197,14 +197,14 @@
                   v-if="routes['/teacherManage/teacherManage']">
         <template slot="title">
           <img style="width:18px"
-               src="../../assets/img/person_slider_icon.png"> 教师管理
+               src="../../assets/img/person_slider_icon.png"> 教职工管理
         </template>
 
         <router-link class="menu-indent"
                      to="/teacherManage/teacherManage"
                      v-if="routes['/teacherManage/teacherManage']">
           <el-menu-item index="/teacherManage/teacherManage">
-            教师列表
+            教职工列表
           </el-menu-item>
         </router-link>
       </el-submenu>

@@ -45,7 +45,7 @@ const SchoolManage = _import('class-manage/permissionsManage');
 const PrintManage = _import('classRoom-manage/permissionsManage');
 // 科室管理
 const Department = _import('department/department');
-// 教师管理
+// 教职工管理
 const AccountManage = _import('teacherManage/teacherManage');
 // 学科管理
 const Subject = _import('subject/subjects');
@@ -93,7 +93,7 @@ const constantRouterMap = [
     noDropdown: true,
     children: [
       { path: 'readme', component: Readme, name: '系统说明' },
-      { path: 'personalInfo', component: PersonalInfo, name: '教师管理' }
+      { path: 'personalInfo', component: PersonalInfo, name: '教职工管理' }
     ]
   },
 
@@ -171,7 +171,7 @@ const constantRouterMap = [
     name: '账号管理',
     // icon: '404',
     children: [
-      { path: 'teacherManage', component: AccountManage, name: '教师管理' }
+      { path: 'teacherManage', component: AccountManage, name: '教职工管理' }
     ]
   },
   {

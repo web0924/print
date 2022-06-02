@@ -6,14 +6,20 @@
       <i class="fa fa-bars"
          @click="toggleSideBar"
          :isActive="sidebar.opened"></i> -->
-      <span class="bars-title">邓州市第一高级中学-文印室管理系统</span>
+      <span class="bars-title">{{accountInfo.printRoom.name}}管理系统</span>
       <!-- <tabs-view></tabs-view> -->
 
       <error-log v-if="log.length>0"
                  class="errLog-container"
                  :logsList="log"></error-log>
       <screenfull class='screenfull'></screenfull>
-      <el-button @click="logout" size="mini" class="loginout-btn">退出</el-button>
+      <el-button @click="logout"
+                 size="mini"
+                 class="loginout-btn">
+        退出
+        <img style="width:15px;height:13px;position:relative;top:2px"
+             src="../../assets/img/login_out.png">
+      </el-button>
       <!-- <el-dropdown class="avatar-container"
                    trigger="click">
         <div class="avatar-wrapper">
@@ -128,6 +134,7 @@ import errLogStore from 'store/errLog';
 import { global } from 'src/global/global';
 import Cookies from 'js-cookie';
 import md5 from 'blueimp-md5';
+import axios from 'axios'
 export default {
   components: {
     TabsView,
@@ -151,6 +158,7 @@ export default {
       }
     };
     return {
+      accountInfo: {},
       log: errLogStore.state.errLog,
       dialogVisible: false,
       dialogFormVisible: false,
@@ -185,6 +193,15 @@ export default {
   },
   mounted() {
     const vm = this;
+    try {
+      axios.post('/smartprint/me/refresh').then(res => {
+        if (res.data.code === 0) {
+          this.accountInfo = res.data.data.login.user
+        }
+      }).catch(err => err)
+    } catch (err) {
+      console.log(err)
+    }
   },
   methods: {
     // 换肤
@@ -271,7 +288,7 @@ export default {
     right: 60px;
     top: 10px;
     background: transparent;
-    color: #FFF;
+    color: #fff;
   }
   .avatar-container {
     height: 50px;

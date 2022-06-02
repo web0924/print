@@ -3,7 +3,7 @@
     <div style="padding-left:20px">
       <div style="height:60px;display:flex;align-items:center">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>教师管理</el-breadcrumb-item>
+          <el-breadcrumb-item>教职工管理</el-breadcrumb-item>
         </el-breadcrumb>
       </div>
     </div>
