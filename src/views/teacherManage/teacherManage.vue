@@ -14,31 +14,31 @@
                     size="small"
                     style="width: 280px;"
                     class="filter-item"
-                    placeholder="输入教职工名称搜索"
+                    placeholder="输入关键字搜索"
                     v-model="listQuery.kw">
           </el-input>
           <el-select clearable
                      class="filter-item"
                      style="width: 280px"
-                     v-model="listQuery.type"
+                     v-model="listQuery.gradeId"
                      size="small"
                      placeholder="选择年级">
-            <el-option v-for="item in  typeOptions"
-                       :key="item.key"
-                       :label="item.display_name+'('+item.key+')'"
-                       :value="item.key">
+            <el-option v-for="item in  gradeList"
+                       :key="item.id"
+                       :label="item.name"
+                       :value="item.id">
             </el-option>
           </el-select>
           <el-select clearable
                      class="filter-item"
                      style="width: 280px"
-                     v-model="listQuery.type"
+                     v-model="listQuery.classId"
                      size="small"
                      placeholder="选择班级">
-            <el-option v-for="item in  typeOptions"
-                       :key="item.key"
-                       :label="item.display_name+'('+item.key+')'"
-                       :value="item.key">
+            <el-option v-for="item in  classList"
+                       :key="item.id"
+                       :label="item.name"
+                       :value="item.id">
             </el-option>
           </el-select>
 
@@ -47,6 +47,10 @@
                      @click="handleSearch"
                      size="small"
                      icon="edit">搜索</el-button>
+          <el-button class="filter-item"
+                     @click="handleReset"
+                     size="small"
+                     icon="edit">重置</el-button>
           <el-button class="filter-item"
                      style="position:absolute;right:40px;background:#000"
                      type="primary"
@@ -201,6 +205,17 @@
               </el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="所属科室">
+            <el-select clearable
+                       class="filter-item"
+                       v-model="roleTemp.officeId">
+              <el-option v-for="item in  officeList"
+                         :key="item.id"
+                         :label="item.name"
+                         :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
           <p style="width:200%;height:1px; background: #eee;margin:50px 0"></p>
           <el-form-item label="账号">
             <el-input v-model="roleTemp.userAccount"></el-input>
@@ -251,6 +266,17 @@
                        class="filter-item"
                        v-model="roleTemp2.subjectId">
               <el-option v-for="item in  subjectList"
+                         :key="item.id"
+                         :label="item.name"
+                         :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="所属科室">
+            <el-select clearable
+                       class="filter-item"
+                       v-model="roleTemp2.officeId">
+              <el-option v-for="item in  officeList"
                          :key="item.id"
                          :label="item.name"
                          :value="item.id">
@@ -310,12 +336,12 @@
 </template>
 <script>
 // import { getList } from 'api/article';
-import { global } from 'src/global/global';
-import { api } from 'src/global/api';
+import { global } from 'src/global/global'
+import { api } from 'src/global/api'
 import axios from 'axios'
 import qs from 'qs'
 
-import store from '@/store';
+import store from '@/store'
 
 export default {
   data() {
@@ -331,17 +357,10 @@ export default {
         currPage: 1,
         count: 10,
         start: 1,
-
-        // importance: undefined,
-        kw: '',
-        type: null // 类型
-
+        kw: ''
       },
-      roleTemp: {
-
-      },
-      roleTemp2: {
-      },
+      roleTemp: {},
+      roleTemp2: {},
       ruleForm: {
         permissions: []
       },
@@ -355,44 +374,88 @@ export default {
       multipleSelection: [],
 
       viewType: 0, // 0 | add | edit
-      gradeList: []
+      gradeList: [],
+      classList: [],
+      subjectList: [],
+      officeList: []
     }
   },
   mounted() {
-    const vm = this;
+    const vm = this
 
-    vm.getList();
+    vm.getList()
     this.getListLen()
     this.setViewByQuery()
     this.editView()
     this.getgradeList()
+    this.getclassList()
+    this.getsubjectList()
+    this.getofficeList()
   },
   methods: {
-    // 获取学科数据
+    // 获取年级数据
     getgradeList() {
-      const vm = this;
-      axios.post('/smartprint/print-room/grade/get-grades', qs.stringify(vm.listQuery))
+      const vm = this
+      axios
+        .post('/smartprint/print-room/grade/get-grades')
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          vm.gradeList = res.data.data.grades;
+          vm.gradeList = res.data.data.grades
+        })
+        .catch(err => err)
+    },
+    // 获取班级数据
+    getclassList() {
+      const vm = this
+      axios
+        .post('/smartprint/print-room/class/get-classs')
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          vm.classList = res.data.data.classs
+        })
+        .catch(err => err)
+    },
+    // 获取学科数据
+    getsubjectList() {
+      const vm = this
+      axios
+        .post('/smartprint/print-room/subject/get-subjects')
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          vm.subjectList = res.data.data.subjects
+        })
+        .catch(err => err)
+    },
+    // 获取科室数据
+    getofficeList() {
+      const vm = this
+      axios
+        .post('/smartprint/company/office/get-offices')
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          vm.officeList = res.data.data.offices
         })
         .catch(err => err)
     },
     // 获取列表数据
     getList() {
-      const vm = this;
+      const vm = this
 
-      vm.listLoading = true;
+      vm.listLoading = true
       // fetchList(this.listQuery).then(response => {
       //   this.list = response.data.items;
       //   this.total = response.data.total;
       //   this.listLoading = false;
       // })
-      axios.post('/smartprint/print-room/staff/get-staffs', qs.stringify(vm.listQuery))
+      axios
+        .post(
+          '/smartprint/print-room/staff/get-staffs',
+          qs.stringify(vm.listQuery)
+        )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          vm.list = res.data.data.staffs;
-          console.log('列表数据：', vm.list);
+          vm.list = res.data.data.staffs
+          console.log('列表数据：', vm.list)
           // vm.listQuery.currPage = data.data.currPage;
           // vm.listQuery.count = data.data.count;
           // vm.total = data.data.total;
@@ -422,16 +485,19 @@ export default {
       // }, res => {
       //   vm.listLoading = false;
       // }, false)
-      vm.listLoading = false;
+      vm.listLoading = false
     },
     // 获取列表数据总数
     getListLen() {
       const params = JSON.parse(JSON.stringify(this.listQuery))
       params.isSum = 1
-      axios.post('/smartprint/print-room/staff/get-staffs', qs.stringify(params)).then(res => {
-        this.total = res.data.data.sum.count
-        console.log(this.total)
-      }).catch(err => console.log(err))
+      axios
+        .post('/smartprint/print-room/staff/get-staffs', qs.stringify(params))
+        .then(res => {
+          this.total = res.data.data.sum.count
+          console.log(this.total)
+        })
+        .catch(err => console.log(err))
     },
     // 根据当前路由参数切换视图
     setViewByQuery() {
@@ -443,141 +509,182 @@ export default {
     editView() {
       const { id } = this.$route.query
       if (id) {
-        axios.post('/smartprint/print-room/staff/get-staff', qs.stringify({ staffId: id })).then(res => {
-          console.log(res)
-          if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          this.roleTemp2 = res.data.data.staff
-        }).catch(err => console.log(err))
+        axios
+          .post(
+            '/smartprint/print-room/staff/get-staff',
+            qs.stringify({ staffId: id })
+          )
+          .then(res => {
+            console.log(res)
+            if (res.data.code !== 0) return this.$message.error(res.data.msg)
+            this.roleTemp2 = res.data.data.staff
+          })
+          .catch(err => console.log(err))
       }
     },
     // 编辑
     handleEdit(index, { id }) {
-      const vm = this;
-      console.log('编辑的row：', index, '-----', id);
+      const vm = this
+      console.log('编辑的row：', index, '-----', id)
       // 跳页面进行修改
       // this.$router.push('/example/form');
-      this.$router.push({ path: '/teacherManage/teacherManage', query: { extra: 'edit', id } }); // 带参跳转
+      this.$router.push({
+        path: '/teacherManage/teacherManage',
+        query: { extra: 'edit', id }
+      }) // 带参跳转
     },
     // 编辑上传
     onEditSubmit() {
       this.roleTemp2.staffId = this.roleTemp2.id
-      axios.post('/smartprint/print-room/staff/update-staff', qs.stringify(this.roleTemp2)).then(res => {
-        if (res.data.code !== 0) return this.$message.error(res.data.msg)
-        this.$message.success('修改成功')
-      }).catch(err => err)
+      axios
+        .post(
+          '/smartprint/print-room/staff/update-staff',
+          qs.stringify(this.roleTemp2)
+        )
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          this.$message.success('修改成功')
+        })
+        .catch(err => err)
     },
     // 单个删除
     handleDelete(index, { id }) {
-      const vm = this;
-      console.log('单个删除选择的row：', index, '-----', id);
-      axios.post('/smartprint/print-room/staff/delete-staff', qs.stringify({ staffId: id })).then(res => {
-        if (res.data.code !== 0) return this.$message.error(res.data.msg)
-        this.$message.success('删除成功')
-        // 前端删除。
-        vm.list.splice(index, 1)
-      }).then(err => err)
+      const vm = this
+      console.log('单个删除选择的row：', index, '-----', id)
+      axios
+        .post(
+          '/smartprint/print-room/staff/delete-staff',
+          qs.stringify({ staffId: id })
+        )
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          this.$message.success('删除成功')
+          this.getListLen()
+          // 前端删除。
+          vm.list.splice(index, 1)
+        })
+        .then(err => err)
     },
     // 批量删除
     handleDelAll() {
-      const vm = this;
+      const vm = this
       console.log('批量删除选择的row：', vm.multipleSelection)
     },
     // 搜索
     handleFilter() {
-      this.getList();
+      this.getList()
     },
     // 操作分页
     handleSizeChange(val) {
-      this.listQuery.count = val;
+      this.listQuery.count = val
 
-      this.getList();
+      this.getList()
     },
     // 操作分页
     handleCurrentChange(val) {
       console.log('--------', val)
-      this.listQuery.currPage = val;
-      this.listQuery.start = this.listQuery.count * (val - 1) + 1;
+      this.listQuery.currPage = val
+      this.listQuery.start = this.listQuery.count * (val - 1) + 1
 
-
-      this.getList();
+      this.getList()
     },
     // 新增
     handleCreate() {
       // this.dialogFormVisible = true;
-      this.$router.push({ path: '/teacherManage/teacherManage', query: { extra: 'add' } }); // 带参跳转
+      this.$router.push({
+        path: '/teacherManage/teacherManage',
+        query: { extra: 'add' }
+      }) // 带参跳转
     },
     // 设置权限
     setPermissions(index, item) {
-      const vm = this;
-      global.get(api.getMenuAndElement, { params: { roleId: item.smRoleBeanDto.id } }, res => {
-        console.log('-------获取到数据：', JSON.stringify(res))
-        const data = res.body;
-        if (data.resultCode == 0) {
-          vm.smMenuBeanDtoList = data.data.smMenuBeanDtoList;
-          console.log('列表数据：', vm.smMenuBeanDtoList);
-        } else {
-          // alert(res.body.resultMsg)
-          Message({
-            showClose: true,
-            message: res.body.resultMsg,
-            type: 'error'
-          });
-        }
+      const vm = this
+      global.get(
+        api.getMenuAndElement,
+        { params: { roleId: item.smRoleBeanDto.id } },
+        res => {
+          console.log('-------获取到数据：', JSON.stringify(res))
+          const data = res.body
+          if (data.resultCode == 0) {
+            vm.smMenuBeanDtoList = data.data.smMenuBeanDtoList
+            console.log('列表数据：', vm.smMenuBeanDtoList)
+          } else {
+            // alert(res.body.resultMsg)
+            Message({
+              showClose: true,
+              message: res.body.resultMsg,
+              type: 'error'
+            })
+          }
 
-        vm.dialogPermissionsVisible = true;
-      }, res => {
-        vm.dialogPermissionsVisible = true;
-      }, true)
+          vm.dialogPermissionsVisible = true
+        },
+        res => {
+          vm.dialogPermissionsVisible = true
+        },
+        true
+      )
     },
     // 设置权限提交
     setPermissionsSubmit() {
-      const vm = this;
+      const vm = this
 
-      console.log(JSON.stringify(vm.smMenuBeanDtoList));
-
+      console.log(JSON.stringify(vm.smMenuBeanDtoList))
 
       vm.$message({
         showClose: true,
         message: '动态修改权限成功！实际开发请把参数提交给后端接口！',
         type: 'success'
-      });
+      })
     },
     // 新增提交
     onAddSubmit() {
-      const vm = this;
+      const vm = this
       console.log('新增入参：', vm.roleTemp)
-      axios.post('/smartprint/print-room/staff/create-staff', qs.stringify(vm.roleTemp)).then(res => {
-        console.log(res.data.code)
-        if (res.data.code !== 0) return vm.$message.error(res.data.msg)
-        vm.$message.success('新增成功')
-        for (const key in this.roleTemp) {
-          this.roleTemp[key] = ''
-        }
-      }).catch(err => console.log(err))
+      axios
+        .post(
+          '/smartprint/print-room/staff/create-staff',
+          qs.stringify(vm.roleTemp)
+        )
+        .then(res => {
+          console.log(res.data.code)
+          if (res.data.code !== 0) return vm.$message.error(res.data.msg)
+          vm.$message.success('新增成功')
+          for (const key in this.roleTemp) {
+            this.roleTemp[key] = ''
+          }
+        })
+        .catch(err => console.log(err))
     },
     setUser() {
-      const vm = this;
+      const vm = this
 
       vm.$message({
         showClose: true,
         message: '设置成员未完成，逻辑参照设置权限即可！',
         type: 'warning'
-      });
+      })
     },
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      this.multipleSelection = val
     },
 
     handleDownload() {
-      const vm = this;
+      const vm = this
 
       require.ensure([], () => {
-        const { export_json_to_excel } = require('vendor/Export2Excel');
-        const tHeader = ['字段1', '字段2', '字段3', '字段4', '字段5'];
-        const filterVal = ['chnlId', 'hisChnlId', 'chnlName', 'state', 'isavailable'];
-        const list = vm.list;
-        const data = vm.formatJson(filterVal, list);
-        export_json_to_excel(tHeader, data, '导出的列表excel');
+        const { export_json_to_excel } = require('vendor/Export2Excel')
+        const tHeader = ['字段1', '字段2', '字段3', '字段4', '字段5']
+        const filterVal = [
+          'chnlId',
+          'hisChnlId',
+          'chnlName',
+          'state',
+          'isavailable'
+        ]
+        const list = vm.list
+        const data = vm.formatJson(filterVal, list)
+        export_json_to_excel(tHeader, data, '导出的列表excel')
       })
     },
     formatJson(filterVal, jsonData) {
@@ -586,7 +693,15 @@ export default {
     handleSearch() {
       this.getList()
       this.getListLen()
+    },
+    handleReset() {
+      this.listQuery = {
+        currPage: 1,
+        count: 10,
+        start: 1,
+        kw: ''
+      }
     }
   }
-};
+}
 </script>

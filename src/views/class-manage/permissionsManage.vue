@@ -237,12 +237,12 @@
 </template>
 <script>
 // import { getList } from 'api/article';
-import { global } from 'src/global/global';
-import { api } from 'src/global/api';
+import { global } from 'src/global/global'
+import { api } from 'src/global/api'
 import axios from 'axios'
 import qs from 'qs'
 
-import store from '@/store';
+import store from '@/store'
 
 export default {
   data() {
@@ -259,12 +259,10 @@ export default {
         count: 10,
         start: 1,
         kw: ''
-
       },
       roleTemp: {
         name: ''
         // remark: ''
-
       },
       roleTemp2: {
         name: ''
@@ -282,13 +280,12 @@ export default {
       multipleSelection: [],
 
       viewType: 0 // 0 | add | edit
-
     }
   },
   mounted() {
-    const vm = this;
+    const vm = this
 
-    vm.getList();
+    vm.getList()
     this.getListLen()
     this.setViewByQuery()
     this.editView()
@@ -296,19 +293,23 @@ export default {
   methods: {
     // 获取列表数据
     getList() {
-      const vm = this;
+      const vm = this
 
-      vm.listLoading = true;
+      vm.listLoading = true
       // fetchList(this.listQuery).then(response => {
       //   this.list = response.data.items;
       //   this.total = response.data.total;
       //   this.listLoading = false;
       // })
-      axios.post('/smartprint/print-room/grade/get-grades', qs.stringify(vm.listQuery))
+      axios
+        .post(
+          '/smartprint/print-room/grade/get-grades',
+          qs.stringify(vm.listQuery)
+        )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          vm.list = res.data.data.grades;
-          console.log('列表数据：', vm.list);
+          vm.list = res.data.data.grades
+          console.log('列表数据：', vm.list)
           // vm.listQuery.currPage = data.data.currPage;
           // vm.listQuery.count = data.data.count;
           // vm.total = data.data.total;
@@ -338,16 +339,19 @@ export default {
       // }, res => {
       //   vm.listLoading = false;
       // }, false)
-      vm.listLoading = false;
+      vm.listLoading = false
     },
     // 获取列表数据总数
     getListLen() {
       const params = JSON.parse(JSON.stringify(this.listQuery))
       params.isSum = 1
-      axios.post('/smartprint/print-room/grade/get-grades', qs.stringify(params)).then(res => {
-        this.total = res.data.data.sum.count
-        console.log(this.total)
-      }).catch(err => console.log(err))
+      axios
+        .post('/smartprint/print-room/grade/get-grades', qs.stringify(params))
+        .then(res => {
+          this.total = res.data.data.sum.count
+          console.log(this.total)
+        })
+        .catch(err => console.log(err))
     },
     // 根据当前路由参数切换视图
     setViewByQuery() {
@@ -359,141 +363,182 @@ export default {
     editView() {
       const { id } = this.$route.query
       if (id) {
-        axios.post('/smartprint/print-room/grade/get-grade', qs.stringify({ gradeId: id })).then(res => {
-          console.log(res)
-          if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          this.roleTemp2 = res.data.data.grade
-        }).catch(err => console.log(err))
+        axios
+          .post(
+            '/smartprint/print-room/grade/get-grade',
+            qs.stringify({ gradeId: id })
+          )
+          .then(res => {
+            console.log(res)
+            if (res.data.code !== 0) return this.$message.error(res.data.msg)
+            this.roleTemp2 = res.data.data.grade
+          })
+          .catch(err => console.log(err))
       }
     },
     // 编辑
     handleEdit(index, { id }) {
-      const vm = this;
-      console.log('编辑的row：', index, '-----', id);
+      const vm = this
+      console.log('编辑的row：', index, '-----', id)
       // 跳页面进行修改
       // this.$router.push('/example/form');
-      this.$router.push({ path: '/classManage/permissionsManage', query: { extra: 'edit', id } }); // 带参跳转
+      this.$router.push({
+        path: '/classManage/permissionsManage',
+        query: { extra: 'edit', id }
+      }) // 带参跳转
     },
     // 编辑上传
     onEditSubmit() {
       this.roleTemp2.gradeId = this.roleTemp2.id
-      axios.post('/smartprint/print-room/grade/update-grade', qs.stringify(this.roleTemp2)).then(res => {
-        if (res.data.code !== 0) return this.$message.error(res.data.msg)
-        this.$message.success('修改成功')
-      }).catch(err => err)
+      axios
+        .post(
+          '/smartprint/print-room/grade/update-grade',
+          qs.stringify(this.roleTemp2)
+        )
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          this.$message.success('修改成功')
+        })
+        .catch(err => err)
     },
     // 单个删除
     handleDelete(index, { id }) {
-      const vm = this;
-      console.log('单个删除选择的row：', index, '-----', id);
-      axios.post('/smartprint/print-room/grade/delete-grade', qs.stringify({ gradeId: id })).then(res => {
-        if (res.data.code !== 0) return this.$message.error(res.data.msg)
-        this.$message.success('删除成功')
-        // 前端删除。
-        vm.list.splice(index, 1)
-      }).then(err => err)
+      const vm = this
+      console.log('单个删除选择的row：', index, '-----', id)
+      axios
+        .post(
+          '/smartprint/print-room/grade/delete-grade',
+          qs.stringify({ gradeId: id })
+        )
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          this.$message.success('删除成功')
+          this.getListLen()
+          // 前端删除。
+          vm.list.splice(index, 1)
+        })
+        .then(err => err)
     },
     // 批量删除
     handleDelAll() {
-      const vm = this;
+      const vm = this
       console.log('批量删除选择的row：', vm.multipleSelection)
     },
     // 搜索
     handleFilter() {
-      this.getList();
+      this.getList()
     },
     // 操作分页
     handleSizeChange(val) {
-      this.listQuery.count = val;
+      this.listQuery.count = val
 
-      this.getList();
+      this.getList()
     },
     // 操作分页
     handleCurrentChange(val) {
       console.log('--------', val)
-      this.listQuery.currPage = val;
-      this.listQuery.start = this.listQuery.count * (val - 1) + 1;
+      this.listQuery.currPage = val
+      this.listQuery.start = this.listQuery.count * (val - 1) + 1
 
-
-      this.getList();
+      this.getList()
     },
     // 新增
     handleCreate() {
       // this.dialogFormVisible = true;
-      this.$router.push({ path: '/classManage/permissionsManage', query: { extra: 'add' } }); // 带参跳转
+      this.$router.push({
+        path: '/classManage/permissionsManage',
+        query: { extra: 'add' }
+      }) // 带参跳转
     },
     // 设置权限
     setPermissions(index, item) {
-      const vm = this;
-      global.get(api.getMenuAndElement, { params: { roleId: item.smRoleBeanDto.id } }, res => {
-        console.log('-------获取到数据：', JSON.stringify(res))
-        const data = res.body;
-        if (data.resultCode == 0) {
-          vm.smMenuBeanDtoList = data.data.smMenuBeanDtoList;
-          console.log('列表数据：', vm.smMenuBeanDtoList);
-        } else {
-          // alert(res.body.resultMsg)
-          Message({
-            showClose: true,
-            message: res.body.resultMsg,
-            type: 'error'
-          });
-        }
+      const vm = this
+      global.get(
+        api.getMenuAndElement,
+        { params: { roleId: item.smRoleBeanDto.id } },
+        res => {
+          console.log('-------获取到数据：', JSON.stringify(res))
+          const data = res.body
+          if (data.resultCode == 0) {
+            vm.smMenuBeanDtoList = data.data.smMenuBeanDtoList
+            console.log('列表数据：', vm.smMenuBeanDtoList)
+          } else {
+            // alert(res.body.resultMsg)
+            Message({
+              showClose: true,
+              message: res.body.resultMsg,
+              type: 'error'
+            })
+          }
 
-        vm.dialogPermissionsVisible = true;
-      }, res => {
-        vm.dialogPermissionsVisible = true;
-      }, true)
+          vm.dialogPermissionsVisible = true
+        },
+        res => {
+          vm.dialogPermissionsVisible = true
+        },
+        true
+      )
     },
     // 设置权限提交
     setPermissionsSubmit() {
-      const vm = this;
+      const vm = this
 
-      console.log(JSON.stringify(vm.smMenuBeanDtoList));
-
+      console.log(JSON.stringify(vm.smMenuBeanDtoList))
 
       vm.$message({
         showClose: true,
         message: '动态修改权限成功！实际开发请把参数提交给后端接口！',
         type: 'success'
-      });
+      })
     },
     // 新增提交
     onAddSubmit() {
-      const vm = this;
+      const vm = this
       console.log('新增入参：', vm.roleTemp)
-      axios.post('/smartprint/print-room/grade/create-grade', qs.stringify(vm.roleTemp)).then(res => {
-        console.log(res.data.code)
-        if (res.data.code !== 0) return vm.$message.error(res.data.msg)
-        vm.$message.success('新增成功')
-        for (const key in this.roleTemp) {
-          this.roleTemp[key] = ''
-        }
-      }).catch(err => console.log(err))
+      axios
+        .post(
+          '/smartprint/print-room/grade/create-grade',
+          qs.stringify(vm.roleTemp)
+        )
+        .then(res => {
+          console.log(res.data.code)
+          if (res.data.code !== 0) return vm.$message.error(res.data.msg)
+          vm.$message.success('新增成功')
+          for (const key in this.roleTemp) {
+            this.roleTemp[key] = ''
+          }
+        })
+        .catch(err => console.log(err))
     },
     setUser() {
-      const vm = this;
+      const vm = this
 
       vm.$message({
         showClose: true,
         message: '设置成员未完成，逻辑参照设置权限即可！',
         type: 'warning'
-      });
+      })
     },
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      this.multipleSelection = val
     },
 
     handleDownload() {
-      const vm = this;
+      const vm = this
 
       require.ensure([], () => {
-        const { export_json_to_excel } = require('vendor/Export2Excel');
-        const tHeader = ['字段1', '字段2', '字段3', '字段4', '字段5'];
-        const filterVal = ['chnlId', 'hisChnlId', 'chnlName', 'state', 'isavailable'];
-        const list = vm.list;
-        const data = vm.formatJson(filterVal, list);
-        export_json_to_excel(tHeader, data, '导出的列表excel');
+        const { export_json_to_excel } = require('vendor/Export2Excel')
+        const tHeader = ['字段1', '字段2', '字段3', '字段4', '字段5']
+        const filterVal = [
+          'chnlId',
+          'hisChnlId',
+          'chnlName',
+          'state',
+          'isavailable'
+        ]
+        const list = vm.list
+        const data = vm.formatJson(filterVal, list)
+        export_json_to_excel(tHeader, data, '导出的列表excel')
       })
     },
     formatJson(filterVal, jsonData) {
@@ -514,5 +559,5 @@ export default {
       this.getListLen()
     }
   }
-};
+}
 </script>
