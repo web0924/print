@@ -408,10 +408,10 @@ export default {
     getclassList() {
       const vm = this
       axios
-        .post('/smartprint/print-room/class/get-classs')
+        .post('/smartprint/print-room/class/get-classes')
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          vm.classList = res.data.data.classs
+          vm.classList = res.data.data.classes
         })
         .catch(err => err)
     },

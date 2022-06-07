@@ -8,7 +8,7 @@
              label-width="0rem"
              class="card-box login-form">
       <p class="title"
-         style="font-size:28rem;color:#000">欢迎登录·邓州市第一高级中学</p>
+         style="font-size:28rem;color:#000">欢迎登录</p>
       <h2 class="title"
           style="font-size:38rem;color:#0053b5">文印室管理系统</h2>
       <p style="text-align:center;font-size: 16rem;margin-top: 30rem;">{{loginType===1?'密码登录':'验证码登录'}}</p>

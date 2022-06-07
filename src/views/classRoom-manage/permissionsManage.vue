@@ -389,12 +389,12 @@ export default {
       // })
       axios
         .post(
-          '/smartprint/print-room/class/get-classs',
+          '/smartprint/print-room/class/get-classes',
           qs.stringify(vm.listQuery)
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          vm.list = res.data.data.classs
+          vm.list = res.data.data.classes
           console.log('列表数据：', vm.list)
           // vm.listQuery.currPage = data.data.currPage;
           // vm.listQuery.count = data.data.count;
@@ -432,7 +432,7 @@ export default {
       const params = JSON.parse(JSON.stringify(this.listQuery))
       params.isSum = 1
       axios
-        .post('/smartprint/print-room/class/get-classs', qs.stringify(params))
+        .post('/smartprint/print-room/class/get-classes', qs.stringify(params))
         .then(res => {
           this.total = res.data.data.sum.count
           console.log(this.total)

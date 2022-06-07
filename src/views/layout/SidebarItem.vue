@@ -147,6 +147,22 @@
         </router-link>
 
       </el-submenu> -->
+      <el-submenu index="订单管理"
+                  v-if="routes['/orderManage/orderManage']">
+        <template slot="title">
+          <img style="width:18px"
+               src="../../assets/img/book_slider_icon.png">
+          订单管理
+        </template>
+
+        <router-link class="menu-indent"
+                     to="/orderManage/orderManage"
+                     v-if="routes['/orderManage/orderManage']">
+          <el-menu-item index="/orderManage/orderManage">
+            订单列表
+          </el-menu-item>
+        </router-link>
+      </el-submenu>
       <el-submenu index="年级管理"
                   v-if="routes['/classManage/permissionsManage']">
         <template slot="title">
@@ -154,7 +170,6 @@
                src="../../assets/img/book_slider_icon.png">
           年级管理
         </template>
-
         <router-link class="menu-indent"
                      to="/classManage/permissionsManage"
                      v-if="routes['/classManage/permissionsManage']">
