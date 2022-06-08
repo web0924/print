@@ -16,7 +16,7 @@
                      v-model="listQuery.type"
                      size="small"
                      placeholder="按类型筛选">
-            <el-option v-for="item in   typeSelectOpt"
+            <el-option v-for="item in typeSelectOpt"
                        :key="item.value"
                        :label="item.name"
                        :value="item.value">
@@ -25,7 +25,7 @@
           <el-select clearable
                      class="filter-item"
                      style="width: 280px"
-                     v-model="listQuery.kw"
+                     v-model="listQuery.status"
                      size="small"
                      placeholder="按状态筛选">
             <el-option v-for="item in  orderSelectStatus"
@@ -176,8 +176,26 @@
                        v-show="roleTemp.status=='DaiJieDan'"
                        type="primary"
                        plain
-                       @click="ensureOrderHnadle"
+                       @click="ensureOrderHnadle('YiJieDan')"
                        size="small">确认接单</el-button>
+            <el-button style="margin-left:50px"
+                       v-show="roleTemp.status=='YiQueRen'"
+                       type="primary"
+                       plain
+                       @click="ensureOrderHnadle('ShengChanZhong')"
+                       size="small">确认生产</el-button>
+            <el-button style="margin-left:50px"
+                       v-show="roleTemp.status=='ShengChanZhong'"
+                       type="primary"
+                       plain
+                       @click="ensureOrderHnadle('YiShangJia')"
+                       size="small">确认上架</el-button>
+            <el-button style="margin-left:50px"
+                       v-show="roleTemp.status=='YiShangJia'"
+                       type="primary"
+                       plain
+                       @click="ensureOrderHnadle('YiLingQu')"
+                       size="small">确认领取</el-button>
           </el-form-item>
           <el-form-item label="文印内容：">
             <el-input v-model="roleTemp.title"></el-input>
@@ -288,7 +306,11 @@
                             label="文印规格及内容：">
               </el-form-item>
               <el-form-item>
-                <div v-for="floor in maxFloor"
+                <skuSets ref="sku"
+                         @lastLevelChange="lastLevelChange"
+                         :schoolId="this.roleTemp.schoolID"
+                         :dynamicTags="dynamicTags" />
+                <!-- <div v-for="floor in maxFloor"
                      :key="floor"
                      data-upperId="0"
                      style="margin-top:10px"
@@ -301,9 +323,9 @@
                        v-if="tag.upperId===floor">
                     {{tag.name}}
                   </div>
-                </div>
+                </div> -->
               </el-form-item>
-              <el-form-item v-show="choseTags.length>0">
+              <el-form-item v-show="isShowPrice">
                 <!-- 价格 -->
                 <div v-for="(item,index) in priceData"
                      :key="item.id"
@@ -434,7 +456,12 @@ import qs from 'qs'
 
 import store from '@/store'
 
+import skuSets from './children/sku-sets.vue'
+
 export default {
+  components: {
+    skuSets
+  },
   data() {
     return {
       // list: null,
@@ -476,9 +503,7 @@ export default {
       multipleSelection: [],
 
       viewType: 0, // 0 | add | edit
-      gradeList: [
-
-      ],
+      gradeList: [],
       classList: [],
       classval: '',
       classType: [
@@ -493,7 +518,9 @@ export default {
       tabsIndex: 1, // 1:系统配置  2：学校配置
       unUploadeData: '',
       samples: '', // 小样
-      deleteClassIds: []
+      deleteClassIds: [],
+      isShowPrice: false,
+      multipleSelectionSouce: []
     }
   },
   computed: {
@@ -601,6 +628,10 @@ export default {
     this.getClassList()
   },
   methods: {
+    lastLevelChange(boo) {
+      // alert(boo)
+      this.isShowPrice = boo
+    },
     // 获取列表数据
     getList() {
       const vm = this
@@ -642,7 +673,7 @@ export default {
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          const arr = []
+          const arr = [{ name: '全部班级', id: '' }]
           vm.gradeList = [...arr, ...res.data.data.grades]
         })
         .catch(err => err)
@@ -789,12 +820,12 @@ export default {
       }) // 带参跳转
     },
     // 确认接单
-    ensureOrderHnadle() {
+    ensureOrderHnadle(status) {
       const { id } = this.roleTemp
       axios
         .post(
           '/smartprint/print-room/order/update-order',
-          qs.stringify({ orderId: id, status: 'YiJieDan' })
+          qs.stringify({ orderId: id, status })
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
@@ -922,20 +953,13 @@ export default {
     },
     // 设置权限提交
     setPermissionsSubmit() {
+      this.multipleSelection = this.multipleSelectionSouce
       this.dialogPermissionsVisible = false
-    },
-    setUser() {
-      const vm = this
-
-      vm.$message({
-        showClose: true,
-        message: '设置成员未完成，逻辑参照设置权限即可！',
-        type: 'warning'
-      })
     },
     handleSelectionChange(val) {
       // console.log(val)
-      this.multipleSelection = val
+      // this.multipleSelection = val
+      this.multipleSelectionSouce = val
     },
     handleSearch() {
       this.getList()

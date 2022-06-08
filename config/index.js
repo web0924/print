@@ -5,8 +5,8 @@ module.exports = {
   build: {
     sitEnv: require('./sit.env'),
     prodEnv: require('./prod.env'),
-    index: path.resolve(__dirname, '../dist/index.html'),
-    assetsRoot: path.resolve(__dirname, '../dist'),
+    index: path.resolve(__dirname, '../printRoom/index.html'),
+    assetsRoot: path.resolve(__dirname, '../printRoom'),
     assetsSubDirectory: '',
     assetsPublicPath: './', //生产环境assetsPublicPath: '/'
     staticPath: './',        //生产环境 staticPath:''
