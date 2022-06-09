@@ -13,7 +13,8 @@ const proxyMiddleware = require('http-proxy-middleware');
 const webpackConfig = require('./webpack.dev.conf');
 
 // default port where dev server listens for incoming traffic
-const port = process.env.PORT || config.dev.port;
+// const port = process.env.PORT || config.dev.port;
+const port = 2023;
 // automatically open browser, if not set will be false
 const autoOpenBrowser = !!config.dev.autoOpenBrowser;
 // Define HTTP proxies to your custom API backend

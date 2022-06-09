@@ -6,7 +6,7 @@
       <i class="fa fa-bars"
          @click="toggleSideBar"
          :isActive="sidebar.opened"></i> -->
-      <span class="bars-title">{{accountInfo.printRoom.name}}管理系统</span>
+      <span class="bars-title">{{accountInfo.printRoom && accountInfo.printRoom.name}}管理系统</span>
       <!-- <tabs-view></tabs-view> -->
 
       <error-log v-if="log.length>0"
