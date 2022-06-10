@@ -22,20 +22,8 @@
                      style="width: 280px"
                      v-model="listQuery.gradeId"
                      size="small"
-                     placeholder="选择年级">
-            <el-option v-for="item in  gradeList"
-                       :key="item.id"
-                       :label="item.name"
-                       :value="item.id">
-            </el-option>
-          </el-select>
-          <el-select clearable
-                     class="filter-item"
-                     style="width: 280px"
-                     v-model="listQuery.classId"
-                     size="small"
-                     placeholder="选择班级">
-            <el-option v-for="item in  classList"
+                     placeholder="选择科室">
+            <el-option v-for="item in  officeList"
                        :key="item.id"
                        :label="item.name"
                        :value="item.id">
@@ -288,7 +276,8 @@
             <el-input v-model="roleTemp2.userAccount"></el-input>
           </el-form-item>
           <el-form-item label="密码">
-            <el-input v-model="roleTemp2.userPwd"></el-input>
+            <el-input v-model="userPwd"
+                      :placeholder="roleTemp2.userPwd"></el-input>
           </el-form-item>
           <!-- <el-form-item label="教职工层次">
             <el-input v-model="roleTemp.remark"></el-input>
@@ -340,12 +329,14 @@ import { global } from 'src/global/global'
 import { api } from 'src/global/api'
 import axios from 'axios'
 import qs from 'qs'
+import md5 from 'blueimp-md5';
 
 import store from '@/store'
 
 export default {
   data() {
     return {
+      userPwd: '',
       // list: null,
       listLoading: false,
 
@@ -430,7 +421,7 @@ export default {
     getofficeList() {
       const vm = this
       axios
-        .post('/smartprint/company/office/get-offices')
+        .post('/smartprint/print-room/office/get-offices')
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           vm.officeList = res.data.data.offices
@@ -536,6 +527,7 @@ export default {
     // 编辑上传
     onEditSubmit() {
       this.roleTemp2.staffId = this.roleTemp2.id
+      this.roleTemp2.userPwd = mad5(mad(this.userPwd))
       axios
         .post(
           '/smartprint/print-room/staff/update-staff',
@@ -550,7 +542,6 @@ export default {
     // 单个删除
     handleDelete(index, { id }) {
       const vm = this
-      console.log('单个删除选择的row：', index, '-----', id)
       axios
         .post(
           '/smartprint/print-room/staff/delete-staff',

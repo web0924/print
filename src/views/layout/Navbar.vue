@@ -247,7 +247,7 @@ export default {
   height: 50px;
   line-height: 50px;
   border-radius: 0px !important;
-  background: #0053b5;
+  background: #0053b5 !important;
   .bars-title {
     position: absolute;
     left: 54px;

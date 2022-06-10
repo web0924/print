@@ -50,6 +50,12 @@
                      @click="handleReset"
                      size="small"
                      icon="edit">重置</el-button>
+          <el-button class="filter-item"
+                     style="position:absolute;right:40px;background:#000"
+                     type="primary"
+                     @click="handleCreate"
+                     size="small"
+                     icon="edit">添加订单</el-button>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
@@ -151,6 +157,33 @@
                        layout="total, sizes, prev, pager, next, jumper"
                        :total="total">
         </el-pagination>
+      </div>
+    </div>
+    <div v-show="viewType==='add'">
+      <div style="padding-left:20px">
+        <div style="height:60px;display:flex;align-items:center">
+          <el-breadcrumb separator-class="el-icon-arrow-right">
+            <el-breadcrumb-item :to="{ path: '/orderManage/orderManage' }">订单列表</el-breadcrumb-item>
+            <el-breadcrumb-item>新增订单</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
+      </div>
+      <div style="padding:50px">
+        <el-form class="small-space"
+                 :model="roleTemp"
+                 label-position="left"
+                 label-width="70px"
+                 style='width: 400px; margin-left:50px;'>
+
+          <el-form-item label="订单名称">
+            <el-input v-model="roleTemp.title"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary"
+                       @click="onAddSubmit">上传</el-button>
+          </el-form-item>
+
+        </el-form>
       </div>
     </div>
     <div v-show="viewType==='edit'">
@@ -670,7 +703,6 @@ export default {
     // 获取年级列表
     getGradeList() {
       const vm = this
-
       vm.listLoading = true
       axios
         .post(
@@ -710,6 +742,25 @@ export default {
         })
         .catch(err => err)
       vm.listLoading = false
+    },
+    onAddSubmit() {
+      const vm = this
+      axios
+        .post(
+          '/smartprint/print-room/order/create-order',
+          qs.stringify(vm.roleTemp)
+        )
+        .then(res => {
+          if (res.data.code !== 0) return vm.$message.error(res.data.msg)
+          vm.$message.success('新增成功')
+          for (const key in this.roleTemp) {
+            this.roleTemp[key] = ''
+          }
+          this.$router.push({
+            path: '/orderManage/orderManage'
+          })
+        })
+        .catch(err => console.log(err))
     },
     // 根据当前路由参数切换视图
     setViewByQuery() {
@@ -958,7 +1009,6 @@ export default {
     },
     // 新增
     handleCreate() {
-      // this.dialogFormVisible = true;
       this.$router.push({
         path: '/orderManage/orderManage',
         query: { extra: 'add' }

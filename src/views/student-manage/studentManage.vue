@@ -183,7 +183,8 @@
             <el-input v-model="roleTemp2.userAccount"></el-input>
           </el-form-item>
           <el-form-item label="密码">
-            <el-input v-model="roleTemp2.userPwd"></el-input>
+            <el-input :placeholder="roleTemp2.userPwd"
+                      v-model="userPwd"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary"
@@ -229,12 +230,14 @@ import { global } from 'src/global/global'
 import { api } from 'src/global/api'
 import axios from 'axios'
 import qs from 'qs'
+import md5 from 'blueimp-md5';
 
 import store from '@/store'
 
 export default {
   data() {
     return {
+      userPwd: '',
       // list: null,
       listLoading: false,
 
@@ -420,6 +423,7 @@ export default {
     // 编辑上传
     onEditSubmit() {
       this.roleTemp2.studentId = this.roleTemp2.id
+      this.roleTemp2.userPwd = md5(md5(this.userPwd))
       axios
         .post(
           '/smartprint/print-room/student/update-student',

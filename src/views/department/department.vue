@@ -298,7 +298,7 @@ export default {
       // })
       axios
         .post(
-          '/smartprint/company/office/get-offices',
+          '/smartprint/print-room/office/get-offices',
           qs.stringify(vm.listQuery)
         )
         .then(res => {
@@ -341,7 +341,7 @@ export default {
       const params = JSON.parse(JSON.stringify(this.listQuery))
       params.isSum = 1
       axios
-        .post('/smartprint/company/office/get-offices', qs.stringify(params))
+        .post('/smartprint/print-room/office/get-offices', qs.stringify(params))
         .then(res => {
           this.total = res.data.data.sum.count
           console.log(this.total)
@@ -360,7 +360,7 @@ export default {
       if (id) {
         axios
           .post(
-            '/smartprint/company/office/get-office',
+            '/smartprint/print-room/office/get-office',
             qs.stringify({ officeId: id })
           )
           .then(res => {
