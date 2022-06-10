@@ -193,6 +193,21 @@
           </el-menu-item>
         </router-link>
       </el-submenu>
+      <el-submenu index="学生管理"
+                  v-if="routes['/studentManage/studentManage']">
+        <template slot="title">
+          <img style="width:18px"
+               src="../../assets/img/book_slider_icon.png"> 学生管理
+        </template>
+
+        <router-link class="menu-indent"
+                     to="/studentManage/studentManage"
+                     v-if="routes['/studentManage/studentManage']">
+          <el-menu-item index="/studentManage/studentManage">
+            学生列表
+          </el-menu-item>
+        </router-link>
+      </el-submenu>
       <el-submenu index="科室管理"
                   v-if="routes['/department/department']">
         <template slot="title">

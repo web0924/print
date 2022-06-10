@@ -62,9 +62,7 @@
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
 
       <!-- 表格 -->
-      <el-table ref="multipleTable"
-                @selection-change="handleSelectionChange"
-                :data="list"
+      <el-table :data="list"
                 v-loading.body="listLoading"
                 element-loading-text=""
                 border
@@ -106,33 +104,10 @@
             {{scope.row.type}}
           </template>
         </el-table-column>
-
-        <!-- <el-table-column label="班级名称"
-                         width="100">
-          <template slot-scope="scope">
-            <template v-for="item in scope.row.userbaseinfoList">
-              <span :key="item">{{ item.userName  }} &nbsp; &nbsp;</span>
-            </template>
-          </template>
-        </el-table-column> -->
-        <!-- <el-table-column label="班级"
-                         width="">
-          <template slot-scope="scope">
-            <template v-for="item in scope.row.userbaseinfoList">
-              <span :key="item">{{ item.identifierId  }} &nbsp; &nbsp;</span>
-            </template>
-          </template>
-        </el-table-column> -->
-
         <el-table-column align="center"
                          label="操作">
           <template slot-scope="scope">
-            <!-- <el-button icon="edit"
-                     size="small"
-                     @click="setPermissions(scope.$index, scope.row)">设置权限</el-button>
-          <el-button icon="edit"
-                     size="small"
-                     @click="setUser(scope.$index, scope.row)">设置成员</el-button> -->
+
             <el-button icon="edit"
                        size="small"
                        @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -140,9 +115,7 @@
                        size="small"
                        type="danger"
                        @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-
           </template>
-
         </el-table-column>
       </el-table>
       <!-- 分页 -->
@@ -200,12 +173,51 @@
               </el-option>
             </el-select>
           </el-form-item>
-
-          <!-- <el-form-item label="班级层次">
-            <el-input v-model="roleTemp.remark"></el-input>
-          </el-form-item>
-          <el-form-item label="所在地">
-            <el-input v-model="roleTemp.remark"></el-input>
+          <!-- <el-form-item label="添加学生">
+            <div style="cursor:auto">
+              <el-button @click="dialogAddStudentVisible=true">选择学生</el-button>
+              <span>当前已添加 {{multipleSelectionByAdd.length}} 个学生</span>
+            </div>
+            <div v-show="multipleSelectionByAdd.length>0"
+                 class="class-table-box">
+              <div class="class-table-th">
+                <span>学生姓名</span>
+                <span>账号</span>
+                <span>手机号</span>
+                <span>操作</span>
+              </div>
+              <div class="class-table-td"
+                   v-for="(item,index) in multipleSelectionByAdd"
+                   :key="item.id">
+                <span>{{item.userName}}</span>
+                <span>{{item.userAccount}}</span>
+                <span>{{item.userPhone}}</span>
+                <el-button @click="deleteStudent(index)"
+                           type="text">移除</el-button>
+              </div>
+            </div>
+          </el-form-item> -->
+          <!-- <el-form-item label="添加学科">
+            <div style="cursor:auto">
+              <el-button @click="dialogAddSubjectVisible=true">选择学科</el-button>
+              <span>当前已添加 {{multipleSelectionBySubject.length}} 个学科</span>
+            </div>
+            <div v-show="multipleSelectionBySubject.length>0"
+                 class="class-table-box">
+              <div class="class-table-th">
+                <span>学科名称</span>
+                <span>学科类型</span>
+                <span>操作</span>
+              </div>
+              <div class="class-table-td"
+                   v-for="(item,index) in multipleSelectionBySubject"
+                   :key="item.id">
+                <span>{{item.name}}</span>
+                <span>{{item.type}}</span>
+                <el-button @click="deleteSubject(index)"
+                           type="text">移除</el-button>
+              </div>
+            </div>
           </el-form-item> -->
           <el-form-item>
             <el-button type="primary"
@@ -257,14 +269,52 @@
               </el-option>
             </el-select>
           </el-form-item>
-
-          <!-- 
-          <el-form-item label="班级层次">
-            <el-input v-model="roleTemp2.remark"></el-input>
+          <el-form-item label="添加学生">
+            <div style="cursor:auto">
+              <el-button @click="dialogAddStudentVisible=true">选择学生</el-button>
+              <span>当前已添加 {{multipleSelectionByAdd.length}} 个学生</span>
+            </div>
+            <div v-show="multipleSelectionByAdd.length>0"
+                 class="class-table-box">
+              <div class="class-table-th">
+                <span>学生姓名</span>
+                <span>账号</span>
+                <span>手机号</span>
+                <span>操作</span>
+              </div>
+              <div class="class-table-td"
+                   v-for="(item,index) in multipleSelectionByAdd"
+                   :key="item.id">
+                <span>{{item.userName}}</span>
+                <span>{{item.userAccount}}</span>
+                <span>{{item.userPhone}}</span>
+                <el-button @click="deleteStudent(index)"
+                           type="text">移除</el-button>
+              </div>
+            </div>
           </el-form-item>
-          <el-form-item label="所在地">
-            <el-input v-model="roleTemp2.remark"></el-input>
-          </el-form-item> -->
+          <el-form-item label="添加学科">
+            <div style="cursor:auto">
+              <el-button @click="dialogAddSubjectVisible=true">选择学科</el-button>
+              <span>当前已添加 {{multipleSelectionBySubject.length}} 个学科</span>
+            </div>
+            <div v-show="multipleSelectionBySubject.length>0"
+                 class="class-table-box">
+              <div class="class-table-th">
+                <span>学科名称</span>
+                <!-- <span>学科类型</span> -->
+                <span>操作</span>
+              </div>
+              <div class="class-table-td"
+                   v-for="(item,index) in multipleSelectionBySubject"
+                   :key="item.id">
+                <span>{{item.name}}</span>
+                <!-- <span>{{item.type}}</span> -->
+                <el-button @click="deleteSubject(index)"
+                           type="text">移除</el-button>
+              </div>
+            </div>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary"
                        @click="onEditSubmit">上传</el-button>
@@ -274,32 +324,125 @@
       </div>
     </div>
 
-    <!-- 设置权限 -->
-    <el-dialog title="设置权限"
-               :visible.sync="dialogPermissionsVisible">
-      <el-form class="small-space"
-               :model="roleTemp"
-               label-position="left"
-               label-width="70px"
-               style='width: 100%; '>
+    <!-- 选择学生 -->
+    <el-dialog title="选择您需要添加的学生"
+               :visible.sync="dialogAddStudentVisible">
+      <el-input style="width: 240px;"
+                class="filter-item"
+                placeholder="输入关键字搜索"
+                v-model="studentlistQuery.kw" />
 
-        <!-- <el-checkbox-group v-model="smMenuBeanDtoList"> -->
-        <el-checkbox v-for="item in smMenuBeanDtoList"
-                     :key="item"
-                     label="item.url"
-                     name="type"
-                     style="margin:0 15px 15px 0;"
-                     v-model="item.set">{{ item.menuName }}</el-checkbox>
-
-        <!-- </el-checkbox-group> -->
-
-      </el-form>
+      <el-button class="filter-item"
+                 type="primary"
+                 @click="handleSearchStudent"
+                 size="small"
+                 icon="edit">搜索</el-button>
+      <!-- 表格 -->
+      <el-table row-key="id"
+                style="margin-top:20px"
+                ref="studentTable"
+                @selection-change="(val)=>{this.multipleSelectionByAddSouce=val}"
+                :data="studentList"
+                v-loading.body="listLoading"
+                element-loading-text=""
+                border
+                fit
+                highlight-current-row>
+        <el-table-column :reserve-selection="true"
+                         type="selection"
+                         width="55">
+        </el-table-column>
+        <el-table-column label="学生名称"
+                         width="">
+          <template slot-scope="scope">
+            {{scope.row.userName}}
+          </template>
+        </el-table-column>
+        <el-table-column label="账号"
+                         width="">
+          <template slot-scope="scope">
+            {{scope.row.userAccount}}
+          </template>
+        </el-table-column>
+        <el-table-column label="手机号"
+                         width="">
+          <template slot-scope="scope">
+            {{scope.row.userPhone}}
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页 -->
+      <div v-show="!listLoading"
+           class="pagination-container">
+        <el-pagination @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange"
+                       :current-page.sync="studentlistQuery.currPage"
+                       :page-sizes="[5,10,20,30, 50]"
+                       :page-size="studentlistQuery.count"
+                       layout="total, sizes, prev, pager, next, jumper">
+        </el-pagination>
+      </div>
       <div slot="footer"
            class="dialog-footer">
-        <el-button @click="dialogPermissionsVisible = false">取 消</el-button>
+        <el-button @click="dialogAddStudentVisible = false">取 消</el-button>
 
         <el-button type="primary"
-                   @click="setPermissionsSubmit">确 定</el-button>
+                   @click="setStudentAddSubmit">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 选择学科 -->
+    <el-dialog title="选择您需要添加的学科"
+               :visible.sync="dialogAddSubjectVisible">
+      <el-input style="width: 240px;"
+                class="filter-item"
+                placeholder="输入关键字搜索"
+                v-model="subjectlistQuery.kw">
+      </el-input>
+      <el-button class="filter-item"
+                 type="primary"
+                 @click="handleSearchStudent"
+                 size="small"
+                 icon="edit">搜索</el-button>
+      <!-- 表格 -->
+      <el-table row-key="id"
+                style="margin-top:20px"
+                ref="subjectTable"
+                @selection-change="(val)=> this.multipleSelectionBySubjectSouce = val"
+                :data="subjectList"
+                v-loading.body="listLoading"
+                element-loading-text=""
+                border
+                fit
+                highlight-current-row>
+        <el-table-column :reserve-selection="true"
+                         type="selection"
+                         width="55">
+        </el-table-column>
+        <el-table-column label="学科名称"
+                         width="">
+          <template slot-scope="scope">
+            {{scope.row.name}}
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页 -->
+      <div v-show="!listLoading"
+           class="pagination-container">
+        <el-pagination @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange"
+                       :current-page.sync="studentlistQuery.currPage"
+                       :page-sizes="[5,10,20,30, 50]"
+                       :page-size="studentlistQuery.count"
+                       layout="total, sizes, prev, pager, next, jumper">
+        </el-pagination>
+      </div>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="dialogAddSubjectVisible = false">取 消</el-button>
+
+        <el-button type="primary"
+                   @click="setSubjectAddSubmit">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -349,7 +492,32 @@ export default {
       multipleSelection: [],
 
       viewType: 0, // 0 | add | edit
-      gradeList: []
+      gradeList: [],
+      studentList: [],
+      subjectList: [],
+
+      deleteStudentIds: [],
+      dialogAddStudentVisible: false,
+      multipleSelectionByAdd: [],
+      multipleSelectionByAddSouce: [],
+      studentlistQuery: {
+        currPage: 1,
+        count: 10,
+        start: 1,
+        kw: ''
+      },
+
+
+      deleteSubjectIds: [],
+      dialogAddSubjectVisible: false,
+      multipleSelectionBySubjectSouce: [],
+      multipleSelectionBySubject: [],
+      subjectlistQuery: {
+        currPage: 1,
+        count: 10,
+        start: 1,
+        kw: ''
+      }
     }
   },
   mounted() {
@@ -360,9 +528,11 @@ export default {
     this.setViewByQuery()
     this.editView()
     this.getGradeList()
+    this.getStudentList()
+    this.getSubjectList()
   },
   methods: {
-    // 获取列表数据
+    // 获取年级数据
     getGradeList() {
       const vm = this
       axios
@@ -373,6 +543,36 @@ export default {
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           vm.gradeList = res.data.data.grades
+        })
+        .catch(err => err)
+      vm.listLoading = false
+    },
+    // 获取学生数据
+    getStudentList(query = {}) {
+      const vm = this
+      axios
+        .post(
+          '/smartprint/print-room/student/get-students',
+          qs.stringify(query)
+        )
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          vm.studentList = res.data.data.students
+        })
+        .catch(err => err)
+      vm.listLoading = false
+    },
+    // 获取学科数据
+    getSubjectList(query = {}) {
+      const vm = this
+      axios
+        .post(
+          '/smartprint/print-room/subject/get-subjects',
+          qs.stringify(query)
+        )
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          vm.subjectList = res.data.data.subjects
         })
         .catch(err => err)
       vm.listLoading = false
@@ -458,6 +658,10 @@ export default {
             console.log(res)
             if (res.data.code !== 0) return this.$message.error(res.data.msg)
             this.roleTemp2 = res.data.data.class
+            const { students, subjects } = res.data.data.class
+            console.log(res.data.data)
+            this.multipleSelectionByAdd = students || []
+            this.multipleSelectionBySubject = subjects || []
           })
           .catch(err => console.log(err))
       }
@@ -475,6 +679,8 @@ export default {
     },
     // 编辑上传
     onEditSubmit() {
+      this.setStudent()
+      this.setSubject()
       this.roleTemp2.classId = this.roleTemp2.id
       axios
         .post(
@@ -536,55 +742,60 @@ export default {
         query: { extra: 'add' }
       }) // 带参跳转
     },
-    // 设置权限
-    setPermissions(index, item) {
-      const vm = this
-      global.get(
-        api.getMenuAndElement,
-        { params: { roleId: item.smRoleBeanDto.id } },
-        res => {
-          console.log('-------获取到数据：', JSON.stringify(res))
-          const data = res.body
-          if (data.resultCode == 0) {
-            vm.smMenuBeanDtoList = data.data.smMenuBeanDtoList
-            console.log('列表数据：', vm.smMenuBeanDtoList)
-          } else {
-            // alert(res.body.resultMsg)
-            Message({
-              showClose: true,
-              message: res.body.resultMsg,
-              type: 'error'
-            })
-          }
-
-          vm.dialogPermissionsVisible = true
-        },
-        res => {
-          vm.dialogPermissionsVisible = true
-        },
-        true
-      )
+    handleSearchStudent() {
+      this.getStudentList(this.studentlistQuery)
     },
-    // 设置权限提交
-    setPermissionsSubmit() {
-      const vm = this
-
-      console.log(JSON.stringify(vm.smMenuBeanDtoList))
-
-      vm.$message({
-        showClose: true,
-        message: '动态修改权限成功！实际开发请把参数提交给后端接口！',
-        type: 'success'
-      })
+    handleSearchSubject() {
+      this.getSubjectList(this.subjectlistQuery)
+    },
+    // 添加学生提交
+    setStudentAddSubmit() {
+      this.multipleSelectionByAdd = this.multipleSelectionByAddSouce
+      console.log(this.multipleSelectionByAdd)
+      console.log(this.multipleSelectionByAddSouce)
+      this.dialogAddStudentVisible = false
+    },
+    // 添加学科提交
+    setSubjectAddSubmit() {
+      this.multipleSelectionBySubject = this.multipleSelectionBySubjectSouce
+      this.dialogAddSubjectVisible = false
+    },
+    // 设置学生
+    setStudent() {
+      const params = {
+        classId: this.roleTemp2.id,
+        studentIds: this.multipleSelectionByAdd.map(item => item.id).join(','),
+        deleteStudentIds: this.deleteStudentIds.join(',')
+      }
+      axios
+        .post(
+          '/smartprint/print-room/class/set-students',
+          qs.stringify(params)
+        ).then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+        }).catch(err => err)
+    },
+    // 设置学科
+    setSubject() {
+      const params = {
+        classId: this.roleTemp2.id,
+        subjectIds: this.multipleSelectionBySubject.map(item => item.id).join(','),
+        deleteSubjectIds: this.deleteSubjectIds.join(',')
+      }
+      axios
+        .post(
+          '/smartprint/print-room/class/set-subjects',
+          qs.stringify(params)
+        ).then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+        }).catch(err => err)
     },
     // 新增提交
     onAddSubmit() {
-      const vm = this
-      console.log('新增入参：', vm.roleTemp)
       axios
         .post(
           '/smartprint/print-room/class/create-class',
-          qs.stringify(vm.roleTemp)
+          qs.stringify(this.roleTemp)
         )
         .then(res => {
           console.log(res.data.code)
@@ -596,40 +807,29 @@ export default {
         })
         .catch(err => console.log(err))
     },
-    setUser() {
-      const vm = this
+    // 删除学生
+    deleteStudent(index) {
+      this.deleteStudentIds.push(this.multipleSelectionByAdd[index].id)
+      this.multipleSelectionByAdd.splice(index, 1)
 
-      vm.$message({
-        showClose: true,
-        message: '设置成员未完成，逻辑参照设置权限即可！',
-        type: 'warning'
-      })
+      if (this.$refs.studentTable) {
+        this.$refs.studentTable.toggleRowSelection(this.multipleSelectionByAdd[index], false);
+      }
+      this.multipleSelectionByAdd.splice(index, 1)
+      this.$forceUpdate()
     },
-    handleSelectionChange(val) {
-      this.multipleSelection = val
+    // 删除学科
+    deleteSubject(index) {
+      this.deleteSubjectIds.push(this.multipleSelectionBySubject[index].id)
+
+      if (this.$refs.subjectTable) {
+        this.$refs.subjectTable.toggleRowSelection(this.multipleSelectionBySubject[index], false);
+      }
+      this.multipleSelectionBySubject.splice(index, 1)
+
+      this.$forceUpdate()
     },
 
-    handleDownload() {
-      const vm = this
-
-      require.ensure([], () => {
-        const { export_json_to_excel } = require('vendor/Export2Excel')
-        const tHeader = ['字段1', '字段2', '字段3', '字段4', '字段5']
-        const filterVal = [
-          'chnlId',
-          'hisChnlId',
-          'chnlName',
-          'state',
-          'isavailable'
-        ]
-        const list = vm.list
-        const data = vm.formatJson(filterVal, list)
-        export_json_to_excel(tHeader, data, '导出的列表excel')
-      })
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]))
-    },
     handleSearch() {
       this.getList()
       this.getListLen()
@@ -648,3 +848,30 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.class-table-box {
+  min-width: 500px;
+  min-height: 50px;
+  margin-top: 30px;
+}
+.class-table-th {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+  background: #f6f8f9;
+  padding: 0 50px;
+  border: 1px solid #cccccc;
+}
+.class-table-td {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+  /* background: #f6f8f9; */
+  padding: 0 50px;
+  border: 1px solid #cccccc;
+  border-top: none;
+}
+</style>

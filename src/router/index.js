@@ -51,11 +51,13 @@ const AccountManage = _import('teacherManage/teacherManage');
 const Subject = _import('subject/subjects');
 // 订单管理
 const OrderManage = _import('order-manage/orderManage');
+// 学生管理
+const StudentManage = _import('student-manage/studentManage');
 
 /* 学生管理*/
-const StudentList = _import('student/studentInfo/index');
-const StudentAdd = _import('student/studentInfo/modal/studentAdd'); /* 新增修改后期改成同一个弹窗*/
-const StudentUpdate = _import('student/studentInfo/modal/studentUpdate');
+// const StudentList = _import('student/studentInfo/index');
+// const StudentAdd = _import('student/studentInfo/modal/studentAdd'); /* 新增修改后期改成同一个弹窗*/
+// const StudentUpdate = _import('student/studentInfo/modal/studentUpdate');
 
 /* 机构管理*/
 const OrgManager = _import('org-manage/org-manager/index');
@@ -166,6 +168,16 @@ const constantRouterMap = [
     ]
   },
   {
+    path: '/studentManage',
+    component: Layout,
+    redirect: 'noredirect',
+    name: '学生管理',
+    // icon: '404',
+    children: [
+      { path: 'studentManage', component: StudentManage, name: '学生列表' }
+    ]
+  },
+  {
     path: '/department',
     component: Layout,
     redirect: 'noredirect',
@@ -193,19 +205,6 @@ const constantRouterMap = [
     // icon: '404',
     children: [
       { path: 'subject', component: Subject, name: '学科管理' }
-    ]
-  },
-  {
-    path: '/studentsManage',
-    component: Layout,
-    redirect: 'noredirect',
-    name: '学生管理',
-    // icon: '404',
-    children: [
-      { path: 'studentList', component: StudentList, name: '学生列表' },
-      { path: 'studentAdd', component: StudentAdd, name: '学生添加' },
-      { path: 'studentUpdate', component: StudentUpdate, name: '学生修改' }
-
     ]
   },
   {

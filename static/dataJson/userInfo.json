@@ -32,6 +32,7 @@
                 "/teacherManage/teacherManage":true,
                 "/subject/subject":true,
                 "/orderManage/orderManage":true,
+                "/studentManage/studentManage":true,
                 "/systemSet/loginLog":true,
                 "/studentsManage/studentAdd":true,
                 "/studentsManage/studentUpdate":true,

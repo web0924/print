@@ -295,22 +295,24 @@
           </el-form-item>
           <div class="module-title">文印配置</div>
           <div style="margin-top:20px">
-            <div class="tabs-box">
+            <!-- <div class="tabs-box">
               <el-button @click="tabsIndex=1"
                          :type="tabsIndex==1? 'primary':''">系统配置</el-button>
               <el-button @click="tabsIndex=2"
                          :type="tabsIndex==2? 'primary':''">学校配置</el-button>
-            </div>
+            </div> -->
             <div v-show="tabsIndex==1">
-              <el-form-item label-width="180"
+              <!-- <div v-show="tabsIndex==false"> -->
+              <!-- <el-form-item label-width="180"
                             label="文印规格及内容：">
-              </el-form-item>
-              <el-form-item>
-                <skuSets ref="sku"
+              </el-form-item> -->
+              <!-- <el-form-item> -->
+              <priceSet ref="priceSetRef" />
+              <!-- <skuSets ref="sku"
                          @lastLevelChange="lastLevelChange"
                          :schoolId="this.roleTemp.schoolID"
-                         :dynamicTags="dynamicTags" />
-                <!-- <div v-for="floor in maxFloor"
+                         :dynamicTags="dynamicTags" /> -->
+              <!-- <div v-for="floor in maxFloor"
                      :key="floor"
                      data-upperId="0"
                      style="margin-top:10px"
@@ -324,8 +326,9 @@
                     {{tag.name}}
                   </div>
                 </div> -->
-              </el-form-item>
-              <el-form-item v-show="isShowPrice">
+              <!-- </el-form-item> -->
+              <!-- <el-form-item v-show="isShowPrice"> -->
+              <el-form-item v-show="false">
                 <!-- 价格 -->
                 <div v-for="(item,index) in priceData"
                      :key="item.id"
@@ -352,7 +355,8 @@
             <div v-show="tabsIndex==2">
               <!-- 学校配置 -->
             </div>
-            <div class="module-title">备注内容</div>
+            <div class="module-title"
+                 style="margin-top:20px">备注内容</div>
             <el-form-item style="margin-top:20px"
                           label="备注内容：">
               <el-input placeholder="请输入"
@@ -457,10 +461,12 @@ import qs from 'qs'
 import store from '@/store'
 
 import skuSets from './children/sku-sets.vue'
+import priceSet from './children/priceSet.vue'
 
 export default {
   components: {
-    skuSets
+    skuSets,
+    priceSet
   },
   data() {
     return {
@@ -802,8 +808,9 @@ export default {
                 )
               })
             }
-            this.getSets()
-            this.getPrices()
+            this.$refs.priceSetRef.params = this.roleTemp
+            // this.getSets()
+            // this.getPrices()
           })
           .catch(err => console.log(err))
       }
@@ -845,12 +852,47 @@ export default {
       this.priceData.forEach(item => {
         item.totalPrice = (item.count - 0) * (item.unitPrice - 0)
       })
+      const { jiaoYingDanBanShu
+        , jiaoYingDanFenShu
+        , jiaoYingShuangBanShu
+        , jiaoYingShuangFenShu
+        , jiaoYingDaDanBanShu
+        , jiaoYingDaDanFenShu
+        , jiaoYingDaShuangBanShu
+        , jiaoYingDaShuangFenShu
+        , otherSetName
+        , otherSetCount
+        , otherSetUnitPrice
+        , fuYingB5Shu
+        , fuYingB4Shu
+        , fuYingA4Shu
+        , fuYingA3Shu
+        , daYingShu
+        , daBanShu
+      } = this.$refs.priceSetRef.params
       const params = {
         orderId: id,
         title,
         count,
         remark,
         printRoomRemark,
+        jiaoYingDanBanShu,
+        jiaoYingDanFenShu,
+        jiaoYingShuangBanShu,
+        jiaoYingShuangFenShu,
+        jiaoYingDaDanBanShu,
+        jiaoYingDaDanFenShu,
+        jiaoYingDaShuangBanShu,
+        jiaoYingDaShuangFenShu,
+        fuYingB5Shu,
+        fuYingB4Shu,
+        fuYingA4Shu,
+        fuYingA3Shu,
+        daYingShu,
+        daBanShu,
+        otherSetName,
+        otherSetCount,
+        otherSetUnitPrice,
         samples: this.samples + ',' + this.fileList.join(','),
         printSetType: this.tabsIndex == 1 ? 'System' : 'School',
         printSetPrices: this.priceData,

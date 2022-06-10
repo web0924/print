@@ -5,7 +5,7 @@
       <div style="height:120px;padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/teacherManage/teacherManage' }">教职工列表</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/studentManage/studentManage' }">学生列表</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
         <!-- 搜索条件 -->
@@ -17,30 +17,6 @@
                     placeholder="输入关键字搜索"
                     v-model="listQuery.kw">
           </el-input>
-          <el-select clearable
-                     class="filter-item"
-                     style="width: 280px"
-                     v-model="listQuery.gradeId"
-                     size="small"
-                     placeholder="选择年级">
-            <el-option v-for="item in  gradeList"
-                       :key="item.id"
-                       :label="item.name"
-                       :value="item.id">
-            </el-option>
-          </el-select>
-          <el-select clearable
-                     class="filter-item"
-                     style="width: 280px"
-                     v-model="listQuery.classId"
-                     size="small"
-                     placeholder="选择班级">
-            <el-option v-for="item in  classList"
-                       :key="item.id"
-                       :label="item.name"
-                       :value="item.id">
-            </el-option>
-          </el-select>
 
           <el-button class="filter-item"
                      type="primary"
@@ -56,7 +32,7 @@
                      type="primary"
                      @click="handleCreate"
                      size="small"
-                     icon="edit">添加教职工</el-button>
+                     icon="edit">添加学生</el-button>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
@@ -82,7 +58,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="教职工名称"
+        <el-table-column label="学生名称"
                          width="">
           <template slot-scope="scope">
             {{scope.row.userName}}
@@ -94,46 +70,16 @@
             {{scope.row.userPhone}}
           </template>
         </el-table-column>
-        <el-table-column label="所属学科"
+        <el-table-column label="账号"
                          width="">
           <template slot-scope="scope">
-            {{scope.row.subjectName}}
+            {{scope.row.userAccount}}
           </template>
         </el-table-column>
-
-        <!-- <el-table-column label="教职工名称"
-                         width="100">
-          <template slot-scope="scope">
-            <template v-for="item in scope.row.userbaseinfoList">
-              <span :key="item">{{ item.userName  }} &nbsp; &nbsp;</span>
-            </template>
-          </template>
-        </el-table-column> -->
-        <!-- <el-table-column label="联系电话"
+        <el-table-column label="密码"
                          width="">
           <template slot-scope="scope">
-            <template v-for="item in scope.row.userPhone">
-              <span :key="item">{{ item.identifierId  }} &nbsp; &nbsp;</span>
-            </template>
-
-          </template>
-        </el-table-column> -->
-        <!-- <el-table-column label="所属学科"
-                         width="">
-          <template slot-scope="scope">
-            <template v-for="item in scope.row.userbaseinfoList">
-              <span :key="item">{{ item.identifierId  }} &nbsp; &nbsp;</span>
-            </template>
-
-          </template>
-        </el-table-column> -->
-        <el-table-column label="是否注册小程序"
-                         width="">
-          <template slot-scope="scope">
-            <template v-for="item in scope.row.userbaseinfoList">
-              <span :key="item">{{ item.identifierId  }} &nbsp; &nbsp;</span>
-            </template>
-
+            {{scope.row.userPwd}}
           </template>
         </el-table-column>
 
@@ -175,8 +121,8 @@
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/teacherManage/teacherManage' }">教职工列表</el-breadcrumb-item>
-            <el-breadcrumb-item>添加教职工</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/studentManage/studentManage' }">学生列表</el-breadcrumb-item>
+            <el-breadcrumb-item>添加学生</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
       </div>
@@ -188,33 +134,11 @@
                  label-width="70px"
                  style='width: 400px; margin-left:50px;'>
 
-          <el-form-item label="教职工名称">
+          <el-form-item label="学生名称">
             <el-input v-model="roleTemp.userName"></el-input>
           </el-form-item>
-          <el-form-item label="联系电话">
+          <el-form-item label="手机号">
             <el-input v-model="roleTemp.userPhone"></el-input>
-          </el-form-item>
-          <el-form-item label="所属学科">
-            <el-select clearable
-                       class="filter-item"
-                       v-model="roleTemp.subjectId">
-              <el-option v-for="item in  subjectList"
-                         :key="item.id"
-                         :label="item.name"
-                         :value="item.id">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="所属科室">
-            <el-select clearable
-                       class="filter-item"
-                       v-model="roleTemp.officeId">
-              <el-option v-for="item in  officeList"
-                         :key="item.id"
-                         :label="item.name"
-                         :value="item.id">
-              </el-option>
-            </el-select>
           </el-form-item>
           <p style="width:200%;height:1px; background: #eee;margin:50px 0"></p>
           <el-form-item label="账号">
@@ -223,13 +147,6 @@
           <el-form-item label="密码">
             <el-input v-model="roleTemp.userPwd"></el-input>
           </el-form-item>
-
-          <!-- <el-form-item label="教职工层次">
-            <el-input v-model="roleTemp.remark"></el-input>
-          </el-form-item>
-          <el-form-item label="所在地">
-            <el-input v-model="roleTemp.remark"></el-input>
-          </el-form-item> -->
           <el-form-item>
             <el-button type="primary"
                        @click="onAddSubmit">上传</el-button>
@@ -242,8 +159,8 @@
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/teacherManage/teacherManage' }">教职工列表</el-breadcrumb-item>
-            <el-breadcrumb-item>编辑教职工</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/studentManage/studentManage' }">学生列表</el-breadcrumb-item>
+            <el-breadcrumb-item>编辑学生</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
       </div>
@@ -255,33 +172,11 @@
                  label-width="70px"
                  style='width: 400px; margin-left:50px;'>
 
-          <el-form-item label="教职工名称">
+          <el-form-item label="学生名称">
             <el-input v-model="roleTemp2.userName"></el-input>
           </el-form-item>
           <el-form-item label="联系电话">
             <el-input v-model="roleTemp2.userPhone"></el-input>
-          </el-form-item>
-          <el-form-item label="所属学科">
-            <el-select clearable
-                       class="filter-item"
-                       v-model="roleTemp2.subjectId">
-              <el-option v-for="item in  subjectList"
-                         :key="item.id"
-                         :label="item.name"
-                         :value="item.id">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="所属科室">
-            <el-select clearable
-                       class="filter-item"
-                       v-model="roleTemp2.officeId">
-              <el-option v-for="item in  officeList"
-                         :key="item.id"
-                         :label="item.name"
-                         :value="item.id">
-              </el-option>
-            </el-select>
           </el-form-item>
           <p style="width:200%;height:1px; background: #eee;margin:50px 0"></p>
           <el-form-item label="账号">
@@ -290,12 +185,6 @@
           <el-form-item label="密码">
             <el-input v-model="roleTemp2.userPwd"></el-input>
           </el-form-item>
-          <!-- <el-form-item label="教职工层次">
-            <el-input v-model="roleTemp.remark"></el-input>
-          </el-form-item>
-          <el-form-item label="所在地">
-            <el-input v-model="roleTemp.remark"></el-input>
-          </el-form-item> -->
           <el-form-item>
             <el-button type="primary"
                        @click="onEditSubmit">上传</el-button>
@@ -364,11 +253,6 @@ export default {
       ruleForm: {
         permissions: []
       },
-      typeOptions: [
-        { key: '001', display_name: '类型1' },
-        { key: '002', display_name: '类型2' },
-        { key: '003', display_name: '类型3' }
-      ],
       dialogFormVisible: false,
       dialogPermissionsVisible: false,
       multipleSelection: [],
@@ -449,12 +333,12 @@ export default {
       // })
       axios
         .post(
-          '/smartprint/print-room/staff/get-staffs',
+          '/smartprint/print-room/student/get-students',
           qs.stringify(vm.listQuery)
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          vm.list = res.data.data.staffs
+          vm.list = res.data.data.students
           console.log('列表数据：', vm.list)
           // vm.listQuery.currPage = data.data.currPage;
           // vm.listQuery.count = data.data.count;
@@ -492,7 +376,7 @@ export default {
       const params = JSON.parse(JSON.stringify(this.listQuery))
       params.isSum = 1
       axios
-        .post('/smartprint/print-room/staff/get-staffs', qs.stringify(params))
+        .post('/smartprint/print-room/student/get-students', qs.stringify(params))
         .then(res => {
           this.total = res.data.data.sum.count
           console.log(this.total)
@@ -511,13 +395,13 @@ export default {
       if (id) {
         axios
           .post(
-            '/smartprint/print-room/staff/get-staff',
-            qs.stringify({ staffId: id })
+            '/smartprint/print-room/student/get-student',
+            qs.stringify({ studentId: id })
           )
           .then(res => {
             console.log(res)
             if (res.data.code !== 0) return this.$message.error(res.data.msg)
-            this.roleTemp2 = res.data.data.staff
+            this.roleTemp2 = res.data.data.student
           })
           .catch(err => console.log(err))
       }
@@ -529,16 +413,16 @@ export default {
       // 跳页面进行修改
       // this.$router.push('/example/form');
       this.$router.push({
-        path: '/teacherManage/teacherManage',
+        path: '/studentManage/studentManage',
         query: { extra: 'edit', id }
       }) // 带参跳转
     },
     // 编辑上传
     onEditSubmit() {
-      this.roleTemp2.staffId = this.roleTemp2.id
+      this.roleTemp2.studentId = this.roleTemp2.id
       axios
         .post(
-          '/smartprint/print-room/staff/update-staff',
+          '/smartprint/print-room/student/update-student',
           qs.stringify(this.roleTemp2)
         )
         .then(res => {
@@ -553,8 +437,8 @@ export default {
       console.log('单个删除选择的row：', index, '-----', id)
       axios
         .post(
-          '/smartprint/print-room/staff/delete-staff',
-          qs.stringify({ staffId: id })
+          '/smartprint/print-room/student/delete-student',
+          qs.stringify({ studentId: id })
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
@@ -592,7 +476,7 @@ export default {
     handleCreate() {
       // this.dialogFormVisible = true;
       this.$router.push({
-        path: '/teacherManage/teacherManage',
+        path: '/studentManage/studentManage',
         query: { extra: 'add' }
       }) // 带参跳转
     },
@@ -643,11 +527,10 @@ export default {
       console.log('新增入参：', vm.roleTemp)
       axios
         .post(
-          '/smartprint/print-room/staff/create-staff',
+          '/smartprint/print-room/student/create-student',
           qs.stringify(vm.roleTemp)
         )
         .then(res => {
-          console.log(res.data.code)
           if (res.data.code !== 0) return vm.$message.error(res.data.msg)
           vm.$message.success('新增成功')
           for (const key in this.roleTemp) {
