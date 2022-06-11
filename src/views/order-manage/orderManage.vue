@@ -212,6 +212,12 @@
                        @click="ensureOrderHnadle('YiJieDan')"
                        size="small">确认接单</el-button>
             <el-button style="margin-left:50px"
+                       v-show="roleTemp.status=='YiJieDan'"
+                       type="primary"
+                       plain
+                       @click="ensureOrderHnadle('DaiQueRen')"
+                       size="small">请用户确认</el-button>
+            <el-button style="margin-left:50px"
                        v-show="roleTemp.status=='YiQueRen'"
                        type="primary"
                        plain
@@ -238,8 +244,31 @@
                       v-model="roleTemp.userName"></el-input>
           </el-form-item>
           <el-form-item label="类型：">
-            <el-input disabled
-                      :value="typeOption[roleTemp.type]"></el-input>
+            <!-- <el-input disabled
+                      :value="typeOption[roleTemp.type]"></el-input> -->
+            <el-select clearable
+                       class="filter-item"
+                       v-model="roleTemp.type"
+                       placeholder="类型：">
+              <el-option v-for="item in  typeSelectOpt"
+                         :key="item.value"
+                         :label="item.name"
+                         :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item v-if="roleTemp.type==='Subject'"
+                        label="选择学科">
+            <el-select clearable
+                       class="filter-item"
+                       v-model="roleTemp.subjectId"
+                       placeholder="学科：">
+              <el-option v-for="item in  subjectList"
+                         :key="item.id"
+                         :label="item.name"
+                         :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
           <div v-if="roleTemp.type!=='Office'">
             <!-- <el-form-item label="年级：">
@@ -286,10 +315,19 @@
               </div>
             </el-form-item>
           </div>
-          <div v-else>
+          <div v-if="roleTemp.type=='Office'">
             <el-form-item label="科室：">
-              <el-input disabled
-                        v-model="roleTemp.officeName"></el-input>
+              <!-- <el-input disabled
+                        v-model="roleTemp.officeName"></el-input> -->
+              <el-select clearable
+                         class="filter-item"
+                         v-model="roleTemp.officeId">
+                <el-option v-for="item in  officelist"
+                           :key="item.id"
+                           :label="item.name"
+                           :value="item.id">
+                </el-option>
+              </el-select>
             </el-form-item>
           </div>
           <el-form-item label="份数：">
@@ -320,7 +358,9 @@
               <div class="class-table-td"
                    v-for="(item,index) in (roleTemp.attachmentFiles)"
                    :key="item.no">
-                <a style="width:80%;overflow:hidden">{{item.originalName}}</a>
+                <a :href="'https://dev.renx.cc/'+item.url"
+                   target="_blank"
+                   style="width:80%;overflow:hidden;color:#0053B5">{{item.originalName}}</a>
                 <el-button @click="deleteFile(index)"
                            type="text">移除</el-button>
               </div>
@@ -540,6 +580,8 @@ export default {
       dialogFormVisible: false,
       dialogPermissionsVisible: false,
       multipleSelection: [],
+      subjectList: [],
+      officelist: [],
 
       viewType: 0, // 0 | add | edit
       gradeList: [],
@@ -649,7 +691,7 @@ export default {
           this.multipleSelection.forEach(item => {
             this.classList.forEach(citem => {
               if (item.id == citem.id) {
-                this.$refs.multipleTable.toggleRowSelection(citem, true);
+                this.$refs.multipleTable.toggleRowSelection(citem, true)
               }
             })
           })
@@ -665,6 +707,8 @@ export default {
     this.editView()
     this.getGradeList()
     this.getClassList()
+    this.getOfficeList()
+    this.getSubjectList()
   },
   methods: {
     lastLevelChange(boo) {
@@ -723,10 +767,7 @@ export default {
 
       vm.listLoading = true
       axios
-        .post(
-          '/smartprint/print-room/class/get-classes',
-          qs.stringify(params)
-        )
+        .post('/smartprint/print-room/class/get-classes', qs.stringify(params))
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           vm.classList = res.data.data.classes
@@ -742,6 +783,28 @@ export default {
         })
         .catch(err => err)
       vm.listLoading = false
+    },
+    // 获取学科列表
+    getSubjectList() {
+      const vm = this
+      axios
+        .post('/smartprint/print-room/subject/get-subjects')
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          vm.subjectList = res.data.data.subjects
+        })
+        .catch(err => err)
+    },
+    // 获取科室列表
+    getOfficeList() {
+      const vm = this
+      axios
+        .post('/smartprint/print-room/office/get-offices')
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          vm.officelist = res.data.data.offices
+        })
+        .catch(err => err)
     },
     onAddSubmit() {
       const vm = this
@@ -769,7 +832,7 @@ export default {
       else this.viewType = extra
     },
     getRowKey(row) {
-      return row.id;
+      return row.id
     },
     gradeChange() {
       this.$forceUpdate()
@@ -782,7 +845,10 @@ export default {
     // 获取文印规格设置
     getSets() {
       axios
-        .post('/smartprint/print-room/price-book/get-sets', qs.stringify({ schoolId: this.roleTemp.schoolID }))
+        .post(
+          '/smartprint/print-room/price-book/get-sets',
+          qs.stringify({ schoolId: this.roleTemp.schoolID })
+        )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.dynamicTags = res.data.data.sets
@@ -799,7 +865,10 @@ export default {
         setIds: this.choseTags.map(item => item.id).join(',')
       }
       axios
-        .post('/smartprint/print-room/price-book/get-prices', qs.stringify(params))
+        .post(
+          '/smartprint/print-room/price-book/get-prices',
+          qs.stringify(params)
+        )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.priceData = res.data.data.prices || []
@@ -842,21 +911,21 @@ export default {
             this.roleTemp = res.data.data.order
             // this.roleTemp.allGrades == 1 ? this.roleTemp.grade = 'allGrades' : this.roleTemp.grade = this.roleTemp.grades[0].gradeId
             // this.roleTemp.allClasses == 1 ? this.classval = 'allClasses' : this.classval = 'diy'
-            this.roleTemp.classes ? this.roleTemp.classes = this.roleTemp.classes.map(item => {
-              item.id = item.classId; item.name = item.className
-              return item
-            }) : this.roleTemp.classes = []
+            this.roleTemp.classes
+              ? (this.roleTemp.classes = this.roleTemp.classes.map(item => {
+                  item.id = item.classId
+                  item.name = item.className
+                  return item
+                }))
+              : (this.roleTemp.classes = [])
 
             this.multipleSelection = this.roleTemp.classes
-
 
             if (this.roleTemp.sampleFiles) {
               if (this.fileList.length > 0) this.fileList = []
               this.roleTemp.samples = ''
               this.roleTemp.sampleFiles.forEach((item, index) => {
-                this.fileList.push(
-                  { name: item.originalName, url: item.url }
-                )
+                this.fileList.push({ name: item.originalName, url: item.url })
               })
             }
             this.$refs.priceSetRef.params = this.roleTemp
@@ -898,34 +967,48 @@ export default {
     },
     // 编辑上传
     submitHandle() {
-      const { id, title, grade, count, remark, printRoomRemark } = this.roleTemp
+      const {
+        id,
+        title,
+        grade,
+        count,
+        remark,
+        printRoomRemark,
+        type,
+        subjectId,
+        officeId
+      } = this.roleTemp
       // const priceData = this.priceData
       this.priceData.forEach(item => {
         item.totalPrice = (item.count - 0) * (item.unitPrice - 0)
       })
-      const { jiaoYingDanBanShu
-        , jiaoYingDanFenShu
-        , jiaoYingShuangBanShu
-        , jiaoYingShuangFenShu
-        , jiaoYingDaDanBanShu
-        , jiaoYingDaDanFenShu
-        , jiaoYingDaShuangBanShu
-        , jiaoYingDaShuangFenShu
-        , otherSetName
-        , otherSetCount
-        , otherSetUnitPrice
-        , fuYingB5Shu
-        , fuYingB4Shu
-        , fuYingA4Shu
-        , fuYingA3Shu
-        , daYingShu
-        , daBanShu
+      const {
+        jiaoYingDanBanShu,
+        jiaoYingDanFenShu,
+        jiaoYingShuangBanShu,
+        jiaoYingShuangFenShu,
+        jiaoYingDaDanBanShu,
+        jiaoYingDaDanFenShu,
+        jiaoYingDaShuangBanShu,
+        jiaoYingDaShuangFenShu,
+        otherSetName,
+        otherSetCount,
+        otherSetUnitPrice,
+        fuYingB5Shu,
+        fuYingB4Shu,
+        fuYingA4Shu,
+        fuYingA3Shu,
+        daYingShu,
+        daBanShu
       } = this.$refs.priceSetRef.params
       const params = {
         orderId: id,
         title,
         count,
         remark,
+        type,
+        subjectId: type === 'Subject' ? subjectId : '',
+        officeId: type === 'Office' ? officeId : '',
         printRoomRemark,
         jiaoYingDanBanShu,
         jiaoYingDanFenShu,
@@ -947,17 +1030,16 @@ export default {
         samples: this.samples + ',' + this.fileList.join(','),
         printSetType: this.tabsIndex == 1 ? 'System' : 'School',
         printSetPrices: this.priceData,
-        attachments: this.roleTemp.attachmentFiles && this.roleTemp.attachmentFiles.map(item => item.url).join(','),
+        attachments:
+          this.roleTemp.attachmentFiles &&
+          this.roleTemp.attachmentFiles.map(item => item.url).join(','),
         // grades: grade == 'allGrades' ? this.gradeList.splice(1).map(item => item.id).join(',') : grade,
         // classes: this.classval == 'allClasses' ? this.classList.map(item => item.id).join(',') : this.multipleSelection.map(item => item.id).join(',')
         classIds: this.multipleSelection.map(item => item.id).join(','),
         deleteClassIds: [...new Set(this.deleteClassIds)].join(',')
       }
       axios
-        .post(
-          '/smartprint/print-room/order/update-order',
-          qs.stringify(params)
-        )
+        .post('/smartprint/print-room/order/update-order', qs.stringify(params))
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('修改成功')
@@ -1074,7 +1156,10 @@ export default {
       this.deleteClassIds.push(this.multipleSelection[index].id)
 
       if (this.$refs.multipleTable) {
-        this.$refs.multipleTable.toggleRowSelection(this.multipleSelection[index], false);
+        this.$refs.multipleTable.toggleRowSelection(
+          this.multipleSelection[index],
+          false
+        )
       } else {
         this.multipleSelection.splice(index, 1)
       }
@@ -1082,29 +1167,31 @@ export default {
 
     // 上传相关
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      console.log(file, fileList)
     },
     handlePreview(file) {
-      console.log(file);
+      console.log(file)
     },
     handleExceed(files, fileList) {
       // this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
     },
     beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
+      return this.$confirm(`确定移除 ${file.name}？`)
     },
     // 覆盖element的默认上传文件
     uploadHttpRequest(param) {
       // 获取上传的文件名
       const file = param.file
       // 发送请求的参数格式为FormData
-      const formData = new FormData();
+      const formData = new FormData()
       formData.append('file', file)
       axios.post('/smartprint/upload-file', formData).then(res => {
         if (res.data.code !== 0) {
           return this.$message.error(res.data.msg)
         }
-        this.roleTemp.attachmentFiles = this.roleTemp.attachmentFiles ? this.roleTemp.attachmentFiles : []
+        this.roleTemp.attachmentFiles = this.roleTemp.attachmentFiles
+          ? this.roleTemp.attachmentFiles
+          : []
         this.roleTemp.attachmentFiles.push(res.data.data)
         this.$forceUpdate()
       })
@@ -1114,7 +1201,7 @@ export default {
       // 获取上传的文件名
       const file = param.file
       // 发送请求的参数格式为FormData
-      const formData = new FormData();
+      const formData = new FormData()
       formData.append('file', file)
       axios.post('/smartprint/upload-file', formData).then(res => {
         if (res.data.code !== 0) {

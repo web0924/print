@@ -6,7 +6,7 @@
       <i class="fa fa-bars"
          @click="toggleSideBar"
          :isActive="sidebar.opened"></i> -->
-      <span class="bars-title">{{accountInfo.printRoom && accountInfo.printRoom.name}}管理系统</span>
+      <span class="bars-title">{{accountInfo.printRoom &&(accountInfo.printRoom.schoolName +accountInfo.printRoom.name)}}</span>
       <!-- <tabs-view></tabs-view> -->
 
       <error-log v-if="log.length>0"
@@ -124,16 +124,16 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from 'vuex'
 
-import TabsView from './TabsView';
+import TabsView from './TabsView'
 
-import Screenfull from 'components/Screenfull';
-import ErrorLog from 'components/ErrLog';
-import errLogStore from 'store/errLog';
-import { global } from 'src/global/global';
-import Cookies from 'js-cookie';
-import md5 from 'blueimp-md5';
+import Screenfull from 'components/Screenfull'
+import ErrorLog from 'components/ErrLog'
+import errLogStore from 'store/errLog'
+import { global } from 'src/global/global'
+import Cookies from 'js-cookie'
+import md5 from 'blueimp-md5'
 import axios from 'axios'
 export default {
   components: {
@@ -145,24 +145,26 @@ export default {
   data() {
     const validateOldPassword = (rule, value, callback) => {
       if (md5('@lss' + value) !== md5('@lss123456')) {
-        callback(new Error('旧密码不正确！'));
+        callback(new Error('旧密码不正确！'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     const validateNewPassword2 = (rule, value, callback) => {
       if (value !== this.passwordForm.newPassword) {
-        callback(new Error('两次输入密码不一致!'));
+        callback(new Error('两次输入密码不一致!'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       accountInfo: {},
       log: errLogStore.state.errLog,
       dialogVisible: false,
       dialogFormVisible: false,
-      themeValue: localStorage.getItem('themeValue') ? localStorage.getItem('themeValue') : 'blue',
+      themeValue: localStorage.getItem('themeValue')
+        ? localStorage.getItem('themeValue')
+        : 'blue',
       passwordForm: {
         oldPassword: '',
         newPassword: '',
@@ -172,7 +174,6 @@ export default {
         oldPassword: [
           { required: true, trigger: 'blur', message: '旧密码不能为空！' },
           { required: true, trigger: 'blur', validator: validateOldPassword }
-
         ],
         newPassword: [
           { required: true, trigger: 'blur', message: '新密码不能为空！' }
@@ -185,20 +186,19 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'sidebar',
-      'userInfo'
-
-    ])
+    ...mapGetters(['sidebar', 'userInfo'])
   },
   mounted() {
-    const vm = this;
+    const vm = this
     try {
-      axios.post('/smartprint/me/refresh').then(res => {
-        if (res.data.code === 0) {
-          this.accountInfo = res.data.data.login.user
-        }
-      }).catch(err => err)
+      axios
+        .post('/smartprint/me/refresh')
+        .then(res => {
+          if (res.data.code === 0) {
+            this.accountInfo = res.data.data.login.user
+          }
+        })
+        .catch(err => err)
     } catch (err) {
       console.log(err)
     }
@@ -206,12 +206,12 @@ export default {
   methods: {
     // 换肤
     handleChangeTheme() {
-      const vm = this;
-      global.changeTheme(vm.themeValue);
-      this.dialogVisible = false;
+      const vm = this
+      global.changeTheme(vm.themeValue)
+      this.dialogVisible = false
     },
     handlePwdModifySubmit(formName) {
-      const vm = this;
+      const vm = this
       console.log('---', this.passwordForm)
       vm.$refs.passwordForm.validate(valid => {
         if (valid) {
@@ -223,20 +223,20 @@ export default {
           }
           console.log('密码修改入参为：', par)
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     toggleSideBar() {
       // 6-28
-      $(this).toggleClass('is-active');
+      $(this).toggleClass('is-active')
       this.$store.dispatch('ToggleSideBar')
     },
     logout() {
       this.$store.dispatch('LogOut').then(() => {
-        location.reload();// 为了重新实例化vue-router对象 避免bug
-      });
+        location.reload() // 为了重新实例化vue-router对象 避免bug
+      })
     }
   }
 }

@@ -20,7 +20,7 @@
           <el-select clearable
                      class="filter-item"
                      style="width: 280px"
-                     v-model="listQuery.gradeId"
+                     v-model="listQuery.officeId"
                      size="small"
                      placeholder="选择科室">
             <el-option v-for="item in  officeList"
@@ -527,7 +527,7 @@ export default {
     // 编辑上传
     onEditSubmit() {
       this.roleTemp2.staffId = this.roleTemp2.id
-      this.roleTemp2.userPwd = mad5(mad(this.userPwd))
+      this.roleTemp2.userPwd = md5(md5(this.userPwd))
       axios
         .post(
           '/smartprint/print-room/staff/update-staff',

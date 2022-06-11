@@ -81,7 +81,7 @@
         </div>
         <div class="table-item mt-20">
           <div class="top">
-            <span class="name">打印单价</span>
+            <span class="name">打印</span>
 
             <input class="value"
                    type="text"
@@ -90,7 +90,7 @@
             <span style="padding: 0 10px">（份）</span>
           </div>
           <div class="bot">
-            <span class="name">打版单价</span>
+            <span class="name">打版</span>
 
             <input class="value"
                    type="text"
