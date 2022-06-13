@@ -438,13 +438,14 @@
             <el-form-item label="上传小样：">
               <div style="border:1px solid #E2E2E2;padding:20px">
                 <!-- https://dev.renx.cc/smartprint/upload-file -->
-                <el-upload action="#"
+                <!-- :http-request="uploadHttpRequestOfSamples" -->
+                <el-upload action="/smartprint/upload-file"
                            :on-preview="handlePreview"
                            :on-remove="handleRemove"
                            :before-remove="beforeRemove"
+                           :on-success="succcessHandle"
                            multiple
                            :limit="10"
-                           :http-request="uploadHttpRequestOfSamples"
                            :on-exceed="handleExceed"
                            :file-list="fileList">
                   <el-button size="small"
@@ -912,12 +913,12 @@ export default {
             // this.roleTemp.allGrades == 1 ? this.roleTemp.grade = 'allGrades' : this.roleTemp.grade = this.roleTemp.grades[0].gradeId
             // this.roleTemp.allClasses == 1 ? this.classval = 'allClasses' : this.classval = 'diy'
             this.roleTemp.classes
-              ? (this.roleTemp.classes = this.roleTemp.classes.map(item => {
-                  item.id = item.classId
-                  item.name = item.className
-                  return item
-                }))
-              : (this.roleTemp.classes = [])
+              ? this.roleTemp.classes = this.roleTemp.classes.map(item => {
+                item.id = item.classId
+                item.name = item.className
+                return item
+              })
+              : this.roleTemp.classes = []
 
             this.multipleSelection = this.roleTemp.classes
 
@@ -1166,11 +1167,19 @@ export default {
     },
 
     // 上传相关
+    succcessHandle(response) {
+      this.samples ? this.samples += ',' + response.data.url : this.samples = response.data.url
+    },
     handleRemove(file, fileList) {
       console.log(file, fileList)
     },
     handlePreview(file) {
       console.log(file)
+      if (file.response) {
+        window.open('https://view.officeapps.live.com/op/view.aspx?src=https://dev.renx.cc/' + file.response.data.url)
+      } else {
+        window.open('https://view.officeapps.live.com/op/view.aspx?src=https://dev.renx.cc/' + file.url)
+      }
     },
     handleExceed(files, fileList) {
       // this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);

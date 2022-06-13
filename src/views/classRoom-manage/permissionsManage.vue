@@ -800,7 +800,7 @@ export default {
         .then(res => {
           console.log(res.data.code)
           if (res.data.code !== 0) return vm.$message.error(res.data.msg)
-          vm.$message.success('新增成功')
+          this.$message.success('新增成功')
           for (const key in this.roleTemp) {
             this.roleTemp[key] = ''
           }
