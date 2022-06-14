@@ -5,15 +5,19 @@
         <div class="table-item">
           <div class="top">
             <span class="name">胶印-单面（张）</span>
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.jiaoYingDanFenShu"
-                   style="border:none;outline: none;">
+                   style="border:none;outline: none;" />
             <span style="padding: 0 10px">（份）</span>
           </div>
           <div class="bot">
             <span class="name">胶印-单面（版）</span>
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.jiaoYingDanBanShu"
                    style="border:none;outline: none;">
@@ -24,7 +28,9 @@
           <div class="top">
             <span class="name">胶印-答单（张）</span>
 
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.jiaoYingDaDanFenShu"
                    style="border:none;outline: none;">
@@ -32,7 +38,9 @@
           </div>
           <div class="bot">
             <span class="name">胶印-答单（版）</span>
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.jiaoYingDaDanBanShu"
                    style="border:none;outline: none;">
@@ -43,7 +51,9 @@
           <div class="top">
             <span class="name">复印-B5</span>
 
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.fuYingB5Shu"
                    style="border:none;outline: none;">
@@ -52,7 +62,9 @@
           <div class="bot">
             <span class="name">复印-B4</span>
 
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.fuYingB4Shu"
                    style="border:none;outline: none;">
@@ -63,7 +75,9 @@
              style="border-top:none">
           <div class="top">
             <span class="name">复印-A4</span>
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.fuYingA4Shu"
                    style="border:none;outline: none;">
@@ -72,7 +86,9 @@
           <div class="bot">
             <span class="name">复印-A3</span>
 
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.fuYingA3Shu"
                    style="border:none;outline: none;">
@@ -83,7 +99,9 @@
           <div class="top">
             <span class="name">打印</span>
 
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.daYingShu"
                    style="border:none;outline: none;">
@@ -92,7 +110,9 @@
           <div class="bot">
             <span class="name">打版</span>
 
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.daBanShu"
                    style="border:none;outline: none;">
@@ -106,7 +126,9 @@
           <div class="top">
             <span class="name">胶印-双面（张）</span>
 
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.jiaoYingShuangFenShu"
                    style="border:none;outline: none;">
@@ -115,7 +137,9 @@
           <div class="bot">
             <span class="name">胶印-双面（版）</span>
 
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.jiaoYingShuangBanShu"
                    style="border:none;outline: none;">
@@ -126,7 +150,9 @@
           <div class="top">
             <span class="name">胶印-答双（张）</span>
 
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.jiaoYingDaShuangFenShu"
                    style="border:none;outline: none;">
@@ -134,7 +160,9 @@
           </div>
           <div class="bot">
             <span class="name">胶印-答双（版）</span>
-            <input class="value"
+            <input :disabled="disabled"
+                   :style="{cursor:disabled? 'not-allowed':''}"
+                   class="value"
                    type="text"
                    v-model="params.jiaoYingDaShuangBanShu"
                    style="border:none;outline: none;">
@@ -173,6 +201,12 @@
 
 <script>
 export default {
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       params: {

@@ -13,6 +13,10 @@
                  class="errLog-container"
                  :logsList="log"></error-log>
       <screenfull class='screenfull'></screenfull>
+      <div class="account-caontainer">
+        <span>账号：{{accountInfo.name}}</span>
+        <span>姓名：{{accountInfo.account}}</span>
+      </div>
       <el-button @click="logout"
                  size="mini"
                  class="loginout-btn">
@@ -320,5 +324,13 @@ export default {
       }
     }
   }
+}
+
+.account-caontainer {
+  height: 50px;
+  display: inline-block;
+  position: absolute;
+  right: 160px;
+  color: #fff;
 }
 </style>

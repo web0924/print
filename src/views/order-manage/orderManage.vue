@@ -2,7 +2,7 @@
   <div class="app-container">
     <div v-show="viewType===0"
          style="padding-bottom:30px">
-      <div style="height:120px;padding-left:20px">
+      <div style="min-height:120px;padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/orderManage/orderManage' }">订单列表</el-breadcrumb-item>
@@ -11,51 +11,104 @@
         <!-- 搜索条件 -->
         <div class="filter-container">
           <el-select clearable
+                     @change="classSelectChange"
                      class="filter-item"
-                     style="width: 280px"
-                     v-model="listQuery.type"
+                     style="width: 200px"
+                     v-model="listQuery.gradeId"
                      size="small"
-                     placeholder="按类型筛选">
-            <el-option v-for="item in typeSelectOpt"
-                       :key="item.value"
+                     placeholder="按年级筛选">
+            <el-option v-for="item in gradeList"
+                       :key="item.id"
                        :label="item.name"
-                       :value="item.value">
+                       :value="item.id">
             </el-option>
           </el-select>
           <el-select clearable
                      class="filter-item"
-                     style="width: 280px"
-                     v-model="listQuery.status"
+                     style="width: 200px"
+                     v-model="listQuery.classId"
                      size="small"
-                     placeholder="按状态筛选">
-            <el-option v-for="item in  orderSelectStatus"
-                       :key="item.value"
+                     placeholder="按班级筛选">
+            <el-option v-for="item in classList"
+                       :key="item.id"
                        :label="item.name"
-                       :value="item.value">
+                       :value="item.id">
+            </el-option>
+          </el-select>
+          <el-select clearable
+                     class="filter-item"
+                     style="width: 200px"
+                     v-model="listQuery.officeId"
+                     size="small"
+                     placeholder="按科室筛选">
+            <el-option v-for="item in officelist"
+                       :key="item.id"
+                       :label="item.name"
+                       :value="item.id">
+            </el-option>
+          </el-select>
+          <el-select clearable
+                     class="filter-item"
+                     style="width: 200px"
+                     v-model="listQuery.subjectId"
+                     size="small"
+                     placeholder="按学科筛选">
+            <el-option v-for="item in subjectList"
+                       :key="item.id"
+                       :label="item.name"
+                       :value="item.id">
             </el-option>
           </el-select>
           <el-input @keyup.enter.native="handleSearch"
                     size="small"
-                    style="width: 280px;"
+                    style="width: 200px;"
                     class="filter-item"
                     placeholder="输入关键字搜索"
                     v-model="listQuery.kw">
           </el-input>
-          <el-button class="filter-item"
-                     type="primary"
-                     @click="handleSearch"
-                     size="small"
-                     icon="edit">搜索</el-button>
-          <el-button class="filter-item"
-                     @click="handleReset"
-                     size="small"
-                     icon="edit">重置</el-button>
           <el-button class="filter-item"
                      style="position:absolute;right:40px;background:#000"
                      type="primary"
                      @click="handleCreate"
                      size="small"
                      icon="edit">添加订单</el-button>
+          <div>
+            <el-select clearable
+                       class="filter-item"
+                       style="width: 200px"
+                       v-model="listQuery.type"
+                       size="small"
+                       placeholder="按类型筛选">
+              <el-option v-for="item in typeSelectOpt"
+                         :key="item.value"
+                         :label="item.name"
+                         :value="item.value">
+              </el-option>
+            </el-select>
+            <el-select clearable
+                       class="filter-item"
+                       style="width: 200px"
+                       v-model="listQuery.status"
+                       size="small"
+                       placeholder="按状态筛选">
+              <el-option v-for="item in  orderSelectStatus"
+                         :key="item.value"
+                         :label="item.name"
+                         :value="item.value">
+              </el-option>
+            </el-select>
+            <el-button style="margin-left:50px"
+                       class="filter-item"
+                       type="primary"
+                       @click="handleSearch"
+                       size="small"
+                       icon="edit">搜索</el-button>
+            <el-button class="filter-item"
+                       @click="handleReset"
+                       size="small"
+                       icon="edit">重置</el-button>
+          </div>
+
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
@@ -65,6 +118,7 @@
       <el-table :data="list"
                 v-loading.body="listLoading"
                 element-loading-text=""
+                @sort-change="tableSortChange"
                 border
                 fit
                 highlight-current-row>
@@ -95,6 +149,12 @@
             {{typeOption[scope.row.type] }}
           </template>
         </el-table-column>
+        <el-table-column label="学科"
+                         width="">
+          <template slot-scope="scope">
+            {{scope.row.subjectName }}
+          </template>
+        </el-table-column>
         <el-table-column label="份数"
                          width="">
           <template slot-scope="scope">
@@ -113,6 +173,19 @@
           <template slot-scope="scope">
             <span :style="{color:orderStatus[scope.row.status].color}"> {{orderStatus[scope.row.status].name }}</span>
           </template>
+        </el-table-column>
+        <el-table-column label="价格"
+                         sortable="custom"
+                         prop="price"
+                         width="">
+          <template slot-scope="scope">
+            {{scope.row.price}}
+          </template>
+        </el-table-column>
+        <el-table-column label="订单时间"
+                         prop="createTime"
+                         sortable="custom"
+                         width="">
         </el-table-column>
 
         <!-- <el-table-column label="订单名称"
@@ -197,51 +270,63 @@
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
       <div style="padding:50px">
-        <el-form class="small-space"
+        <el-form :disabled="isEditOrder"
+                 class="small-space"
                  :model="roleTemp"
                  label-position="left"
                  label-width="120px"
                  style='width: 620px; margin-left:50px;'>
-
-          <el-form-item label="状态：">
-            <span :style="{color:orderStatus[roleTemp.status]&&orderStatus[roleTemp.status].color}">{{orderStatus[roleTemp.status]&&orderStatus[roleTemp.status].name}}</span>
-            <el-button style="margin-left:50px"
-                       v-show="roleTemp.status=='DaiJieDan'"
-                       type="primary"
-                       plain
-                       @click="ensureOrderHnadle('YiJieDan')"
-                       size="small">确认接单</el-button>
-            <el-button style="margin-left:50px"
-                       v-show="roleTemp.status=='YiJieDan'"
-                       type="primary"
-                       plain
-                       @click="ensureOrderHnadle('DaiQueRen')"
-                       size="small">请用户确认</el-button>
-            <el-button style="margin-left:50px"
-                       v-show="roleTemp.status=='YiQueRen'"
-                       type="primary"
-                       plain
-                       @click="ensureOrderHnadle('ShengChanZhong')"
-                       size="small">确认生产</el-button>
-            <el-button style="margin-left:50px"
-                       v-show="roleTemp.status=='ShengChanZhong'"
-                       type="primary"
-                       plain
-                       @click="ensureOrderHnadle('YiShangJia')"
-                       size="small">确认上架</el-button>
-            <el-button style="margin-left:50px"
-                       v-show="roleTemp.status=='YiShangJia'"
-                       type="primary"
-                       plain
-                       @click="ensureOrderHnadle('YiLingQu')"
-                       size="small">确认领取</el-button>
-          </el-form-item>
+          <el-form class="small-space"
+                   :model="roleTemp"
+                   label-position="left"
+                   label-width="120px">
+            <el-form-item :disabled="false"
+                          label="状态：">
+              <span :style="{color:orderStatus[roleTemp.status]&&orderStatus[roleTemp.status].color}">{{orderStatus[roleTemp.status]&&orderStatus[roleTemp.status].name}}</span>
+              <el-button style="margin-left:50px"
+                         v-show="roleTemp.status=='DaiJieDan'"
+                         type="primary"
+                         plain
+                         @click="ensureOrderHnadle('YiJieDan')"
+                         size="small">确认接单</el-button>
+              <el-button style="margin-left:50px"
+                         v-show="roleTemp.status=='YiJieDan'"
+                         type="primary"
+                         plain
+                         @click="ensureOrderHnadle('DaiQueRen')"
+                         size="small">请用户确认</el-button>
+              <el-button style="margin-left:50px"
+                         v-show="roleTemp.status=='YiQueRen'"
+                         type="primary"
+                         plain
+                         @click="ensureOrderHnadle('ShengChanZhong')"
+                         size="small">确认生产</el-button>
+              <el-button style="margin-left:50px"
+                         v-show="roleTemp.status=='ShengChanZhong'"
+                         type="primary"
+                         plain
+                         @click="ensureOrderHnadle('YiShangJia')"
+                         size="small">确认上架</el-button>
+              <el-button style="margin-left:50px"
+                         v-show="roleTemp.status=='YiShangJia'"
+                         type="primary"
+                         plain
+                         @click="ensureOrderHnadle('YiLingQu')"
+                         size="small">确认领取</el-button>
+            </el-form-item>
+          </el-form>
           <el-form-item label="文印内容：">
             <el-input v-model="roleTemp.title"></el-input>
           </el-form-item>
           <el-form-item label="下单人：">
-            <el-input disabled
-                      v-model="roleTemp.userName"></el-input>
+            <el-input v-model="roleTemp.userName"></el-input>
+          </el-form-item>
+          <el-form-item label="下单时间：">
+            <el-date-picker v-model="roleTemp.createTime"
+                            type="datetime">
+            </el-date-picker>
+            <!-- <el-input disabled
+                      v-model="roleTemp.createTime"></el-input> -->
           </el-form-item>
           <el-form-item label="类型：">
             <!-- <el-input disabled
@@ -258,7 +343,7 @@
             </el-select>
           </el-form-item>
           <el-form-item v-if="roleTemp.type==='Subject'"
-                        label="选择学科">
+                        label="选择学科：">
             <el-select clearable
                        class="filter-item"
                        v-model="roleTemp.subjectId"
@@ -380,7 +465,8 @@
                             label="文印规格及内容：">
               </el-form-item> -->
               <!-- <el-form-item> -->
-              <priceSet ref="priceSetRef" />
+              <priceSet :disabled="isEditOrder"
+                        ref="priceSetRef" />
               <!-- <skuSets ref="sku"
                          @lastLevelChange="lastLevelChange"
                          :schoolId="this.roleTemp.schoolID"
@@ -573,11 +659,6 @@ export default {
       ruleForm: {
         permissions: []
       },
-      typeOptions: [
-        { key: '001', display_name: '类型1' },
-        { key: '002', display_name: '类型2' },
-        { key: '003', display_name: '类型3' }
-      ],
       dialogFormVisible: false,
       dialogPermissionsVisible: false,
       multipleSelection: [],
@@ -619,6 +700,16 @@ export default {
         Common: '公共',
         Subject: '学科'
       }
+    },
+    // 订单是否可编辑
+    isEditOrder() {
+      const statusArr = [
+        'ShengChanZhong',
+        'YiShangJia',
+        'YiLingQu'
+      ]
+      if (statusArr.find(item => item === this.roleTemp.status)) return true
+      return false
     },
     orderSelectStatus() {
       return [
@@ -744,6 +835,25 @@ export default {
           console.log(this.total)
         })
         .catch(err => console.log(err))
+    },
+    classSelectChange(val) {
+      this.getClassList({ gradeId: val })
+    },
+    // table排序
+    tableSortChange(column) {
+      const sortMap = {
+        ascending: 'asc',
+        descending: 'desc'
+      }
+      if (column.order) {
+        this.listQuery.sorts = column.prop
+        this.listQuery.orders = sortMap[column.order]
+      } else {
+        this.listQuery.orders = this.listQuery.sorts = ''
+      }
+
+      this.listQuery.currPage = this.listQuery.start = 1
+      this.getList()
     },
     // 获取年级列表
     getGradeList() {
@@ -972,12 +1082,14 @@ export default {
         id,
         title,
         grade,
+        userName,
         count,
         remark,
         printRoomRemark,
         type,
         subjectId,
-        officeId
+        officeId,
+        createTime
       } = this.roleTemp
       // const priceData = this.priceData
       this.priceData.forEach(item => {
@@ -1006,7 +1118,9 @@ export default {
         orderId: id,
         title,
         count,
+        userName,
         remark,
+        createTime,
         type,
         subjectId: type === 'Subject' ? subjectId : '',
         officeId: type === 'Office' ? officeId : '',

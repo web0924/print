@@ -9,7 +9,7 @@ import { Message } from 'element-ui';
 const user = {
   state: {
     uid: Cookies.get('userId'),
-    token: Cookies.get('userToken'),
+    token: Cookies.get('printToken'),
     userInfo: null
 
   },
@@ -50,7 +50,7 @@ const user = {
             var res = res.body.data;
 
             // 按一天8小时工作制设置过期时间
-            Cookies.set('userToken', res.token, { expires: 1 / 3 }); // 设置token
+            Cookies.set('printToken', res.token, { expires: 1 / 3 }); // 设置token
             Cookies.set('userId', res.uid, { expires: 1 / 3 }); // 设置用户id，
 
             commit('SET_TOKEN', res.token);
@@ -83,7 +83,7 @@ const user = {
           if (res.body.resultCode == 0) {
             var res = res.body.data;
 
-            // Cookies.set('userToken', res.token); //Cookies.get('userId')
+            // Cookies.set('printToken', res.token); //Cookies.get('userId')
             // Cookies.set('userId', res.uid); //Cookies.get('userId')
 
             commit('SET_TOKEN', res.token);
@@ -117,7 +117,7 @@ const user = {
         commit('SET_CODE', code);
         loginByThirdparty(state.status, state.email, state.code, state.auth_type).then(response => {
           commit('SET_TOKEN', response.data.token);
-          Cookies.set('userToken', response.data.token);
+          Cookies.set('printToken', response.data.token);
           resolve();
         }).catch(error => {
           reject(error);
@@ -134,7 +134,7 @@ const user = {
         // logout(state.token).then(() => {
         commit('SET_TOKEN', '');
         // commit('SET_ROLES', []);
-        Cookies.remove('userToken');
+        Cookies.remove('printToken');
         Cookies.remove('userId');
         resolve();
         // }).catch(error => {

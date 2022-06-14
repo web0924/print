@@ -223,21 +223,6 @@
           </el-menu-item>
         </router-link>
       </el-submenu>
-      <el-submenu index="账号管理"
-                  v-if="routes['/teacherManage/teacherManage']">
-        <template slot="title">
-          <img style="width:18px"
-               src="../../assets/img/person_slider_icon.png"> 教职工管理
-        </template>
-
-        <router-link class="menu-indent"
-                     to="/teacherManage/teacherManage"
-                     v-if="routes['/teacherManage/teacherManage']">
-          <el-menu-item index="/teacherManage/teacherManage">
-            教职工列表
-          </el-menu-item>
-        </router-link>
-      </el-submenu>
       <el-submenu index="学科管理"
                   v-if="routes['/subject/subject']">
         <template slot="title">
@@ -250,6 +235,21 @@
                      v-if="routes['/subject/subject']">
           <el-menu-item index="/subject/subject">
             学科列表
+          </el-menu-item>
+        </router-link>
+      </el-submenu>
+      <el-submenu index="账号管理"
+                  v-if="routes['/teacherManage/teacherManage']">
+        <template slot="title">
+          <img style="width:18px"
+               src="../../assets/img/person_slider_icon.png"> 教职工管理
+        </template>
+
+        <router-link class="menu-indent"
+                     to="/teacherManage/teacherManage"
+                     v-if="routes['/teacherManage/teacherManage']">
+          <el-menu-item index="/teacherManage/teacherManage">
+            教职工列表
           </el-menu-item>
         </router-link>
       </el-submenu>

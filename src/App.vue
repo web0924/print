@@ -15,4 +15,7 @@ export default {
 .el-loading-mask {
   background: rgba(0, 0, 0, 0.5);
 }
+span {
+  font-size: 15px;
+}
 </style>

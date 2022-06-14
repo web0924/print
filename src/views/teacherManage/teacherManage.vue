@@ -632,6 +632,7 @@ export default {
     onAddSubmit() {
       const vm = this
       console.log('新增入参：', vm.roleTemp)
+      this.roleTemp.userPwd = md5(md5(this.roleTemp.userPwd))
       axios
         .post(
           '/smartprint/print-room/staff/create-staff',

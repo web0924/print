@@ -171,12 +171,40 @@
                  label-position="left"
                  label-width="70px"
                  style='width: 400px; margin-left:50px;'>
-
           <el-form-item label="学生名称">
             <el-input v-model="roleTemp2.userName"></el-input>
           </el-form-item>
           <el-form-item label="联系电话">
             <el-input v-model="roleTemp2.userPhone"></el-input>
+          </el-form-item>
+          <el-form-item label="选择年级">
+            <el-select clearable
+                       filterable
+                       class="filter-item"
+                       style="width: 200px"
+                       v-model="listQuery.gradeId"
+                       size="small">
+              <el-option v-for="item in gradeList"
+                         :key="item.id"
+                         :label="item.name"
+                         :value="item.id">
+              </el-option>
+            </el-select>
+
+          </el-form-item>
+          <el-form-item label="选择班级">
+            <el-select clearable
+                       filterable
+                       class="filter-item"
+                       style="width: 200px"
+                       v-model="listQuery.classId"
+                       size="small">
+              <el-option v-for="item in classList"
+                         :key="item.id"
+                         :label="item.name"
+                         :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
           <p style="width:200%;height:1px; background: #eee;margin:50px 0"></p>
           <el-form-item label="账号">
@@ -423,7 +451,7 @@ export default {
     // 编辑上传
     onEditSubmit() {
       this.roleTemp2.studentId = this.roleTemp2.id
-      this.roleTemp2.userPwd = md5(md5(this.userPwd))
+      this.roleTemp2.userPwd = md5(md5(this.roleTemp.userPwd))
       axios
         .post(
           '/smartprint/print-room/student/update-student',
@@ -529,6 +557,7 @@ export default {
     onAddSubmit() {
       const vm = this
       console.log('新增入参：', vm.roleTemp)
+      this.roleTemp.userPwd = md5(md5(this.roleTemp.userPwd))
       axios
         .post(
           '/smartprint/print-room/student/create-student',

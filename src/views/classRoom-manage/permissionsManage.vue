@@ -101,7 +101,7 @@
         <el-table-column label="类型"
                          width="">
           <template slot-scope="scope">
-            {{scope.row.type}}
+            {{scope.row.type?typeOptions.filter(item=>item.key==scope.row.type)[0].name:''  }}
           </template>
         </el-table-column>
         <el-table-column align="center"
@@ -246,6 +246,9 @@
 
           <el-form-item label="班级名称">
             <el-input v-model="roleTemp2.name"></el-input>
+          </el-form-item>
+          <el-form-item label="班级人数">
+            <el-input v-model="roleTemp2.studentsCount"></el-input>
           </el-form-item>
           <el-form-item label="所属年级">
             <el-select clearable
