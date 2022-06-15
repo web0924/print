@@ -212,10 +212,11 @@
             <el-button icon="edit"
                        size="small"
                        @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button icon="delete"
+            <el-button v-if="scope.row.status!=='YiCheXiao'"
+                       icon="delete"
                        size="small"
                        type="danger"
-                       @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                       @click="handleDelete(scope.$index, scope.row)">撤销</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -740,6 +741,10 @@ export default {
         {
           name: '已领取',
           value: 'YiLingQu'
+        },
+        {
+          name: '已撤销',
+          value: 'YiCheXiao'
         }
       ]
     },
@@ -1162,21 +1167,22 @@ export default {
         })
         .catch(err => err)
     },
-    // 单个删除
+    // 单个删除（撤销）
     handleDelete(index, { id }) {
       const vm = this
       console.log('单个删除选择的row：', index, '-----', id)
       axios
         .post(
-          '/smartprint/print-room/order/delete-order',
-          qs.stringify({ orderId: id })
+          '/smartprint/print-room/order/update-order',
+          qs.stringify({ orderId: id, status: 'YiCheXiao' })
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          this.$message.success('删除成功')
-          this.getListLen()
-          // 前端删除。
-          vm.list.splice(index, 1)
+          this.$message.success('撤销成功')
+          // this.getListLen()
+          // 前端更新。
+          vm.list[index].status = 'YiCheXiao'
+          // vm.list.splice(index, 1)
         })
         .then(err => err)
     },

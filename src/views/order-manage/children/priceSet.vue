@@ -1,176 +1,114 @@
 <template>
   <div>
-    <div class="price-box">
-      <div class="left">
-        <div class="table-item">
-          <div class="top">
-            <span class="name">胶印-单面（张）</span>
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.jiaoYingDanFenShu"
-                   style="border:none;outline: none;" />
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-          <div class="bot">
-            <span class="name">胶印-单面（版）</span>
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.jiaoYingDanBanShu"
-                   style="border:none;outline: none;">
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-        </div>
-        <div class="table-item mt-20">
-          <div class="top">
-            <span class="name">胶印-答单（张）</span>
-
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.jiaoYingDaDanFenShu"
-                   style="border:none;outline: none;">
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-          <div class="bot">
-            <span class="name">胶印-答单（版）</span>
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.jiaoYingDaDanBanShu"
-                   style="border:none;outline: none;">
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-        </div>
-        <div class="table-item mt-20">
-          <div class="top">
-            <span class="name">复印-B5</span>
-
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.fuYingB5Shu"
-                   style="border:none;outline: none;">
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-          <div class="bot">
-            <span class="name">复印-B4</span>
-
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.fuYingB4Shu"
-                   style="border:none;outline: none;">
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-        </div>
-        <div class="table-item"
-             style="border-top:none">
-          <div class="top">
-            <span class="name">复印-A4</span>
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.fuYingA4Shu"
-                   style="border:none;outline: none;">
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-          <div class="bot">
-            <span class="name">复印-A3</span>
-
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.fuYingA3Shu"
-                   style="border:none;outline: none;">
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-        </div>
-        <div class="table-item mt-20">
-          <div class="top">
-            <span class="name">打印</span>
-
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.daYingShu"
-                   style="border:none;outline: none;">
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-          <div class="bot">
-            <span class="name">打版</span>
-
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.daBanShu"
-                   style="border:none;outline: none;">
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-        </div>
-      </div>
-      <div class="right"
-           style="margin-left:20px">
-        <div class="table-item">
-          <div class="top">
-            <span class="name">胶印-双面（张）</span>
-
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.jiaoYingShuangFenShu"
-                   style="border:none;outline: none;">
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-          <div class="bot">
-            <span class="name">胶印-双面（版）</span>
-
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.jiaoYingShuangBanShu"
-                   style="border:none;outline: none;">
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-        </div>
-        <div class="table-item mt-20">
-          <div class="top">
-            <span class="name">胶印-答双（张）</span>
-
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.jiaoYingDaShuangFenShu"
-                   style="border:none;outline: none;">
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-          <div class="bot">
-            <span class="name">胶印-答双（版）</span>
-            <input :disabled="disabled"
-                   :style="{cursor:disabled? 'not-allowed':''}"
-                   class="value"
-                   type="text"
-                   v-model="params.jiaoYingDaShuangBanShu"
-                   style="border:none;outline: none;">
-            <span style="padding: 0 10px">（份）</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <table class="table-caontainer"
+           border="1px"
+           width="712px">
+      <thead>
+        <tr>
+          <th colspan="9">胶印</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td>单</td>
+          <td>份</td>
+          <td>双</td>
+          <td>份</td>
+          <td>答单</td>
+          <td>份</td>
+          <td>答双</td>
+          <td>份</td>
+        </tr>
+        <tr>
+          <td>数量</td>
+          <td class=" bg-FFF">
+            <el-input v-model="params.jiaoYingDanFenShu"
+                      style="width:100%;border: none;text-align: center;"></el-input>
+          </td>
+          <td class="bg-FFF">
+            <el-input v-model="params.jiaoYingDanBanShu"
+                      style="width:100%"></el-input>
+          </td>
+          <td class="bg-FFF">
+            <el-input v-model="params.jiaoYingShuangFenShu"
+                      style="width:100%"></el-input>
+          </td>
+          <td class="bg-FFF">
+            <el-input v-model="params.jiaoYingShuangBanShu"
+                      style="width:100%"></el-input>
+          </td>
+          <td class="bg-FFF">
+            <el-input v-model="params.jiaoYingDaDanFenShu"
+                      style="width:100%"></el-input>
+          </td>
+          <td class="bg-FFF">
+            <el-input v-model="params.jiaoYingDaDanBanShu"
+                      style="width:100%"></el-input>
+          </td>
+          <td class="bg-FFF">
+            <el-input v-model="params.jiaoYingDaShuangFenShu"
+                      style="width:100%"></el-input>
+          </td>
+          <td class="bg-FFF">
+            <el-input v-model="params.jiaoYingDaShuangBanShu"
+                      style="width:100%"></el-input>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table style="margin-top:50px"
+           class="table-caontainer"
+           cellpadding="10px"
+           border="1px"
+           width="712px">
+      <thead>
+        <tr>
+          <th colspan="1"></th>
+          <th colspan="4">复印</th>
+          <th colspan="1">打印</th>
+          <th colspan="1">打版</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td>B5 </td>
+          <td>A4 </td>
+          <td>B4</td>
+          <td>A3 </td>
+          <td>B5A4 </td>
+          <td>B5A4 </td>
+        </tr>
+        <tr>
+          <td>数量</td>
+          <td>
+            <el-input v-model="params.fuYingB5Shu"
+                      style="width:100%"></el-input>
+          </td>
+          <td>
+            <el-input v-model="params.fuYingB4Shu"
+                      style="width:100%"></el-input>
+          </td>
+          <td>
+            <el-input v-model="params.fuYingA4Shu"
+                      style="width:100%"></el-input>
+          </td>
+          <td>
+            <el-input v-model="params.fuYingA3Shu"
+                      style="width:100%"></el-input>
+          </td>
+          <td>
+            <el-input v-model="params.daYingShu"
+                      style="width:100%"></el-input>
+          </td>
+          <td>
+            <el-input v-model="params.daBanShu"
+                      style="width:100%"></el-input>
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <!-- 其他配置 -->
     <div style="margin-top:60px">
       <div style="color:#333;font-size:20px;font-weight:500;margin-bottom: 20px;">其他配置</div>
@@ -201,12 +139,6 @@
 
 <script>
 export default {
-  props: {
-    disabled: {
-      type: Boolean,
-      default: false
-    }
-  },
   data() {
     return {
       params: {
@@ -242,44 +174,24 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.mt-20 {
-  margin-top: 20px;
-}
-.price-box {
-  display: flex;
-  justify-content: center;
-}
-.table-item {
-  height: 125px;
-  width: 345px;
-  border: 1px solid #cccccc;
-  display: flex;
-  flex-direction: column;
-}
-.table-item .bot {
-  border-top: 1px solid #cccccc;
-}
-.table-item .bot,
-.table-item .top {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-.name,
-.value {
-  flex: 1;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #333;
-}
-.name {
+<style lang="scss" >
+.table-caontainer {
   background: #f5f5f5;
-  border-right: 1px solid #cccccc;
+  border: 1px solid #ccc;
+  text-align: center;
+  line-height: 22px;
+  font-size: 16px;
+  .el-input__inner {
+    border: none !important;
+    text-align: center;
+  }
+  th,
+  td {
+    height: 40px;
+  }
+  td {
+    width: 10%;
+  }
 }
 .extra {
   display: flex;
