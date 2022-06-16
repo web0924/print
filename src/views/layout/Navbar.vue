@@ -14,8 +14,8 @@
                  :logsList="log"></error-log>
       <screenfull class='screenfull'></screenfull>
       <div class="account-caontainer">
-        <span>账号：{{accountInfo.name}}</span>
-        <span>姓名：{{accountInfo.account}}</span>
+        <span>姓名：{{accountInfo.name}}</span>
+        <span style="margin-left:15px">账号：{{accountInfo.account}}</span>
       </div>
       <el-button @click="logout"
                  size="mini"

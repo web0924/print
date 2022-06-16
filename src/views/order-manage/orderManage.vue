@@ -114,7 +114,7 @@
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
 
       <!-- 表格 -->
-      <!--                 @selection-change="handleSelectionChange" -->
+      <!-- @selection-change="handleSelectionChange" -->
       <el-table :data="list"
                 v-loading.body="listLoading"
                 element-loading-text=""
@@ -249,7 +249,7 @@
                  label-width="70px"
                  style='width: 400px; margin-left:50px;'>
 
-          <el-form-item label="订单名称">
+          <el-form-item label="文印内容">
             <el-input v-model="roleTemp.title"></el-input>
           </el-form-item>
           <el-form-item>
@@ -320,10 +320,22 @@
             <el-input v-model="roleTemp.title"></el-input>
           </el-form-item>
           <el-form-item label="下单人：">
-            <el-input v-model="roleTemp.userName"></el-input>
+            <!-- <el-input v-model="roleTemp.userName"></el-input> -->
+            <el-select clearable
+                       filterable
+                       v-model="roleTemp.userId"
+                       @change="staffChange"
+                       class="filter-item">
+              <el-option v-for="item in  staffList"
+                         :key="item.userId"
+                         :label="item.userName+' / '+item.officeName+' / '+item.subjectName "
+                         :value="item.userId">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="下单时间：">
-            <el-date-picker v-model="roleTemp.createTime"
+            <el-date-picker value-format="yyyy-MM-dd HH:mm:ss"
+                            v-model="roleTemp.createTime"
                             type="datetime">
             </el-date-picker>
             <!-- <el-input disabled
@@ -382,7 +394,8 @@
             </el-form-item> -->
             <el-form-item label="选择班级：">
               <div>
-                <el-button @click="dialogPermissionsVisible=true">添加班级</el-button>
+                <!-- dialogPermissionsVisible=true -->
+                <el-button @click="addClassDialogHnadle">添加班级</el-button>
                 <span>当前已添加 {{multipleSelection.length}} 个班级</span>
               </div>
               <div v-show="multipleSelection.length>0"
@@ -552,10 +565,9 @@
     <!-- 选择班级 -->
     <el-dialog title="选择您需要添加的班级"
                :visible.sync="dialogPermissionsVisible">
-      <el-select clearable
+      <!-- <el-select clearable
                  @change="gradeChange"
                  class="filter-item"
-                 placeholder="请选择年级"
                  v-model="claslistQuery.gradeId">
         <el-option v-for="item in gradeList"
                    :key="item.id"
@@ -567,7 +579,8 @@
                  type="primary"
                  @click="handleSearchClass"
                  size="small"
-                 icon="edit">搜索</el-button>
+                 icon="edit">搜索</el-button> -->
+      <span>年级：{{currentStaff.gradeName}}</span>
       <!-- 表格 -->
       <el-table :row-key="getRowKey"
                 style="margin-top:20px"
@@ -591,7 +604,7 @@
         </el-table-column>
       </el-table>
       <!-- 分页 -->
-      <div v-show="!listLoading"
+      <!-- <div v-show="!listLoading"
            class="pagination-container">
         <el-pagination @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"
@@ -600,7 +613,7 @@
                        :page-size="claslistQuery.count"
                        layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
-      </div>
+      </div> -->
 
       <div slot="footer"
            class="dialog-footer">
@@ -684,7 +697,11 @@ export default {
       samples: '', // 小样
       deleteClassIds: [],
       isShowPrice: false,
-      multipleSelectionSouce: []
+      multipleSelectionSouce: [],
+
+      staffList: [],
+      currentStaff: {
+      }
     }
   },
   computed: {
@@ -806,6 +823,7 @@ export default {
     this.getClassList()
     this.getOfficeList()
     this.getSubjectList()
+    this.getStaffList()
   },
   methods: {
     lastLevelChange(boo) {
@@ -841,8 +859,22 @@ export default {
         })
         .catch(err => console.log(err))
     },
+    // 教职工选择事件
+    staffChange(val) {
+      this.currentStaff = this.staffList.filter(item => item.userId === val)[0]
+
+      // if (this.currentStaff.userId !== val) {
+      this.roleTemp.userName = this.currentStaff.userName
+      this.multipleSelection = []
+      // }
+    },
     classSelectChange(val) {
       this.getClassList({ gradeId: val })
+    },
+    addClassDialogHnadle() {
+      // console.log(this.currentStaff)
+      this.getClassList({ gradeId: this.currentStaff.gradeId || '' })
+      this.dialogPermissionsVisible = true
     },
     // table排序
     tableSortChange(column) {
@@ -899,6 +931,20 @@ export default {
         })
         .catch(err => err)
       vm.listLoading = false
+    },
+    // 获取教师列表
+    getStaffList() {
+      axios
+        .post('/smartprint/print-room/staff/get-staffs')
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          this.staffList = res.data.data.staffs || []
+          if (this.staffList) {
+            this.currentStaff = this.staffList.filter(item => item.userId == this.roleTemp.userId)[0] || {}
+            // console.log(this.currentStaff)
+          }
+        })
+        .catch(err => err)
     },
     // 获取学科列表
     getSubjectList() {
@@ -1045,6 +1091,7 @@ export default {
               })
             }
             this.$refs.priceSetRef.params = this.roleTemp
+
             // this.getSets()
             // this.getPrices()
           })
@@ -1081,12 +1128,13 @@ export default {
     deleteFile(index) {
       this.roleTemp.attachmentFiles.splice(index, 1)
     },
+
     // 编辑上传
     submitHandle() {
       const {
         id,
         title,
-        grade,
+        userId,
         userName,
         count,
         remark,
@@ -1123,6 +1171,7 @@ export default {
         orderId: id,
         title,
         count,
+        userId,
         userName,
         remark,
         createTime,

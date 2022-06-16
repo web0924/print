@@ -173,7 +173,7 @@
         <el-form class="small-space"
                  :model="roleTemp"
                  label-position="left"
-                 label-width="70px"
+                 label-width="120px"
                  style='width: 400px; margin-left:50px;'>
 
           <el-form-item label="教职工名称">
@@ -181,6 +181,17 @@
           </el-form-item>
           <el-form-item label="联系电话">
             <el-input v-model="roleTemp.userPhone"></el-input>
+          </el-form-item>
+          <el-form-item label="所属年级">
+            <el-select clearable
+                       class="filter-item"
+                       v-model="roleTemp.gradeId">
+              <el-option v-for="item in  gradeList"
+                         :key="item.id"
+                         :label="item.name"
+                         :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="所属学科">
             <el-select clearable
@@ -240,7 +251,7 @@
         <el-form class="small-space"
                  :model="roleTemp2"
                  label-position="left"
-                 label-width="70px"
+                 label-width="120px"
                  style='width: 400px; margin-left:50px;'>
 
           <el-form-item label="教职工名称">
@@ -248,6 +259,17 @@
           </el-form-item>
           <el-form-item label="联系电话">
             <el-input v-model="roleTemp2.userPhone"></el-input>
+          </el-form-item>
+          <el-form-item label="所属年级">
+            <el-select clearable
+                       class="filter-item"
+                       v-model="roleTemp2.gradeId">
+              <el-option v-for="item in  gradeList"
+                         :key="item.id"
+                         :label="item.name"
+                         :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="所属学科">
             <el-select clearable
@@ -276,7 +298,8 @@
             <el-input v-model="roleTemp2.userAccount"></el-input>
           </el-form-item>
           <el-form-item label="密码">
-            <el-input v-model="userPwd"
+            <el-input type="password"
+                      v-model="userPwd"
                       :placeholder="roleTemp2.userPwd"></el-input>
           </el-form-item>
           <!-- <el-form-item label="教职工层次">
@@ -527,7 +550,7 @@ export default {
     // 编辑上传
     onEditSubmit() {
       this.roleTemp2.staffId = this.roleTemp2.id
-      this.roleTemp2.userPwd = md5(md5(this.userPwd))
+      this.roleTemp2.userPwd = this.userPwd ? md5(md5(this.userPwd)) : ''
       axios
         .post(
           '/smartprint/print-room/staff/update-staff',
@@ -536,6 +559,7 @@ export default {
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('修改成功')
+          this.editView()
         })
         .catch(err => err)
     },

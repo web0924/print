@@ -151,6 +151,9 @@
           <el-form-item label="班级名称">
             <el-input v-model="roleTemp.name"></el-input>
           </el-form-item>
+          <el-form-item label="班级人数">
+            <el-input v-model="roleTemp.studentsCount"></el-input>
+          </el-form-item>
           <el-form-item label="所属年级">
             <el-select clearable
                        class="filter-item"
@@ -251,7 +254,8 @@
             <el-input v-model="roleTemp2.studentsCount"></el-input>
           </el-form-item>
           <el-form-item label="所属年级">
-            <el-select clearable
+            <el-select disabled
+                       clearable
                        class="filter-item"
                        v-model="roleTemp2.gradeId">
               <el-option v-for="item in  gradeList"

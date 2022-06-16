@@ -211,7 +211,8 @@
             <el-input v-model="roleTemp2.userAccount"></el-input>
           </el-form-item>
           <el-form-item label="密码">
-            <el-input :placeholder="roleTemp2.userPwd"
+            <el-input type="password"
+                      :placeholder="roleTemp2.userPwd"
                       v-model="userPwd"></el-input>
           </el-form-item>
           <el-form-item>
@@ -451,7 +452,7 @@ export default {
     // 编辑上传
     onEditSubmit() {
       this.roleTemp2.studentId = this.roleTemp2.id
-      this.roleTemp2.userPwd = md5(md5(this.roleTemp.userPwd))
+      this.roleTemp2.userPwd = this.userPwd ? md5(md5(this.userPwd)) : ''
       axios
         .post(
           '/smartprint/print-room/student/update-student',
@@ -460,6 +461,7 @@ export default {
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('修改成功')
+          this.editView()
         })
         .catch(err => err)
     },
