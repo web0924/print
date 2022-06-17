@@ -97,6 +97,20 @@
                          :value="item.value">
               </el-option>
             </el-select>
+            <el-date-picker value-format="yyyy-MM-dd:00:00:00"
+                            class="filter-item"
+                            v-model="listQuery.startTime"
+                            type="date"
+                            size="small"
+                            placeholder="开始日期">
+            </el-date-picker>
+            <el-date-picker value-format="yyyy-MM-dd:23:59:59"
+                            class="filter-item"
+                            v-model="listQuery.endTime"
+                            type="date"
+                            size="small"
+                            placeholder="结束日期">
+            </el-date-picker>
             <el-button style="margin-left:50px"
                        class="filter-item"
                        type="primary"
@@ -111,8 +125,10 @@
 
         </div>
       </div>
-      <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
-
+      <p style="min-height:80px;width:100%;background:#F5F5F5;margin:0">
+        <el-button @click="exportAll"
+                   style="margin-top:20px; background:#09BB07;color:#FFF">全部导出</el-button>
+      </p>
       <!-- 表格 -->
       <!-- @selection-change="handleSelectionChange" -->
       <el-table :data="list"
@@ -206,17 +222,26 @@
           </template>
         </el-table-column> -->
 
-        <el-table-column align="center"
-                         label="操作">
+        <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button icon="edit"
                        size="small"
                        @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button v-if="scope.row.status!=='YiCheXiao'"
+            <template>
+              <el-popconfirm @confirm="handleDelete(scope.$index, scope.row)"
+                             title="确定撤销吗？">
+                <el-button v-if="scope.row.status!=='YiCheXiao'"
+                           slot="reference"
+                           icon="delete"
+                           size="small"
+                           type="danger">撤销</el-button>
+              </el-popconfirm>
+            </template>
+            <!-- <el-button v-if="scope.row.status!=='YiCheXiao'"
                        icon="delete"
                        size="small"
                        type="danger"
-                       @click="handleDelete(scope.$index, scope.row)">撤销</el-button>
+                       @click="handleDelete(scope.$index, scope.row)">撤销</el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -369,8 +394,10 @@
             </el-select>
           </el-form-item>
           <div v-if="roleTemp.type!=='Office'">
-            <!-- <el-form-item label="年级：">
-              <el-select clearable
+            <el-form-item label="年级：">
+              <el-input disabled
+                        :value="currentStaff.gradeName"></el-input>
+              <!-- <el-select clearable
                          @change="gradeChange"
                          class="filter-item"
                          v-model="roleTemp.grade">
@@ -379,8 +406,8 @@
                            :label="item.name"
                            :value="item.id">
                 </el-option>
-              </el-select>
-            </el-form-item> -->
+              </el-select> -->
+            </el-form-item>
             <!-- <el-form-item label="班级：">
               <el-select clearable
                          class="filter-item"
@@ -794,6 +821,10 @@ export default {
         YiLingQu: {
           name: '已领取',
           color: '#333333'
+        },
+        YiCheXiao: {
+          name: '已撤销',
+          color: '#333333'
         }
       }
     }
@@ -867,6 +898,19 @@ export default {
       this.roleTemp.userName = this.currentStaff.userName
       this.multipleSelection = []
       // }
+    },
+    // 导出
+    exportAll() {
+      axios
+        .post(
+          '/smartprint/print-room/order/export-bill',
+          qs.stringify({ startTime: this.listQuery.startTime, endTime: this.listQuery.endTime })
+        )
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          window.open('https://dev.renx.cc/' + res.data.data.url)
+        })
+        .catch(err => err)
     },
     classSelectChange(val) {
       this.getClassList({ gradeId: val })
@@ -1198,7 +1242,7 @@ export default {
         otherSetUnitPrice,
         samples: this.samples + ',' + this.fileList.join(','),
         printSetType: this.tabsIndex == 1 ? 'System' : 'School',
-        printSetPrices: this.priceData,
+        // printSetPrices: this.priceData,
         attachments:
           this.roleTemp.attachmentFiles &&
           this.roleTemp.attachmentFiles.map(item => item.url).join(','),
@@ -1217,13 +1261,15 @@ export default {
         .catch(err => err)
     },
     // 单个删除（撤销）
-    handleDelete(index, { id }) {
+    handleDelete(index, row) {
       const vm = this
-      console.log('单个删除选择的row：', index, '-----', id)
+      const params = row
+      params.orderId = row.id
+      params.status = 'YiCheXiao'
       axios
         .post(
           '/smartprint/print-room/order/update-order',
-          qs.stringify({ orderId: id, status: 'YiCheXiao' })
+          qs.stringify(params)
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)

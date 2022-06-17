@@ -137,10 +137,15 @@
             <el-button icon="edit"
                        size="small"
                        @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button icon="delete"
-                       size="small"
-                       type="danger"
-                       @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <template>
+              <el-popconfirm @confirm="handleDelete(scope.$index, scope.row)"
+                             title="确定删除吗？">
+                <el-button slot="reference"
+                           icon="delete"
+                           size="small"
+                           type="danger">删除</el-button>
+              </el-popconfirm>
+            </template>
 
           </template>
 
