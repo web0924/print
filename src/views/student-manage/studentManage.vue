@@ -185,6 +185,7 @@
           <el-form-item label="选择年级">
             <el-select clearable
                        filterable
+                       @change="gradeChange"
                        class="filter-item"
                        style="width: 200px"
                        v-model="listQuery.gradeId"
@@ -309,7 +310,7 @@ export default {
     this.setViewByQuery()
     this.editView()
     this.getgradeList()
-    this.getclassList()
+    // this.getclassList()
     this.getsubjectList()
     this.getofficeList()
   },
@@ -326,10 +327,10 @@ export default {
         .catch(err => err)
     },
     // 获取班级数据
-    getclassList() {
+    getclassList(params = {}) {
       const vm = this
       axios
-        .post('/smartprint/print-room/class/get-classes')
+        .post('/smartprint/print-room/class/get-classes', qs.stringify(params))
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           vm.classList = res.data.data.classes
@@ -441,6 +442,13 @@ export default {
             this.roleTemp2 = res.data.data.student
           })
           .catch(err => console.log(err))
+      }
+    },
+    gradeChange(val) {
+      if (val) {
+        this.getclassList({ gradeId: val })
+      } else {
+        this.classList = []
       }
     },
     // 编辑

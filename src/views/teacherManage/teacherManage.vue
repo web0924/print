@@ -129,11 +129,13 @@
                          label="操作">
           <template slot-scope="scope">
             <!-- <el-button icon="edit"
-                     size="small"
-                     @click="setPermissions(scope.$index, scope.row)">设置权限</el-button>
-          <el-button icon="edit"
-                     size="small"
-                     @click="setUser(scope.$index, scope.row)">设置成员</el-button> -->
+                       size="small"
+                       @click="setPermissions(scope.$index, scope.row)">设置权限</el-button> -->
+            <el-button icon="edit"
+                       size="small"
+                       type="success"
+                       plain
+                       @click="createICCard(scope.$index, scope.row)">制作IC卡</el-button>
             <el-button icon="edit"
                        size="small"
                        @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -322,31 +324,21 @@
     </div>
 
     <!-- 设置权限 -->
-    <el-dialog title="设置权限"
+    <el-dialog title="制卡"
                :visible.sync="dialogPermissionsVisible">
-      <el-form class="small-space"
-               :model="roleTemp"
-               label-position="left"
-               label-width="70px"
-               style='width: 100%; '>
-
-        <!-- <el-checkbox-group v-model="smMenuBeanDtoList"> -->
-        <el-checkbox v-for="item in smMenuBeanDtoList"
-                     :key="item"
-                     label="item.url"
-                     name="type"
-                     style="margin:0 15px 15px 0;"
-                     v-model="item.set">{{ item.menuName }}</el-checkbox>
-
-        <!-- </el-checkbox-group> -->
-
-      </el-form>
+      <el-steps :active="active"
+                finish-status="success">
+        <el-step title="连接设备"></el-step>
+        <el-step title="读取卡片"></el-step>
+        <el-step title="写入完成"></el-step>
+      </el-steps>
+      <el-button style="margin-top: 12px;"
+                 @click="next">下一步</el-button>
       <div slot="footer"
            class="dialog-footer">
         <el-button @click="dialogPermissionsVisible = false">取 消</el-button>
 
-        <el-button type="primary"
-                   @click="setPermissionsSubmit">确 定</el-button>
+        <el-button type="primary">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -361,9 +353,31 @@ import md5 from 'blueimp-md5';
 
 import store from '@/store'
 
+const GFUNC = {
+  M1_findCard: 1,
+  M1_authentication: 2,
+  M1_read: 3,
+  M1_write: 4,
+  M1_initVal: 5,
+  M1_increment: 6,
+  M1_decrement: 7,
+  M1_readVal: 8,
+  M1_updateKey: 9
+};
+
+const g_device = '00'; // 设备句柄号
+const g_isOpen = false;
+let g_blockAddr;
+let g_blockData;
+let g_key;
+let g_keyType;
+let g_vale;
+const g_wantFunc = 0;
+
 export default {
   data() {
     return {
+      active: 0,
       userPwd: '',
       // list: null,
       listLoading: false,
@@ -616,47 +630,6 @@ export default {
         query: { extra: 'add' }
       }) // 带参跳转
     },
-    // 设置权限
-    setPermissions(index, item) {
-      const vm = this
-      global.get(
-        api.getMenuAndElement,
-        { params: { roleId: item.smRoleBeanDto.id } },
-        res => {
-          console.log('-------获取到数据：', JSON.stringify(res))
-          const data = res.body
-          if (data.resultCode == 0) {
-            vm.smMenuBeanDtoList = data.data.smMenuBeanDtoList
-            console.log('列表数据：', vm.smMenuBeanDtoList)
-          } else {
-            // alert(res.body.resultMsg)
-            Message({
-              showClose: true,
-              message: res.body.resultMsg,
-              type: 'error'
-            })
-          }
-
-          vm.dialogPermissionsVisible = true
-        },
-        res => {
-          vm.dialogPermissionsVisible = true
-        },
-        true
-      )
-    },
-    // 设置权限提交
-    setPermissionsSubmit() {
-      const vm = this
-
-      console.log(JSON.stringify(vm.smMenuBeanDtoList))
-
-      vm.$message({
-        showClose: true,
-        message: '动态修改权限成功！实际开发请把参数提交给后端接口！',
-        type: 'success'
-      })
-    },
     // 新增提交
     onAddSubmit() {
       const vm = this
@@ -690,27 +663,6 @@ export default {
       this.multipleSelection = val
     },
 
-    handleDownload() {
-      const vm = this
-
-      require.ensure([], () => {
-        const { export_json_to_excel } = require('vendor/Export2Excel')
-        const tHeader = ['字段1', '字段2', '字段3', '字段4', '字段5']
-        const filterVal = [
-          'chnlId',
-          'hisChnlId',
-          'chnlName',
-          'state',
-          'isavailable'
-        ]
-        const list = vm.list
-        const data = vm.formatJson(filterVal, list)
-        export_json_to_excel(tHeader, data, '导出的列表excel')
-      })
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]))
-    },
     handleSearch() {
       this.getList()
       this.getListLen()
@@ -723,6 +675,40 @@ export default {
         kw: ''
       }
       this.handleSearch()
+    },
+    createICCard(index, { userId }) {
+      console.log(userId)
+      console.log(this.$Reader)
+      this.dialogPermissionsVisible = true
+    },
+    next() {
+      if (this.active == 0) {
+        this.$Reader.send(g_device + '0007' + '00'); // Open the USB device with index number 0. (打开索引号为0的USB设备)
+        this.$Reader.send(g_device + '0109' + '41'); // Set to ISO14443a working mode. (设置为ISO14443A工作模式)
+        this.$Reader.send(g_device + '0108' + '01'); // Turn on the reader antenna. (打开读卡器天线)
+        this.LedGreen();
+        setTimeout(LedRed(), 200);
+        this.this.$Reader.send(g_device + '0106' + '10'); // Beeps. (蜂鸣提示)
+      }
+      if (this.active == 1) {
+
+      }
+      if (this.active++ > 2) this.active = 0;
+    },
+    /**
+ * Turn on the green light
+ * (亮绿灯)
+**/
+    LedGreen() {
+      this.$Reader.send(g_device + '0107' + '02');
+    },
+
+    /**
+     * Turn on the red light
+     * (亮红灯)
+    **/
+    LedRed() {
+      this.$Reader.send(g_device + '0107' + '01');
     }
   }
 }

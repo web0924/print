@@ -386,8 +386,8 @@
       <!-- 分页 -->
       <div v-show="!listLoading"
            class="pagination-container">
-        <el-pagination @size-change="handleSizeChange"
-                       @current-change="handleCurrentChange"
+        <el-pagination @size-change="handleStudentSizeChange"
+                       @current-change="handleStudentCurrentChange"
                        :current-page.sync="studentlistQuery.currPage"
                        :page-sizes="[5,10,20,30, 50]"
                        :page-size="studentlistQuery.count"
@@ -441,8 +441,8 @@
       <!-- 分页 -->
       <div v-show="!listLoading"
            class="pagination-container">
-        <el-pagination @size-change="handleSizeChange"
-                       @current-change="handleCurrentChange"
+        <el-pagination @size-change="handleSubjectSizeChange"
+                       @current-change="handleSubjectCurrentChange"
                        :current-page.sync="studentlistQuery.currPage"
                        :page-sizes="[5,10,20,30, 50]"
                        :page-size="studentlistQuery.count"
@@ -738,13 +738,30 @@ export default {
 
       this.getList()
     },
+    // 学生分页
+    handleStudentSizeChange(val) {
+      this.studentlistQuery.count = val
+    },
+    // 学科分页
+    handleSubjectSizeChange(val) {
+      this.subjectlistQuery.count = val
+    },
     // 操作分页
     handleCurrentChange(val) {
-      console.log('--------', val)
       this.listQuery.currPage = val
       this.listQuery.start = this.listQuery.count * (val - 1) + 1
 
       this.getList()
+    },
+    handleSubjectCurrentChange(val) {
+      this.subjectlistQuery.currPage = val
+      this.subjectlistQuery.start = this.subjectlistQuery.count * (val - 1) + 1
+      this.getSubjectList(this.subjectlistQuery)
+    },
+    handleStudentCurrentChange(val) {
+      this.studentlistQuery.currPage = val
+      this.studentlistQuery.start = this.studentlistQuery.count * (val - 1) + 1
+      this.getStudentList(this.studentlistQuery)
     },
     // 新增
     handleCreate() {

@@ -97,14 +97,14 @@
                          :value="item.value">
               </el-option>
             </el-select>
-            <el-date-picker value-format="yyyy-MM-dd:00:00:00"
+            <el-date-picker value-format="yyyy-MM-dd 00:00:00"
                             class="filter-item"
                             v-model="listQuery.startTime"
                             type="date"
                             size="small"
                             placeholder="开始日期">
             </el-date-picker>
-            <el-date-picker value-format="yyyy-MM-dd:23:59:59"
+            <el-date-picker value-format="yyyy-MM-dd 23:59:59"
                             class="filter-item"
                             v-model="listQuery.endTime"
                             type="date"
@@ -248,7 +248,7 @@
       <!-- 分页 -->
       <div v-show="!listLoading"
            class="pagination-container">
-        <el-pagination @size-change="handleSizeChangeClass"
+        <el-pagination @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"
                        :current-page.sync="listQuery.currPage"
                        :page-sizes="[5,10,20,30, 50]"
@@ -357,6 +357,12 @@
                          :value="item.userId">
               </el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="下单人签名：">
+            <viewer :trigger="roleTemp.yongHuQueRenQianZi">
+              <img style="width:100px;height:100px;"
+                   :src="roleTemp.yongHuQueRenQianZi">
+            </viewer>
           </el-form-item>
           <el-form-item label="下单时间：">
             <el-date-picker value-format="yyyy-MM-dd HH:mm:ss"
@@ -631,16 +637,15 @@
         </el-table-column>
       </el-table>
       <!-- 分页 -->
-      <!-- <div v-show="!listLoading"
-           class="pagination-container">
-        <el-pagination @size-change="handleSizeChange"
-                       @current-change="handleCurrentChange"
+      <div class="pagination-container">
+        <el-pagination @size-change="handleClassSizeChange"
+                       @current-change="handleClassCurrentChange"
                        :current-page.sync="claslistQuery.currPage"
                        :page-sizes="[5,10,20,30, 50]"
                        :page-size="claslistQuery.count"
                        layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
-      </div> -->
+      </div>
 
       <div slot="footer"
            class="dialog-footer">
@@ -678,6 +683,11 @@ export default {
       smMenuBeanDtoList: null, // 菜单
       total: null,
       // listLoading: true,
+      classListQuery: {
+        currPage: 1,
+        count: 10,
+        start: 1
+      },
       listQuery: {
         currPage: 1,
         count: 10,
@@ -751,7 +761,8 @@ export default {
       const statusArr = [
         'ShengChanZhong',
         'YiShangJia',
-        'YiLingQu'
+        'YiLingQu',
+        'YiCheXiao'
       ]
       if (statusArr.find(item => item === this.roleTemp.status)) return true
       return false
@@ -901,10 +912,13 @@ export default {
     },
     // 导出
     exportAll() {
+      if (!this.listQuery.gradeId) return this.$message.warning('请选择年级')
+      if (!this.listQuery.startTime) return this.$message.warning('请选择开始时间')
+      if (!this.listQuery.endTime) return this.$message.warning('请选择结束时间')
       axios
         .post(
           '/smartprint/print-room/order/export-bill',
-          qs.stringify({ startTime: this.listQuery.startTime, endTime: this.listQuery.endTime })
+          qs.stringify(this.listQuery)
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
@@ -947,8 +961,9 @@ export default {
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          const arr = [{ name: '全部班级', id: '' }]
-          vm.gradeList = [...arr, ...res.data.data.grades]
+          // const arr = [{ name: '全部班级', id: '' }]
+          // vm.gradeList = [...arr, ...res.data.data.grades]
+          vm.gradeList = res.data.data.grades
         })
         .catch(err => err)
       vm.listLoading = false
@@ -1291,11 +1306,10 @@ export default {
 
       this.getList()
     },
-    // 班级操作分页
-    handleSizeChangeClass(val) {
-      this.claslistQuery.count = val
-
-      this.getList()
+    // 班级分页
+    handleClassSizeChange(val) {
+      this.classListQuery.count = val
+      this.getClassList(this.classListQuery)
     },
     // 操作分页
     handleCurrentChange(val) {
@@ -1304,6 +1318,13 @@ export default {
       this.listQuery.start = this.listQuery.count * (val - 1) + 1
 
       this.getList()
+    },
+    // 班级分页
+    handleClassCurrentChange(val) {
+      this.classListQuery.currPage = val
+      this.classListQuery.start = this.classListQuery.count * (val - 1) + 1
+
+      this.getClassList(this.classListQuery)
     },
     // 新增
     handleCreate() {

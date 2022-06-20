@@ -23,6 +23,21 @@ import errLog from 'store/errLog';// error log组件
 import { global } from 'src/global/global';
 import Cookies from 'js-cookie';
 
+import reader from './assets/js/rdapi'
+Vue.prototype.$Reader = reader
+
+
+import Viewer from 'v-viewer'
+import 'viewerjs/dist/viewer.css'
+
+Vue.use(Viewer)
+Viewer.setDefaults({
+  // 需要配置的属性 注意属性并没有引号
+  title: false,
+  toolbar: false
+})
+
+
 
 // register globally
 // Vue.component('multiselect', Multiselect);
