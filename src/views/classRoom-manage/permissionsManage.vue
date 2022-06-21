@@ -52,11 +52,17 @@
                      size="small"
                      icon="edit">重置</el-button>
           <el-button class="filter-item"
-                     style="position:absolute;right:40px;background:#000"
+                     style="position:absolute;right:200px;background:#000"
                      type="primary"
                      @click="handleCreate"
                      size="small"
                      icon="edit">添加班级</el-button>
+          <el-button class="filter-item"
+                     style="position:absolute;right:40px;background:#000"
+                     type="primary"
+                     @click="handleCreateGroup"
+                     size="small"
+                     icon="edit">批量添加班级</el-button>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
@@ -181,57 +187,62 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <!-- <el-form-item label="添加学生">
-            <div style="cursor:auto">
-              <el-button @click="dialogAddStudentVisible=true">选择学生</el-button>
-              <span>当前已添加 {{multipleSelectionByAdd.length}} 个学生</span>
-            </div>
-            <div v-show="multipleSelectionByAdd.length>0"
-                 class="class-table-box">
-              <div class="class-table-th">
-                <span>学生姓名</span>
-                <span>账号</span>
-                <span>手机号</span>
-                <span>操作</span>
-              </div>
-              <div class="class-table-td"
-                   v-for="(item,index) in multipleSelectionByAdd"
-                   :key="item.id">
-                <span>{{item.userName}}</span>
-                <span>{{item.userAccount}}</span>
-                <span>{{item.userPhone}}</span>
-                <el-button @click="deleteStudent(index)"
-                           type="text">移除</el-button>
-              </div>
-            </div>
-          </el-form-item> -->
-          <!-- <el-form-item label="添加学科">
-            <div style="cursor:auto">
-              <el-button @click="dialogAddSubjectVisible=true">选择学科</el-button>
-              <span>当前已添加 {{multipleSelectionBySubject.length}} 个学科</span>
-            </div>
-            <div v-show="multipleSelectionBySubject.length>0"
-                 class="class-table-box">
-              <div class="class-table-th">
-                <span>学科名称</span>
-                <span>学科类型</span>
-                <span>操作</span>
-              </div>
-              <div class="class-table-td"
-                   v-for="(item,index) in multipleSelectionBySubject"
-                   :key="item.id">
-                <span>{{item.name}}</span>
-                <span>{{item.type}}</span>
-                <el-button @click="deleteSubject(index)"
-                           type="text">移除</el-button>
-              </div>
-            </div>
-          </el-form-item> -->
           <el-form-item>
             <el-button type="primary"
                        @click="onAddSubmit">上传</el-button>
           </el-form-item>
 
+        </el-form>
+      </div>
+    </div>
+    <div v-show="viewType==='groupAdd'">
+      <div style="padding-left:20px">
+        <div style="height:60px;display:flex;align-items:center">
+          <el-breadcrumb separator-class="el-icon-arrow-right">
+            <el-breadcrumb-item :to="{ path: '/classRoomManage/permissionsManage' }">班级列表</el-breadcrumb-item>
+            <el-breadcrumb-item>批量添加班级</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
+      </div>
+      <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
+      <div style="padding:50px">
+        <el-form class="small-space"
+                 :model="roleTemp"
+                 label-position="left"
+                 label-width="70px"
+                 style='width: 400px; margin-left:50px;'>
+          <el-form-item label="所属年级">
+            <el-select clearable
+                       class="filter-item"
+                       v-model="roleTemp3.gradeId">
+              <el-option v-for="item in  gradeList"
+                         :key="item.id"
+                         :label="item.name"
+                         :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="班级类型">
+            <el-select clearable
+                       class="filter-item"
+                       v-model="roleTemp3.type">
+              <el-option v-for="item in  typeOptions"
+                         :key="item.key"
+                         :label="item.name"
+                         :value="item.key">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="起始序号">
+            <el-input v-model="roleTemp3.start"></el-input>
+          </el-form-item>
+          <el-form-item label="数量">
+            <el-input v-model="roleTemp3.count"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary"
+                       @click="onAddGroupSubmit">上传</el-button>
+          </el-form-item>
         </el-form>
       </div>
     </div>
@@ -487,11 +498,11 @@ export default {
       },
       roleTemp: {
         name: ''
-        // remark: ''
       },
       roleTemp2: {
         name: ''
       },
+      roleTemp3: {},
       ruleForm: {
         permissions: []
       },
@@ -503,7 +514,7 @@ export default {
       dialogPermissionsVisible: false,
       multipleSelection: [],
 
-      viewType: 0, // 0 | add | edit
+      viewType: 0, // 0 | add | edit | groupAdd
       gradeList: [],
       studentList: [],
       subjectList: [],
@@ -765,10 +776,16 @@ export default {
     },
     // 新增
     handleCreate() {
-      // this.dialogFormVisible = true;
       this.$router.push({
         path: '/classRoomManage/permissionsManage',
         query: { extra: 'add' }
+      }) // 带参跳转
+    },
+    // 批量新增
+    handleCreateGroup() {
+      this.$router.push({
+        path: '/classRoomManage/permissionsManage',
+        query: { extra: 'groupAdd' }
       }) // 带参跳转
     },
     handleSearchStudent() {
@@ -828,10 +845,26 @@ export default {
         )
         .then(res => {
           console.log(res.data.code)
-          if (res.data.code !== 0) return vm.$message.error(res.data.msg)
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('新增成功')
           for (const key in this.roleTemp) {
             this.roleTemp[key] = ''
+          }
+        })
+        .catch(err => console.log(err))
+    },
+    // 新增批量提交
+    onAddGroupSubmit() {
+      axios
+        .post(
+          '/smartprint/print-room/class/create-classes',
+          qs.stringify(this.roleTemp3)
+        )
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          this.$message.success('批量新增成功')
+          for (const key in this.roleTemp3) {
+            this.roleTemp3[key] = ''
           }
         })
         .catch(err => console.log(err))

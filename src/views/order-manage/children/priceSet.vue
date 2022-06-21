@@ -176,6 +176,7 @@ export default {
 
 <style lang="scss" >
 .table-caontainer {
+  max-width: 700px;
   background: #f5f5f5;
   border: 1px solid #ccc;
   text-align: center;

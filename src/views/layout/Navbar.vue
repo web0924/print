@@ -139,6 +139,7 @@ import { global } from 'src/global/global'
 import Cookies from 'js-cookie'
 import md5 from 'blueimp-md5'
 import axios from 'axios'
+import qs from 'qs'
 export default {
   components: {
     TabsView,
@@ -162,6 +163,7 @@ export default {
       }
     }
     return {
+      timer: null,
       accountInfo: {},
       log: errLogStore.state.errLog,
       dialogVisible: false,
@@ -193,6 +195,7 @@ export default {
     ...mapGetters(['sidebar', 'userInfo'])
   },
   mounted() {
+    this.polling()// 消息推送
     const vm = this
     try {
       axios
@@ -241,6 +244,45 @@ export default {
       this.$store.dispatch('LogOut').then(() => {
         location.reload() // 为了重新实例化vue-router对象 避免bug
       })
+    },
+    // 轮训
+    polling() {
+      axios.post('/smartprint/me/get-messages', qs.stringify({ getted: 1, sorts: 'id', orders: 'asc' }))
+        .then(res => {
+          this.timer = setTimeout(() => {
+            clearTimeout(this.timer)
+            const messages = res.data.data.messages
+            if (messages) {
+              this.creatNotify(messages)
+            }
+            this.polling()
+          }, 20000)
+        })
+    },
+    creatNotify(messages) {
+      messages = messages.filter(item => item.viewed !== 1)
+      let notifyPromise = Promise.resolve()
+      for (let i = 0; i < messages.length; i++) {
+        notifyPromise = notifyPromise.then(() => {
+          this.$notify({
+            title: '通知',
+            dangerouslyUseHTMLString: true,
+            duration: 0,
+            onClick: () => {
+              axios.post('/smartprint/me/view-message', qs.stringify({ messageId: messages[i].id })).then(res => {
+                this.$router.push({
+                  path: '/orderManage/orderManage',
+                  query: { extra: 'edit', id: messages[i].linkId }
+                })
+              })
+            },
+            message: `<a style="color:#409EFF">这是 <i>${messages[i].content}</i></a>`
+          });
+        })
+      }
+    },
+    linkToOrder() {
+      console.log(1)
     }
   }
 }

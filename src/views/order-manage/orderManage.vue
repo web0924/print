@@ -295,13 +295,13 @@
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
-      <div style="padding:50px">
+      <div style="padding:50px;display: flex;">
         <el-form :disabled="isEditOrder"
                  class="small-space"
                  :model="roleTemp"
                  label-position="left"
                  label-width="120px"
-                 style='width: 620px; margin-left:50px;'>
+                 style='width: 50%;'>
           <el-form class="small-space"
                    :model="roleTemp"
                    label-position="left"
@@ -337,12 +337,13 @@
                          v-show="roleTemp.status=='YiShangJia'"
                          type="primary"
                          plain
-                         @click="ensureOrderHnadle('YiLingQu')"
+                         @click="validIC"
                          size="small">确认领取</el-button>
             </el-form-item>
           </el-form>
           <el-form-item label="文印内容：">
-            <el-input v-model="roleTemp.title"></el-input>
+            <el-input class="form-item-width"
+                      v-model="roleTemp.title"></el-input>
           </el-form-item>
           <el-form-item label="下单人：">
             <!-- <el-input v-model="roleTemp.userName"></el-input> -->
@@ -350,7 +351,7 @@
                        filterable
                        v-model="roleTemp.userId"
                        @change="staffChange"
-                       class="filter-item">
+                       class="filter-item form-item-width">
               <el-option v-for="item in  staffList"
                          :key="item.userId"
                          :label="item.userName+' / '+item.officeName+' / '+item.subjectName "
@@ -365,7 +366,8 @@
             </viewer>
           </el-form-item>
           <el-form-item label="下单时间：">
-            <el-date-picker value-format="yyyy-MM-dd HH:mm:ss"
+            <el-date-picker class="form-item-width"
+                            value-format="yyyy-MM-dd HH:mm:ss"
                             v-model="roleTemp.createTime"
                             type="datetime">
             </el-date-picker>
@@ -376,7 +378,7 @@
             <!-- <el-input disabled
                       :value="typeOption[roleTemp.type]"></el-input> -->
             <el-select clearable
-                       class="filter-item"
+                       class="filter-item form-item-width"
                        v-model="roleTemp.type"
                        placeholder="类型：">
               <el-option v-for="item in  typeSelectOpt"
@@ -389,7 +391,7 @@
           <el-form-item v-if="roleTemp.type==='Subject'"
                         label="选择学科：">
             <el-select clearable
-                       class="filter-item"
+                       class="filter-item form-item-width"
                        v-model="roleTemp.subjectId"
                        placeholder="学科：">
               <el-option v-for="item in  subjectList"
@@ -401,7 +403,8 @@
           </el-form-item>
           <div v-if="roleTemp.type!=='Office'">
             <el-form-item label="年级：">
-              <el-input disabled
+              <el-input class="form-item-width"
+                        disabled
                         :value="currentStaff.gradeName"></el-input>
               <!-- <el-select clearable
                          @change="gradeChange"
@@ -452,7 +455,7 @@
               <!-- <el-input disabled
                         v-model="roleTemp.officeName"></el-input> -->
               <el-select clearable
-                         class="filter-item"
+                         class="filter-item form-item-width"
                          v-model="roleTemp.officeId">
                 <el-option v-for="item in  officelist"
                            :key="item.id"
@@ -463,10 +466,12 @@
             </el-form-item>
           </div>
           <el-form-item label="份数：">
-            <el-input v-model="roleTemp.count"></el-input>
+            <el-input class="form-item-width"
+                      v-model="roleTemp.count"></el-input>
           </el-form-item>
           <el-form-item label="备注：">
-            <el-input v-model="roleTemp.remark"></el-input>
+            <el-input class="form-item-width"
+                      v-model="roleTemp.remark"></el-input>
           </el-form-item>
           <el-form-item label="附件：">
             <!-- https://dev.renx.cc/smartprint/upload-file -->
@@ -498,44 +503,12 @@
               </div>
             </div>
           </el-form-item>
-          <div class="module-title">文印配置</div>
-          <div style="margin-top:20px">
-            <!-- <div class="tabs-box">
-              <el-button @click="tabsIndex=1"
-                         :type="tabsIndex==1? 'primary':''">系统配置</el-button>
-              <el-button @click="tabsIndex=2"
-                         :type="tabsIndex==2? 'primary':''">学校配置</el-button>
-            </div> -->
+          <!-- <div class="module-title">文印配置</div> -->
+          <!-- <div style="margin-top:20px">
             <div v-show="tabsIndex==1">
-              <!-- <div v-show="tabsIndex==false"> -->
-              <!-- <el-form-item label-width="180"
-                            label="文印规格及内容：">
-              </el-form-item> -->
-              <!-- <el-form-item> -->
               <priceSet :disabled="isEditOrder"
                         ref="priceSetRef" />
-              <!-- <skuSets ref="sku"
-                         @lastLevelChange="lastLevelChange"
-                         :schoolId="this.roleTemp.schoolID"
-                         :dynamicTags="dynamicTags" /> -->
-              <!-- <div v-for="floor in maxFloor"
-                     :key="floor"
-                     data-upperId="0"
-                     style="margin-top:10px"
-                     class="floor">
-                  <div class="tag-box"
-                       :class="isActive(tag)?'tag-active':''"
-                       @click="tagClick(tag,index)"
-                       :key="tag.id"
-                       v-for="(tag,index) in dynamicTags"
-                       v-if="tag.upperId===floor">
-                    {{tag.name}}
-                  </div>
-                </div> -->
-              <!-- </el-form-item> -->
-              <!-- <el-form-item v-show="isShowPrice"> -->
               <el-form-item v-show="false">
-                <!-- 价格 -->
                 <div v-for="(item,index) in priceData"
                      :key="item.id"
                      class="table-item">
@@ -545,11 +518,6 @@
                          class="table-item-cell"
                          placeholder="请输入"
                          style="background:#FFF; outline: none">
-                  <!-- <span class="table-item-cell">单价￥</span>
-                  <input v-model="item.unitPrice"
-                         class="table-item-cell"
-                         placeholder="请输入"
-                         style="background:#FFF; outline: none"> -->
                   <span class="table-item-cell">数量</span>
                   <input v-model="item.count"
                          class="table-item-cell"
@@ -558,8 +526,63 @@
                 </div>
               </el-form-item>
             </div>
-            <div v-show="tabsIndex==2">
-              <!-- 学校配置 -->
+            <div class="module-title"
+                 style="margin-top:20px">备注内容</div>
+            <el-form-item style="margin-top:20px"
+                          label="备注内容：">
+              <el-input placeholder="请输入"
+                        v-model="roleTemp.printRoomRemark"></el-input>
+            </el-form-item>
+            <el-form-item label="上传小样：">
+              <div style="border:1px solid #E2E2E2;padding:20px">
+                <el-upload action="/smartprint/upload-file"
+                           :on-preview="handlePreview"
+                           :on-remove="handleRemove"
+                           :before-remove="beforeRemove"
+                           :on-success="succcessHandle"
+                           multiple
+                           :limit="10"
+                           :on-exceed="handleExceed"
+                           :file-list="fileList">
+                  <el-button size="small"
+                             style="background:#67C23A;color:#FFF">上传</el-button>
+                </el-upload>
+              </div>
+            </el-form-item>
+          </div> -->
+          <el-form-item>
+            <el-button type="primary"
+                       @click="submitHandle">提交</el-button>
+          </el-form-item>
+        </el-form>
+        <el-form :disabled="isEditOrder"
+                 class="small-space"
+                 :model="roleTemp"
+                 label-position="left"
+                 style="width:50%"
+                 label-width="120px">
+          <div class="module-title">文印配置</div>
+          <div style="margin-top:20px">
+            <div v-show="tabsIndex==1">
+              <priceSet :disabled="isEditOrder"
+                        ref="priceSetRef" />
+              <el-form-item v-show="false">
+                <div v-for="(item,index) in priceData"
+                     :key="item.id"
+                     class="table-item">
+                  <span class="table-item-cell">收费项</span>
+                  <input readonly
+                         v-model="item.name"
+                         class="table-item-cell"
+                         placeholder="请输入"
+                         style="background:#FFF; outline: none">
+                  <span class="table-item-cell">数量</span>
+                  <input v-model="item.count"
+                         class="table-item-cell"
+                         placeholder="请输入"
+                         style="background:#FFF; outline: none">
+                </div>
+              </el-form-item>
             </div>
             <div class="module-title"
                  style="margin-top:20px">备注内容</div>
@@ -587,10 +610,6 @@
               </div>
             </el-form-item>
           </div>
-          <el-form-item>
-            <el-button style="background:#FF5C00;color:#FFF"
-                       @click="submitHandle">确认上传</el-button>
-          </el-form-item>
         </el-form>
       </div>
     </div>
@@ -655,6 +674,33 @@
                    @click="setPermissionsSubmit">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 领取 -->
+    <!-- const { id } = this.$route.query -->
+    <el-dialog title="IC卡验证"
+               @close="dialogICVisible=false"
+               :visible="dialogICVisible">
+      <p>{{this.tips}}</p>
+      <el-steps :active="active"
+                finish-status="success">
+        <el-step description="请将IC卡放入感应区内"
+                 title="连接设备"></el-step>
+        <el-step :description="tfUID"
+                 title="获取卡号"></el-step>
+        <el-step :description="tfBlockData"
+                 title="读取卡内数据"></el-step>
+        <el-step title="验证身份"></el-step>
+      </el-steps>
+      <el-button v-if="active<=3"
+                 style="margin-top: 12px;"
+                 @click="next">下一步</el-button>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button :disabled="!isValidSuccess"
+                   @click="ensureOrderHnadle('YiLingQu')"
+                   type="primary">领取</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -669,6 +715,27 @@ import store from '@/store'
 import skuSets from './children/sku-sets.vue'
 import priceSet from './children/priceSet.vue'
 
+const GFUNC = {
+  M1_findCard: 1,
+  M1_authentication: 2,
+  M1_read: 3,
+  M1_write: 4,
+  M1_initVal: 5,
+  M1_increment: 6,
+  M1_decrement: 7,
+  M1_readVal: 8,
+  M1_updateKey: 9
+};
+
+const g_device = '00'; // 设备句柄号
+let g_isOpen = false;
+let g_blockAddr = 2;
+let g_blockData;
+const g_key = 'FFFFFFFFFFFF'
+const g_keyType = 60;
+let g_vale;
+let g_wantFunc = 0;
+
 export default {
   components: {
     skuSets,
@@ -676,6 +743,13 @@ export default {
   },
   data() {
     return {
+      dialogICVisible: false,
+      active: 0,
+      tips: '', // 提示
+      tfUID: '', // 卡号
+      tfBlockData: '', // 读取的数据
+      isValidSuccess: false, // 身份验证是否成功
+
       // list: null,
       listLoading: false,
 
@@ -866,6 +940,8 @@ export default {
     this.getOfficeList()
     this.getSubjectList()
     this.getStaffList()
+
+    this.icTips()
   },
   methods: {
     lastLevelChange(boo) {
@@ -1168,7 +1244,7 @@ export default {
         query: { extra: 'edit', id }
       }) // 带参跳转
     },
-    // 确认接单
+    // 修改订单状态
     ensureOrderHnadle(status) {
       const { id } = this.roleTemp
       axios
@@ -1454,14 +1530,325 @@ export default {
         }
         this.samples = res.data.data.url + ',' + this.samples
       })
+    },
+    // IC卡验证领取
+    validIC() {
+      this.active = 0
+      this.tips = '' // 提示
+      this.tfUID = '' // 卡号
+      this.tfBlockData = '' // 读取的数据
+      this.dialogICVisible = true
+    },
+    // ic卡返回提示
+    icTips() {
+      this.$Reader.onResult(rData => {
+        switch (rData.strCmdCode) {
+          case '0007': // Sys_Open
+            if (rData.strStatus != '00') {
+              // this.tips = 'Failed to connect device ! ' + 'Error code: 0x' + rData.strStatus;
+              this.tips = 'Failed to connect device ! ' + 'Error code: 0x' + rData.strStatus;
+            } else {
+              g_isOpen = true;
+              // this.tips = 'Reader connected successfully !';
+              this.tips = 'Reader connected successfully !';
+            }
+            break;
+
+          case '0009': // Sys_Close
+            if (rData.strStatus != '00') {
+              this.tips = 'Failed to disconnect device !';
+            } else {
+              this.tips = 'Reader disconnected successfully !';
+            }
+            break;
+
+          case '0106': // Sys_SetBuzzer
+            break;
+
+          case '0105': // Sys_GetSnr
+            if (rData.strStatus != '00') {
+              this.tips = 'Sys_GetSnr faild !';
+            } else {
+              this.tips = rData.strData;
+              this.tips = 'Get device serial number successfully !';
+            }
+            break;
+
+          case '1001': // TyA_Request
+            if (rData.strStatus != '00') {
+              this.tips = 'TyA_Request faild !';
+              return;
+            }
+
+            switch (g_wantFunc) {
+              case GFUNC.M1_findCard:
+              case GFUNC.M1_authentication:
+              case GFUNC.M1_read:
+              case GFUNC.M1_write:
+              case GFUNC.M1_initVal:
+              case GFUNC.M1_increment:
+              case GFUNC.M1_decrement:
+              case GFUNC.M1_readVal:
+              case GFUNC.M1_updateKey:
+                this.$Reader.send(g_device + '1002'); // TyA_Anticollision
+                break;
+            }
+
+            break;
+
+          case '1002': // TyA_Anticollision
+            if (rData.strStatus != '00') {
+              this.tips = 'TyA_Anticollision faild !';
+              return;
+            }
+
+            switch (g_wantFunc) {
+              case GFUNC.M1_findCard:
+                // document.getElementById('tfUID').value = rData.strData;
+                this.tfUID = rData.strData;
+                this.tips = 'Found card !';
+              case GFUNC.M1_authentication:
+              case GFUNC.M1_read:
+              case GFUNC.M1_write:
+              case GFUNC.M1_initVal:
+              case GFUNC.M1_increment:
+              case GFUNC.M1_decrement:
+              case GFUNC.M1_readVal:
+              case GFUNC.M1_updateKey:
+                this.$Reader.send(g_device + '1003' + rData.strData); // TyA_Select
+                break;
+            }
+
+            break;
+
+          case '1003': // TyA_Select
+            if (rData.strStatus != '00') {
+              this.tips = 'TyA_Select faild !';
+              return;
+            }
+
+            switch (g_wantFunc) {
+              case GFUNC.M1_authentication:
+              case GFUNC.M1_read:
+              case GFUNC.M1_write:
+              case GFUNC.M1_initVal:
+              case GFUNC.M1_increment:
+              case GFUNC.M1_decrement:
+              case GFUNC.M1_readVal:
+              case GFUNC.M1_updateKey:
+                this.$Reader.send(g_device + '100A' + g_keyType + g_blockAddr + g_key); // TyA_CS_Authentication2
+                break;
+            }
+
+            break;
+
+          case '100A': // TyA_CS_Authentication2
+            if (rData.strStatus != '00') {
+              this.tips = 'TyA_CS_Authentication2 faild !';
+              return;
+            }
+
+            switch (g_wantFunc) {
+              case GFUNC.M1_read:
+                this.$Reader.send(g_device + '100B' + g_blockAddr); // TyA_CS_Read
+                break;
+
+              case GFUNC.M1_write:
+                this.$Reader.send(g_device + '100C' + g_blockAddr + g_blockData);
+                break;
+
+              case GFUNC.M1_initVal:
+                this.$Reader.send(g_device + '100D' + g_blockAddr + g_value);
+                break;
+
+              case GFUNC.M1_readVal:
+                this.$Reader.send(g_device + '100E' + g_blockAddr);
+                break;
+
+              case GFUNC.M1_decrement:
+                this.$Reader.send(g_device + '100F' + g_blockAddr + g_value);
+                break;
+
+              case GFUNC.M1_increment:
+                this.$Reader.send(g_device + '1010' + g_blockAddr + g_value);
+                break;
+            }
+
+            break;
+
+          case '100B': // TyA_CS_Read
+            if (rData.strStatus != '00') {
+              this.tips = 'TyA_CS_Read faild !';
+            } else {
+              // document.getElementById('tfBlockData').value = rData.strData;
+              this.tfBlockData = rData.strData;
+              this.tips = 'Read block successfully !';
+            }
+            break;
+
+          case '100C': // TyA_CS_Write
+            if (rData.strStatus != '00') {
+              this.tips = 'TyA_CS_Write faild !';
+            } else {
+              this.tips = 'Write block successfully !';
+            }
+            break;
+
+          case '100D': // TyA_CS_InitValue
+            if (rData.strStatus != '00') {
+              this.tips = 'TyA_CS_InitValue faild !';
+            } else {
+              this.tips = 'Initialize the wallet value successfully !';
+            }
+            break;
+
+          case '100E': // TyA_CS_ReadValue
+            if (rData.strStatus != '00') {
+              this.tips = 'TyA_CS_ReadValue faild !';
+            } else {
+              let hexValue = rData.strData;
+              hexValue = hexValue.substr(6, 2) + hexValue.substr(4, 2) + hexValue.substr(2, 2) + hexValue.substr(0, 2); // Reverse sorting of high and low bytes (高低字节反过来排序)
+              const decValue = parseInt(hexValue, 16); // Convert hexadecimal string to decimal string (十六进制字符串转换为十进制字符串)
+              document.getElementById('tfValue').value = decValue; // Show wallet balance (显示电子钱包余额)
+              this.tips = 'Read value successfully !';
+            }
+            break;
+
+          case '100F': // TyA_CS_Decrement
+            if (rData.strStatus != '00') {
+              this.tips = 'TyA_CS_Decrement faild !';
+            } else {
+              this.tips = 'Decrement value successfully !';
+            }
+            break;
+
+          case '1010': // TyA_CS_Increment
+            if (rData.strStatus != '00') {
+              this.tips = 'TyA_CS_Increment faild !';
+            } else {
+              this.tips = 'Increment value successfully !';
+            }
+            break;
+        }
+      }
+      )
+    },
+    next() {
+      if (this.active == 0) { // 连接设备
+        this.$Reader.send(g_device + '0007' + '00'); // Open the USB device with index number 0. (打开索引号为0的USB设备)
+        this.$Reader.send(g_device + '0109' + '41'); // Set to ISO14443a working mode. (设置为ISO14443A工作模式)
+        this.$Reader.send(g_device + '0108' + '01'); // Turn on the this.$Reader antenna. (打开读卡器天线)
+        this.LedGreen();
+        setTimeout(this.LedRed(), 200);
+        // this.$Reader.send(g_device + '0106' + '10'); // Beeps. (蜂鸣提示)
+      }
+      if (this.active == 1) { // 读取设备卡号
+        // Check whether the reader is opened or not.
+        if (g_isOpen != true) {
+          this.tips = 'Please connect the device first !';
+          return;
+        }
+        // Clear UID edit box
+        this.tfUID = '';
+
+        // Start read UID
+        this.$Reader.send(g_device + '1001' + '52'); // TyA_Request
+        g_wantFunc = GFUNC.M1_findCard;
+      }
+      if (this.active == 2) { // 读取卡内数据
+        this.ReadBlock()
+      }
+      if (this.active == 3) { // 验证身份
+        // this.tfBlockData = this.tfBlockData
+        const cardData = parseInt(this.tfBlockData + '')
+        const userId = this.roleTemp.userId
+        // return
+        if (cardData == userId) {
+          this.tips = '身份验证成功！'
+          this.isValidSuccess = true
+        } else {
+          this.tips = '身份验证失败！'
+        }
+      }
+      this.active += 1
+    },
+    /**
+ * Turn on the green light
+ * (亮绿灯)
+**/
+    LedGreen() {
+      this.$Reader.send(g_device + '0107' + '02');
+    },
+
+    /**
+     * Turn on the red light
+     * (亮红灯)
+    **/
+    LedRed() {
+      this.$Reader.send(g_device + '0107' + '01');
+    },
+    /**
+     * Read a block of M1 card
+     * (读M1卡的一个块)
+    **/
+    ReadBlock() {
+      // Check whether the reader is opened or not.
+      if (g_isOpen != true) {
+        this.tips = 'Please connect the device first !';
+        return;
+      }
+
+      // Clear block data
+      this.tfBlockData = '';
+
+      // Get block address
+      // g_blockAddr = document.getElementById('tfBlock').value;
+      if (g_blockAddr == '') {
+        this.tips = 'Please enter  block address !';
+        return;
+      }
+      g_blockAddr = this.DecStrToHexStr(g_blockAddr, 2);
+
+      // Get key
+      if (g_key.length != 12) {
+        this.tips = 'Please enter a 12-digit key !';
+        return;
+      }
+
+      // Get key type
+      // if (rbKeyA.checked) {
+      //   g_keyType = '60';
+      // } else {
+      //   g_keyType = '61';
+      // }
+
+      // Start read block
+      this.$Reader.send(g_device + '1001' + '52'); // TyA_Request
+      g_wantFunc = GFUNC.M1_read;
+    },
+    /**
+    * Function：Converts a decimal string to a hexadecimal string with a specified number of digits.
+             (十进制字符串转换为指定位数的十六进制字符串)
+    * Parameter：decimalStr [IN] Decimal string. (十进制字符串)
+    *            length [IN] Specifies the number of digits to convert to hexadecimal. (指定要转换成十六进制的位数)
+    * Return：Hexadecimal string. (十六进制字符串)
+    **/
+    DecStrToHexStr(decimalStr, length) {
+      const num = Number(decimalStr);
+      const str = (Array(length).join('0') + num.toString(16)).slice(-length);
+      return str;
     }
   }
 }
 </script>
 
 <style scoped>
+/* form 输入框 宽度 */
+.form-item-width {
+  width: 400px;
+}
 .class-table-box {
-  min-width: 500px;
+  width: 400px;
   min-height: 50px;
   margin-top: 30px;
 }
@@ -1513,9 +1900,9 @@ export default {
   justify-content: center;
 }
 .module-title {
-  width: calc(100vw - 250px);
+  width: 100%;
   position: relative;
-  left: -100px;
+  /* left: -100px; */
   background: #0053b50d;
   font-size: 15px;
   height: 42px;
