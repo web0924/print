@@ -51,8 +51,13 @@ const AccountManage = _import('teacherManage/teacherManage');
 const Subject = _import('subject/subjects');
 // 订单管理
 const OrderManage = _import('order-manage/orderManage');
+const officeOrderManage = _import('order-manage/officeOrderManage');
+
 // 学生管理
 const StudentManage = _import('student-manage/studentManage');
+
+// 消息管理
+const messageManage = _import('message-manage/messageManage');
 
 /* 学生管理*/
 // const StudentList = _import('student/studentInfo/index');
@@ -144,7 +149,8 @@ const constantRouterMap = [
     name: '订单管理',
     // icon: '404',
     children: [
-      { path: 'orderManage', component: OrderManage, name: '订单列表' }
+      { path: 'orderManage', component: OrderManage, name: '订单列表' },
+      { path: 'officeOrderManage', component: officeOrderManage, name: '科室订单' }
     ]
   },
   {
@@ -185,6 +191,16 @@ const constantRouterMap = [
     // icon: '404',
     children: [
       { path: 'department', component: Department, name: '科室列表' }
+    ]
+  },
+  {
+    path: '/messageManage',
+    component: Layout,
+    redirect: 'noredirect',
+    name: '消息管理',
+    // icon: '404',
+    children: [
+      { path: 'messageManage', component: messageManage, name: '消息管理' }
     ]
   },
   {

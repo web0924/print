@@ -150,7 +150,7 @@
             <el-input v-model="roleTemp.userAccount"></el-input>
           </el-form-item>
           <el-form-item label="密码">
-            <el-input v-model="roleTemp.userPwd"></el-input>
+            <el-input placeholder="初始密码为：123456" v-model="roleTemp.userPwd"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary"
@@ -312,7 +312,7 @@ export default {
     this.getgradeList()
     // this.getclassList()
     this.getsubjectList()
-    this.getofficeList()
+    // this.getofficeList()
   },
   methods: {
     // 获取年级数据
@@ -348,17 +348,17 @@ export default {
         })
         .catch(err => err)
     },
-    // 获取科室数据
-    getofficeList() {
-      const vm = this
-      axios
-        .post('/smartprint/company/office/get-offices')
-        .then(res => {
-          if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          vm.officeList = res.data.data.offices
-        })
-        .catch(err => err)
-    },
+    // // 获取科室数据
+    // getofficeList() {
+    //   const vm = this
+    //   axios
+    //     .post('/smartprint/company/office/get-offices')
+    //     .then(res => {
+    //       if (res.data.code !== 0) return this.$message.error(res.data.msg)
+    //       vm.officeList = res.data.data.offices
+    //     })
+    //     .catch(err => err)
+    // },
     // 获取列表数据
     getList() {
       const vm = this
@@ -572,6 +572,7 @@ export default {
     onAddSubmit() {
       const vm = this
       console.log('新增入参：', vm.roleTemp)
+      this.roleTemp.userPwd = this.roleTemp.userPwd || 123456
       this.roleTemp.userPwd = md5(md5(this.roleTemp.userPwd))
       axios
         .post(

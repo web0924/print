@@ -159,7 +159,14 @@
                      to="/orderManage/orderManage"
                      v-if="routes['/orderManage/orderManage']">
           <el-menu-item index="/orderManage/orderManage">
-            订单列表
+            学科订单
+          </el-menu-item>
+        </router-link>
+        <router-link class="menu-indent"
+                     to="/orderManage/officeOrderManage"
+                     v-if="routes['/orderManage/officeOrderManage']">
+          <el-menu-item index="/orderManage/officeOrderManage">
+            科室订单
           </el-menu-item>
         </router-link>
       </el-submenu>
@@ -238,7 +245,8 @@
           </el-menu-item>
         </router-link>
       </el-submenu>
-      <el-submenu index="账号管理"
+
+      <el-submenu index="教职工管理"
                   v-if="routes['/teacherManage/teacherManage']">
         <template slot="title">
           <img style="width:18px"
@@ -250,6 +258,21 @@
                      v-if="routes['/teacherManage/teacherManage']">
           <el-menu-item index="/teacherManage/teacherManage">
             教职工列表
+          </el-menu-item>
+        </router-link>
+      </el-submenu>
+      <el-submenu index="消息管理"
+                  v-if="routes['/messageManage/messageManage']">
+        <template slot="title">
+          <img style="width:18px"
+               src="../../assets/img/person_slider_icon.png"> 消息管理
+        </template>
+
+        <router-link class="menu-indent"
+                     to="/messageManage/messageManage"
+                     v-if="routes['/messageManage/messageManage']">
+          <el-menu-item index="/messageManage/messageManage">
+            消息列表
           </el-menu-item>
         </router-link>
       </el-submenu>

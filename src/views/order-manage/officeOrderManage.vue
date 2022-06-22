@@ -5,12 +5,12 @@
       <div style="min-height:120px;padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/orderManage/orderManage' }">学科订单</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/orderManage/officeOrderManage' }">科室订单</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
         <!-- 搜索条件 -->
         <div class="filter-container">
-          <el-select clearable
+          <!-- <el-select clearable
                      @change="classSelectChange"
                      class="filter-item"
                      style="width: 200px"
@@ -34,8 +34,8 @@
                        :label="item.name"
                        :value="item.id">
             </el-option>
-          </el-select>
-          <!-- <el-select clearable
+          </el-select> -->
+          <el-select clearable
                      class="filter-item"
                      style="width: 200px"
                      v-model="listQuery.officeId"
@@ -46,8 +46,8 @@
                        :label="item.name"
                        :value="item.id">
             </el-option>
-          </el-select> -->
-          <el-select clearable
+          </el-select>
+          <!-- <el-select clearable
                      class="filter-item"
                      style="width: 200px"
                      v-model="listQuery.subjectId"
@@ -58,20 +58,27 @@
                        :label="item.name"
                        :value="item.id">
             </el-option>
-          </el-select>
+          </el-select> -->
 
-          <el-select clearable
-                     class="filter-item"
-                     style="width: 200px"
-                     v-model="listQuery.type"
+          <el-button class="filter-item"
+                     style="position:absolute;right:40px;background:#000"
+                     type="primary"
+                     @click="handleCreate"
                      size="small"
-                     placeholder="按类型筛选">
-            <el-option v-for="item in typeSelectOpt"
-                       :key="item.value"
-                       :label="item.name"
-                       :value="item.value">
-            </el-option>
-          </el-select>
+                     icon="edit">添加订单</el-button>
+          <!-- <div> -->
+          <!-- <el-select clearable
+                       class="filter-item"
+                       style="width: 200px"
+                       v-model="listQuery.type"
+                       size="small"
+                       placeholder="按类型筛选">
+              <el-option v-for="item in typeSelectOpt"
+                         :key="item.value"
+                         :label="item.name"
+                         :value="item.value">
+              </el-option>
+            </el-select> -->
           <el-select clearable
                      class="filter-item"
                      style="width: 200px"
@@ -84,6 +91,20 @@
                        :value="item.value">
             </el-option>
           </el-select>
+          <el-date-picker value-format="yyyy-MM-dd 00:00:00"
+                          class="filter-item"
+                          v-model="listQuery.startTime"
+                          type="date"
+                          size="small"
+                          placeholder="开始日期">
+          </el-date-picker>
+          <el-date-picker value-format="yyyy-MM-dd 23:59:59"
+                          class="filter-item"
+                          v-model="listQuery.endTime"
+                          type="date"
+                          size="small"
+                          placeholder="结束日期">
+          </el-date-picker>
           <el-input @keyup.enter.native="handleSearch"
                     size="small"
                     style="width: 200px;"
@@ -91,41 +112,19 @@
                     placeholder="输入关键字搜索"
                     v-model="listQuery.kw">
           </el-input>
-          <el-button class="filter-item"
-                     style="position:absolute;right:40px;background:#000"
+          <el-button style="margin-left:50px"
+                     class="filter-item"
                      type="primary"
-                     @click="handleCreate"
+                     @click="handleSearch"
                      size="small"
-                     icon="edit">添加订单</el-button>
-          <div>
-
-            <el-date-picker value-format="yyyy-MM-dd 00:00:00"
-                            class="filter-item"
-                            v-model="listQuery.startTime"
-                            type="date"
-                            size="small"
-                            placeholder="开始日期">
-            </el-date-picker>
-            <el-date-picker value-format="yyyy-MM-dd 23:59:59"
-                            class="filter-item"
-                            v-model="listQuery.endTime"
-                            type="date"
-                            size="small"
-                            placeholder="结束日期">
-            </el-date-picker>
-            <el-button style="margin-left:50px"
-                       class="filter-item"
-                       type="primary"
-                       @click="handleSearch"
-                       size="small"
-                       icon="edit">搜索</el-button>
-            <el-button class="filter-item"
-                       @click="handleReset"
-                       size="small"
-                       icon="edit">重置</el-button>
-          </div>
-
+                     icon="edit">搜索</el-button>
+          <el-button class="filter-item"
+                     @click="handleReset"
+                     size="small"
+                     icon="edit">重置</el-button>
         </div>
+
+        <!-- </div> -->
       </div>
       <p style="min-height:80px;width:100%;background:#F5F5F5;margin:0">
         <el-button @click="exportAll"
@@ -167,12 +166,12 @@
             {{typeOption[scope.row.type] }}
           </template>
         </el-table-column>
-        <el-table-column label="学科"
+        <!-- <el-table-column label="学科"
                          width="">
           <template slot-scope="scope">
             {{scope.row.subjectName }}
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="份数"
                          width="">
           <template slot-scope="scope">
@@ -203,34 +202,57 @@
         <el-table-column label="订单时间"
                          prop="createTime"
                          sortable="custom"
-                         width="200">
+                         width="">
         </el-table-column>
 
-        <el-table-column align="left"
-                         width="300"
+        <!-- <el-table-column label="订单名称"
+                         width="100">
+          <template slot-scope="scope">
+            <template v-for="item in scope.row.userbaseinfoList">
+              <span :key="item">{{ item.userName  }} &nbsp; &nbsp;</span>
+            </template>
+          </template>
+        </el-table-column> -->
+        <!-- <el-table-column label="班级数量"
+                         width="">
+          <template slot-scope="scope">
+            <template v-for="item in scope.row.userbaseinfoList">
+              <span :key="item">{{ item.identifierId  }} &nbsp; &nbsp;</span>
+            </template>
+
+          </template>
+        </el-table-column> -->
+
+        <el-table-column align="center"
+                         width="320"
                          label="操作">
           <template slot-scope="scope">
-            <el-button v-show="scope.row.status=='DaiJieDan'"
+            <el-button style="margin-left:50px"
+                       v-show="scope.row.status=='DaiJieDan'"
                        type="primary"
                        plain
                        @click="tableOrderStatuHandle('YiJieDan',scope.row,scope.$index)"
                        size="small">确认接单</el-button>
-            <el-button v-show="scope.row.status=='YiJieDan'"
+            <el-button style="margin-left:50px"
+                       v-show="scope.row.status=='YiJieDan'"
                        type="primary"
                        plain
                        @click="tableOrderStatuHandle('DaiQueRen',scope.row,scope.$index)"
                        size="small">请用户确认</el-button>
-            <el-button v-show="scope.row.status=='YiQueRen'"
+            <el-button style="margin-left:50px"
+                       v-show="scope.row.status=='YiQueRen'"
                        type="primary"
                        plain
                        @click="tableOrderStatuHandle('ShengChanZhong',scope.row,scope.$index)"
                        size="small">确认生产</el-button>
-            <el-button v-show="scope.row.status=='ShengChanZhong'"
+            <el-button style="margin-left:50px"
+                       v-show="scope.row.status=='ShengChanZhong'"
                        type="primary"
                        plain
                        @click="tableOrderStatuHandle('YiShangJia',scope.row,scope.$index)"
                        size="small">确认上架</el-button>
-            <el-button v-show="scope.row.status=='YiShangJia'"
+            <el-button style="margin-left:50px"
+                       v-show="scope.row.status=='YiShangJia'"
                        type="primary"
                        plain
                        @click="validICTable(scope.row,scope.$index)"
@@ -273,7 +295,7 @@
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/orderManage/orderManage' }">学科订单</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/orderManage/officeOrderManage' }">科室订单</el-breadcrumb-item>
             <el-breadcrumb-item>新增订单</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
@@ -284,19 +306,6 @@
                  label-position="left"
                  label-width="70px"
                  style='width: 400px; margin-left:50px;'>
-
-          <el-form-item label="订单类型">
-            <el-select clearable
-                       class="filter-item"
-                       v-model="roleTemp.type"
-                       placeholder="按类型筛选">
-              <el-option v-for="item in typeSelectOpt"
-                         :key="item.value"
-                         :label="item.name"
-                         :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item label="文印内容">
             <el-input v-model="roleTemp.title"></el-input>
           </el-form-item>
@@ -312,7 +321,7 @@
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/orderManage/orderManage' }">学科订单</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/orderManage/officeOrderManage' }">科室订单</el-breadcrumb-item>
             <el-breadcrumb-item>编辑订单</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
@@ -766,6 +775,8 @@ export default {
   },
   data() {
     return {
+      types: 'Office',
+
       dialogICVisible: false,
       active: 0,
       tips: '', // 提示
@@ -790,7 +801,7 @@ export default {
         count: 10,
         start: 1,
         kw: '',
-        types: 'Subject,Common,Class'
+        types: 'Office'
       },
       claslistQuery: {
         currPage: 1,
@@ -798,12 +809,15 @@ export default {
         start: 1,
         kw: ''
       },
+      //       学科订单
+      // types=Subject,Common
+
+      // 科室订单
+      // types=Office
       roleTemp: {
-        name: '',
-        grade: ''
+
       },
       roleTemp2: {
-        name: ''
       },
       ruleForm: {
         permissions: []
@@ -842,10 +856,9 @@ export default {
   computed: {
     typeSelectOpt() {
       return [
-        // { name: '科室', value: 'Office' },
+        { name: '科室', value: 'Office' },
         { name: '公共', value: 'Common' },
-        { name: '学科', value: 'Subject' },
-        { name: '班级', value: 'Class' }
+        { name: '学科', value: 'Subject' }
       ]
     },
     typeOption() {
@@ -1130,6 +1143,7 @@ export default {
     },
     onAddSubmit() {
       const vm = this
+      this.roleTemp.type = this.listQuery.types
       axios
         .post(
           '/smartprint/print-room/order/create-order',
@@ -1142,7 +1156,7 @@ export default {
             this.roleTemp[key] = ''
           }
           this.$router.push({
-            path: '/orderManage/orderManage'
+            path: '/orderManage/officeOrderManage'
           })
         })
         .catch(err => console.log(err))
@@ -1249,7 +1263,7 @@ export default {
       // 跳页面进行修改
       // this.$router.push('/example/form');
       this.$router.push({
-        path: '/orderManage/orderManage',
+        path: '/orderManage/officeOrderManage',
         query: { extra: 'edit', id }
       }) // 带参跳转
     },
@@ -1436,7 +1450,7 @@ export default {
     // 新增
     handleCreate() {
       this.$router.push({
-        path: '/orderManage/orderManage',
+        path: '/orderManage/officeOrderManage',
         query: { extra: 'add' }
       }) // 带参跳转
     },
@@ -1469,21 +1483,15 @@ export default {
         true
       )
     },
-    // 选择班级提交
+    // 设置权限提交
     setPermissionsSubmit() {
       this.multipleSelection = this.multipleSelectionSouce
       this.dialogPermissionsVisible = false
     },
     handleSelectionChange(val) {
-      if (this.roleTemp.type == 'Class') {
-        this.multipleSelectionSouce = [val[0]];
-        if (val.length > 1) {
-          this.$refs.multipleTable.clearSelection();
-          this.$refs.multipleTable.toggleRowSelection(val.pop());
-        }
-      } else {
-        this.multipleSelectionSouce = val
-      }
+      // console.log(val)
+      // this.multipleSelection = val
+      this.multipleSelectionSouce = val
     },
     handleSearch() {
       this.getList()
@@ -1498,7 +1506,7 @@ export default {
         count: 10,
         start: 1,
         kw: '',
-        types: 'Subject,Common,Class'
+        types: 'Office'
       }
       this.getList()
       this.getListLen()
@@ -1786,15 +1794,31 @@ export default {
     },
     next() {
       if (this.active == 0) { // 连接设备
-        this.Connect()
+        this.$Reader.send(g_device + '0007' + '00'); // Open the USB device with index number 0. (打开索引号为0的USB设备)
+        this.$Reader.send(g_device + '0109' + '41'); // Set to ISO14443a working mode. (设置为ISO14443A工作模式)
+        this.$Reader.send(g_device + '0108' + '01'); // Turn on the this.$Reader antenna. (打开读卡器天线)
+        this.LedGreen();
+        setTimeout(this.LedRed(), 200);
+        // this.$Reader.send(g_device + '0106' + '10'); // Beeps. (蜂鸣提示)
       }
       if (this.active == 1) { // 读取设备卡号
-        this.getCardId()
+        // Check whether the reader is opened or not.
+        if (g_isOpen != true) {
+          this.tips = 'Please connect the device first !';
+          return;
+        }
+        // Clear UID edit box
+        this.tfUID = '';
+
+        // Start read UID
+        this.$Reader.send(g_device + '1001' + '52'); // TyA_Request
+        g_wantFunc = GFUNC.M1_findCard;
       }
       if (this.active == 2) { // 读取卡内数据
         this.ReadBlock()
       }
       if (this.active == 3) { // 验证身份
+        // this.tfBlockData = this.tfBlockData
         const cardData = parseInt(this.tfBlockData + '')
         const userId = this.roleTemp.userId
         // return
@@ -1821,35 +1845,6 @@ export default {
     **/
     LedRed() {
       this.$Reader.send(g_device + '0107' + '01');
-    },
-    /**
-    * 连接设备
-    *
-    * **/
-    Connect() {
-      this.$Reader.send(g_device + '0007' + '00'); // Open the USB device with index number 0. (打开索引号为0的USB设备)
-      this.$Reader.send(g_device + '0109' + '41'); // Set to ISO14443a working mode. (设置为ISO14443A工作模式)
-      this.$Reader.send(g_device + '0108' + '01'); // Turn on the this.$Reader antenna. (打开读卡器天线)
-      this.LedGreen();
-      setTimeout(this.LedRed(), 200);
-      // this.$Reader.send(g_device + '0106' + '10'); // Beeps. (蜂鸣提示)
-    },
-    /**
- * 获取卡号
- *
- * **/
-    getCardId() {
-      // Check whether the reader is opened or not.
-      if (g_isOpen != true) {
-        this.tips = 'Please connect the device first !';
-        return;
-      }
-      // Clear UID edit box
-      this.tfUID = '';
-
-      // Start read UID
-      this.$Reader.send(g_device + '1001' + '52'); // TyA_Request
-      g_wantFunc = GFUNC.M1_findCard;
     },
     /**
      * Read a block of M1 card

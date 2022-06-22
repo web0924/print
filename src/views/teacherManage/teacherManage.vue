@@ -227,9 +227,9 @@
             <el-input v-model="roleTemp.userAccount"></el-input>
           </el-form-item>
           <el-form-item label="密码">
-            <el-input v-model="roleTemp.userPwd"></el-input>
+            <el-input placeholder="初始密码为：123456"
+                      v-model="roleTemp.userPwd"></el-input>
           </el-form-item>
-
           <!-- <el-form-item label="教职工层次">
             <el-input v-model="roleTemp.remark"></el-input>
           </el-form-item>
@@ -240,7 +240,6 @@
             <el-button type="primary"
                        @click="onAddSubmit">上传</el-button>
           </el-form-item>
-
         </el-form>
       </div>
     </div>
@@ -644,7 +643,7 @@ export default {
     onAddSubmit() {
       const vm = this
       console.log('新增入参：', vm.roleTemp)
-      this.roleTemp.userPwd = md5(md5(this.roleTemp.userPwd))
+      this.roleTemp.userPwd = md5(md5(this.roleTemp.userPwd || 123456))
       axios
         .post(
           '/smartprint/print-room/staff/create-staff',
@@ -890,30 +889,18 @@ export default {
     },
     next() {
       if (this.active == 0) { // 连接设备
-        this.$Reader.send(g_device + '0007' + '00'); // Open the USB device with index number 0. (打开索引号为0的USB设备)
-        this.$Reader.send(g_device + '0109' + '41'); // Set to ISO14443a working mode. (设置为ISO14443A工作模式)
-        this.$Reader.send(g_device + '0108' + '01'); // Turn on the this.$Reader antenna. (打开读卡器天线)
-        this.LedGreen();
-        setTimeout(this.LedRed(), 200);
-        // this.$Reader.send(g_device + '0106' + '10'); // Beeps. (蜂鸣提示)
+        this.Connect()
       }
       if (this.active == 1) { // 读取设备卡号
-        // Check whether the reader is opened or not.
-        if (g_isOpen != true) {
-          this.tips = 'Please connect the device first !';
-          return;
-        }
-        // Clear UID edit box
-        this.tfUID = '';
-
-        // Start read UID
-        this.$Reader.send(g_device + '1001' + '52'); // TyA_Request
-        g_wantFunc = GFUNC.M1_findCard;
+        this.getCardId()
       }
       if (this.active == 2) { // 读取卡内数据
+        // this.getCardId()
+        // setTimeout(this.ReadBlock(), 1000)
         this.ReadBlock()
       }
       if (this.active == 3) { // 写入数据
+        // this.getCardId()
         this.WriteBlock()
       }
       this.active += 1
@@ -934,6 +921,36 @@ export default {
     LedRed() {
       this.$Reader.send(g_device + '0107' + '01');
     },
+    /**
+     * 连接设备
+     *
+     * **/
+    Connect() {
+      this.$Reader.send(g_device + '0007' + '00'); // Open the USB device with index number 0. (打开索引号为0的USB设备)
+      this.$Reader.send(g_device + '0109' + '41'); // Set to ISO14443a working mode. (设置为ISO14443A工作模式)
+      this.$Reader.send(g_device + '0108' + '01'); // Turn on the this.$Reader antenna. (打开读卡器天线)
+      this.LedGreen();
+      setTimeout(this.LedRed(), 200);
+      // this.$Reader.send(g_device + '0106' + '10'); // Beeps. (蜂鸣提示)
+    },
+    /**
+     * 获取卡号
+     *
+     * **/
+    getCardId() {
+      // Check whether the reader is opened or not.
+      if (g_isOpen != true) {
+        this.tips = 'Please connect the device first !';
+        return;
+      }
+      // Clear UID edit box
+      this.tfUID = '';
+
+      // Start read UID
+      this.$Reader.send(g_device + '1001' + '52'); // TyA_Request
+      g_wantFunc = GFUNC.M1_findCard;
+    },
+
     /**
      * Read a block of M1 card
      * (读M1卡的一个块)

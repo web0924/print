@@ -247,7 +247,7 @@ export default {
     },
     // 轮训
     polling() {
-      axios.post('/smartprint/me/get-messages', qs.stringify({ getted: 1, sorts: 'id', orders: 'asc' }))
+      axios.post('/smartprint/me/get-messages', qs.stringify({ getted: 0, sorts: 'id', orders: 'asc' }))
         .then(res => {
           this.timer = setTimeout(() => {
             clearTimeout(this.timer)
@@ -276,7 +276,7 @@ export default {
                 })
               })
             },
-            message: `<a style="color:#409EFF">这是 <i>${messages[i].content}</i></a>`
+            message: `<a style="color:#409EFF"><i>${messages[i].content}</i></a>`
           });
         })
       }
