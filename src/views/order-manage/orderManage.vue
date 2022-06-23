@@ -148,7 +148,6 @@
             {{scope.$index+1}}
           </template>
         </el-table-column>
-
         <el-table-column label="文印内容"
                          width="">
           <template slot-scope="scope">
@@ -167,12 +166,19 @@
             {{typeOption[scope.row.type] }}
           </template>
         </el-table-column>
+        <el-table-column label="年级"
+                         width="">
+          <template slot-scope="scope">
+            {{scope.row.gradeName }}
+          </template>
+        </el-table-column>
         <el-table-column label="学科"
                          width="">
           <template slot-scope="scope">
             {{scope.row.subjectName }}
           </template>
         </el-table-column>
+
         <el-table-column label="份数"
                          width="">
           <template slot-scope="scope">
@@ -288,8 +294,7 @@
           <el-form-item label="订单类型">
             <el-select clearable
                        class="filter-item"
-                       v-model="roleTemp.type"
-                       placeholder="按类型筛选">
+                       v-model="roleTemp.type">
               <el-option v-for="item in typeSelectOpt"
                          :key="item.value"
                          :label="item.name"
@@ -382,7 +387,8 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="下单人签名：">
+          <el-form-item v-if="roleTemp.yongHuQueRenQianZi"
+                        label="下单人签名：">
             <viewer :trigger="roleTemp.yongHuQueRenQianZi">
               <img style="width:100px;height:100px;"
                    :src="roleTemp.yongHuQueRenQianZi">
@@ -764,7 +770,7 @@ export default {
     skuSets,
     priceSet
   },
-  data() {
+  data () {
     return {
       dialogICVisible: false,
       active: 0,
@@ -840,7 +846,7 @@ export default {
     }
   },
   computed: {
-    typeSelectOpt() {
+    typeSelectOpt () {
       return [
         // { name: '科室', value: 'Office' },
         { name: '公共', value: 'Common' },
@@ -848,7 +854,7 @@ export default {
         { name: '班级', value: 'Class' }
       ]
     },
-    typeOption() {
+    typeOption () {
       return {
         Office: '科室',
         Common: '公共',
@@ -856,7 +862,7 @@ export default {
       }
     },
     // 订单是否可编辑
-    isEditOrder() {
+    isEditOrder () {
       const statusArr = [
         'ShengChanZhong',
         'YiShangJia',
@@ -866,7 +872,7 @@ export default {
       if (statusArr.find(item => item === this.roleTemp.status)) return true
       return false
     },
-    orderSelectStatus() {
+    orderSelectStatus () {
       return [
         {
           name: '待文印室接单',
@@ -902,7 +908,7 @@ export default {
         }
       ]
     },
-    orderStatus() {
+    orderStatus () {
       return {
         DaiJieDan: {
           name: '待文印室接单',
@@ -940,7 +946,7 @@ export default {
     }
   },
   watch: {
-    dialogPermissionsVisible(newVal) {
+    dialogPermissionsVisible (newVal) {
       if (newVal) {
         setTimeout(() => {
           this.multipleSelection.forEach(item => {
@@ -954,7 +960,7 @@ export default {
       }
     }
   },
-  mounted() {
+  mounted () {
     const vm = this
     vm.getList()
     this.getListLen()
@@ -969,12 +975,12 @@ export default {
     this.icTips()
   },
   methods: {
-    lastLevelChange(boo) {
+    lastLevelChange (boo) {
       // alert(boo)
       this.isShowPrice = boo
     },
     // 获取列表数据
-    getList() {
+    getList () {
       const vm = this
 
       vm.listLoading = true
@@ -991,7 +997,7 @@ export default {
       vm.listLoading = false
     },
     // 获取列表数据总数
-    getListLen() {
+    getListLen () {
       const params = JSON.parse(JSON.stringify(this.listQuery))
       params.isSum = 1
       axios
@@ -1003,7 +1009,7 @@ export default {
         .catch(err => console.log(err))
     },
     // 教职工选择事件
-    staffChange(val) {
+    staffChange (val) {
       this.currentStaff = this.staffList.filter(item => item.userId === val)[0]
 
       // if (this.currentStaff.userId !== val) {
@@ -1012,7 +1018,7 @@ export default {
       // }
     },
     // 导出
-    exportAll() {
+    exportAll () {
       if (!this.listQuery.gradeId) return this.$message.warning('请选择年级')
       if (!this.listQuery.startTime) return this.$message.warning('请选择开始时间')
       if (!this.listQuery.endTime) return this.$message.warning('请选择结束时间')
@@ -1027,16 +1033,16 @@ export default {
         })
         .catch(err => err)
     },
-    classSelectChange(val) {
+    classSelectChange (val) {
       this.getClassList({ gradeId: val })
     },
-    addClassDialogHnadle() {
+    addClassDialogHnadle () {
       // console.log(this.currentStaff)
       this.getClassList({ gradeId: this.currentStaff.gradeId || '' })
       this.dialogPermissionsVisible = true
     },
     // table排序
-    tableSortChange(column) {
+    tableSortChange (column) {
       const sortMap = {
         ascending: 'asc',
         descending: 'desc'
@@ -1052,7 +1058,7 @@ export default {
       this.getList()
     },
     // 获取年级列表
-    getGradeList() {
+    getGradeList () {
       const vm = this
       vm.listLoading = true
       axios
@@ -1070,7 +1076,7 @@ export default {
       vm.listLoading = false
     },
     // 获取班级列表
-    getClassList(params = {}) {
+    getClassList (params = {}) {
       const vm = this
 
       vm.listLoading = true
@@ -1093,7 +1099,7 @@ export default {
       vm.listLoading = false
     },
     // 获取教师列表
-    getStaffList() {
+    getStaffList () {
       axios
         .post('/smartprint/print-room/staff/get-staffs')
         .then(res => {
@@ -1107,7 +1113,7 @@ export default {
         .catch(err => err)
     },
     // 获取学科列表
-    getSubjectList() {
+    getSubjectList () {
       const vm = this
       axios
         .post('/smartprint/print-room/subject/get-subjects')
@@ -1118,7 +1124,7 @@ export default {
         .catch(err => err)
     },
     // 获取科室列表
-    getOfficeList() {
+    getOfficeList () {
       const vm = this
       axios
         .post('/smartprint/print-room/office/get-offices')
@@ -1128,7 +1134,7 @@ export default {
         })
         .catch(err => err)
     },
-    onAddSubmit() {
+    onAddSubmit () {
       const vm = this
       axios
         .post(
@@ -1148,24 +1154,24 @@ export default {
         .catch(err => console.log(err))
     },
     // 根据当前路由参数切换视图
-    setViewByQuery() {
+    setViewByQuery () {
       const { extra } = this.$route.query
       if (!extra) this.viewType = 0
       else this.viewType = extra
     },
-    getRowKey(row) {
+    getRowKey (row) {
       return row.id
     },
-    gradeChange() {
+    gradeChange () {
       this.$forceUpdate()
     },
     // 获取最高层数
-    getMaxFloor(list) {
+    getMaxFloor (list) {
       const upperIds = list.map(item => item.upperId)
       return [...new Set(upperIds)].sort()
     },
     // 获取文印规格设置
-    getSets() {
+    getSets () {
       axios
         .post(
           '/smartprint/print-room/price-book/get-sets',
@@ -1181,7 +1187,7 @@ export default {
         .catch(err => err)
     },
     // 获取价格设置
-    getPrices() {
+    getPrices () {
       const params = {
         schoolId: this.roleTemp.schoolId,
         setIds: this.choseTags.map(item => item.id).join(',')
@@ -1197,12 +1203,12 @@ export default {
         })
         .catch(err => err)
     },
-    isActive(tag) {
+    isActive (tag) {
       const ids = this.choseTags.map(item => item.id)
       return ids.find(item => tag.id === item)
     },
     // 编辑回显
-    editView() {
+    editView () {
       const { id } = this.$route.query
       if (id) {
         axios
@@ -1243,7 +1249,7 @@ export default {
       }
     },
     // 编辑
-    handleEdit(index, { id }) {
+    handleEdit (index, { id }) {
       const vm = this
       console.log('编辑的row：', index, '-----', id)
       // 跳页面进行修改
@@ -1254,7 +1260,7 @@ export default {
       }) // 带参跳转
     },
     // 修改table订单状态
-    tableOrderStatuHandle(status, row, index) {
+    tableOrderStatuHandle (status, row, index) {
       const { id } = row
       axios
         .post(
@@ -1270,7 +1276,7 @@ export default {
         .catch(err => err)
     },
     // 修改订单状态
-    ensureOrderHnadle(status) {
+    ensureOrderHnadle (status) {
       const { id } = this.roleTemp
       axios
         .post(
@@ -1291,12 +1297,12 @@ export default {
         .catch(err => err)
     },
     // 删除附件
-    deleteFile(index) {
+    deleteFile (index) {
       this.roleTemp.attachmentFiles.splice(index, 1)
     },
 
     // 编辑上传
-    submitHandle() {
+    submitHandle () {
       const {
         id,
         title,
@@ -1383,7 +1389,7 @@ export default {
         .catch(err => err)
     },
     // 单个删除（撤销）
-    handleDelete(index, row) {
+    handleDelete (index, row) {
       const vm = this
       const params = row
       params.orderId = row.id
@@ -1404,22 +1410,22 @@ export default {
         .then(err => err)
     },
     // 搜索
-    handleFilter() {
+    handleFilter () {
       this.getList()
     },
     // 操作分页
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.listQuery.count = val
 
       this.getList()
     },
     // 班级分页
-    handleClassSizeChange(val) {
+    handleClassSizeChange (val) {
       this.classListQuery.count = val
       this.getClassList(this.classListQuery)
     },
     // 操作分页
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       console.log('--------', val)
       this.listQuery.currPage = val
       this.listQuery.start = this.listQuery.count * (val - 1) + 1
@@ -1427,21 +1433,21 @@ export default {
       this.getList()
     },
     // 班级分页
-    handleClassCurrentChange(val) {
+    handleClassCurrentChange (val) {
       this.classListQuery.currPage = val
       this.classListQuery.start = this.classListQuery.count * (val - 1) + 1
 
       this.getClassList(this.classListQuery)
     },
     // 新增
-    handleCreate() {
+    handleCreate () {
       this.$router.push({
         path: '/orderManage/orderManage',
         query: { extra: 'add' }
       }) // 带参跳转
     },
     // 设置权限
-    setPermissions(index, item) {
+    setPermissions (index, item) {
       const vm = this
       global.get(
         api.getMenuAndElement,
@@ -1470,11 +1476,11 @@ export default {
       )
     },
     // 选择班级提交
-    setPermissionsSubmit() {
+    setPermissionsSubmit () {
       this.multipleSelection = this.multipleSelectionSouce
       this.dialogPermissionsVisible = false
     },
-    handleSelectionChange(val) {
+    handleSelectionChange (val) {
       if (this.roleTemp.type == 'Class') {
         this.multipleSelectionSouce = [val[0]];
         if (val.length > 1) {
@@ -1485,14 +1491,14 @@ export default {
         this.multipleSelectionSouce = val
       }
     },
-    handleSearch() {
+    handleSearch () {
       this.getList()
       this.getListLen()
     },
-    handleSearchClass() {
+    handleSearchClass () {
       this.getClassList(this.claslistQuery)
     },
-    handleReset() {
+    handleReset () {
       this.listQuery = {
         currPage: 1,
         count: 10,
@@ -1503,7 +1509,7 @@ export default {
       this.getList()
       this.getListLen()
     },
-    deleteClass(index) {
+    deleteClass (index) {
       this.deleteClassIds.push(this.multipleSelection[index].id)
 
       if (this.$refs.multipleTable) {
@@ -1517,13 +1523,13 @@ export default {
     },
 
     // 上传相关
-    succcessHandle(response) {
+    succcessHandle (response) {
       this.samples ? this.samples += ',' + response.data.url : this.samples = response.data.url
     },
-    handleRemove(file, fileList) {
+    handleRemove (file, fileList) {
       console.log(file, fileList)
     },
-    handlePreview(file) {
+    handlePreview (file) {
       console.log(file)
       if (file.response) {
         window.open('https://view.officeapps.live.com/op/view.aspx?src=https://dev.renx.cc/' + file.response.data.url)
@@ -1531,14 +1537,14 @@ export default {
         window.open('https://view.officeapps.live.com/op/view.aspx?src=https://dev.renx.cc/' + file.url)
       }
     },
-    handleExceed(files, fileList) {
+    handleExceed (files, fileList) {
       // this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
     },
-    beforeRemove(file, fileList) {
+    beforeRemove (file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`)
     },
     // 覆盖element的默认上传文件
-    uploadHttpRequest(param) {
+    uploadHttpRequest (param) {
       // 获取上传的文件名
       const file = param.file
       // 发送请求的参数格式为FormData
@@ -1556,7 +1562,7 @@ export default {
       })
     },
     // 覆盖element的默认上传文件
-    uploadHttpRequestOfSamples(param) {
+    uploadHttpRequestOfSamples (param) {
       // 获取上传的文件名
       const file = param.file
       // 发送请求的参数格式为FormData
@@ -1570,11 +1576,11 @@ export default {
       })
     },
     // 领取成功回调
-    validSuccessCallback(index) {
+    validSuccessCallback (index) {
       this.list[index].status = 'YiLingQu'
     },
     // table IC卡验证
-    validICTable(row, index) {
+    validICTable (row, index) {
       this.roleTemp = row
       this.active = 0
       this.tips = '' // 提示
@@ -1583,7 +1589,7 @@ export default {
       this.dialogICVisible = true
     },
     // IC卡验证领取
-    validIC() {
+    validIC () {
       this.active = 0
       this.tips = '' // 提示
       this.tfUID = '' // 卡号
@@ -1591,7 +1597,7 @@ export default {
       this.dialogICVisible = true
     },
     // ic卡返回提示
-    icTips() {
+    icTips () {
       this.$Reader.onResult(rData => {
         switch (rData.strCmdCode) {
           case '0007': // Sys_Open
@@ -1784,7 +1790,7 @@ export default {
       }
       )
     },
-    next() {
+    next () {
       if (this.active == 0) { // 连接设备
         this.Connect()
       }
@@ -1811,7 +1817,7 @@ export default {
  * Turn on the green light
  * (亮绿灯)
 **/
-    LedGreen() {
+    LedGreen () {
       this.$Reader.send(g_device + '0107' + '02');
     },
 
@@ -1819,14 +1825,14 @@ export default {
      * Turn on the red light
      * (亮红灯)
     **/
-    LedRed() {
+    LedRed () {
       this.$Reader.send(g_device + '0107' + '01');
     },
     /**
     * 连接设备
     *
     * **/
-    Connect() {
+    Connect () {
       this.$Reader.send(g_device + '0007' + '00'); // Open the USB device with index number 0. (打开索引号为0的USB设备)
       this.$Reader.send(g_device + '0109' + '41'); // Set to ISO14443a working mode. (设置为ISO14443A工作模式)
       this.$Reader.send(g_device + '0108' + '01'); // Turn on the this.$Reader antenna. (打开读卡器天线)
@@ -1838,7 +1844,7 @@ export default {
  * 获取卡号
  *
  * **/
-    getCardId() {
+    getCardId () {
       // Check whether the reader is opened or not.
       if (g_isOpen != true) {
         this.tips = 'Please connect the device first !';
@@ -1855,7 +1861,7 @@ export default {
      * Read a block of M1 card
      * (读M1卡的一个块)
     **/
-    ReadBlock() {
+    ReadBlock () {
       // Check whether the reader is opened or not.
       if (g_isOpen != true) {
         this.tips = 'Please connect the device first !';
@@ -1897,7 +1903,7 @@ export default {
     *            length [IN] Specifies the number of digits to convert to hexadecimal. (指定要转换成十六进制的位数)
     * Return：Hexadecimal string. (十六进制字符串)
     **/
-    DecStrToHexStr(decimalStr, length) {
+    DecStrToHexStr (decimalStr, length) {
       const num = Number(decimalStr);
       const str = (Array(length).join('0') + num.toString(16)).slice(-length);
       return str;

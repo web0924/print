@@ -9,7 +9,10 @@
           <el-button @click="viewAllMessage"
                      style="margin-left:20px;color:#666"
                      round
-                     size="mini">一键清除未读</el-button>
+                     size="mini">
+            <img style="width:15px" src="../../assets/img/clear-svg-icon.svg">
+            一键清除未读
+          </el-button>
           <!-- 搜索条件 -->
           <div style="position:absolute;right:20px">
             <el-input @keyup.enter.native="handleSearch"

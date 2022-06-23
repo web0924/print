@@ -160,10 +160,16 @@
             {{scope.row.userName}}
           </template>
         </el-table-column>
-        <el-table-column label="类型"
+        <!-- <el-table-column label="类型"
                          width="">
           <template slot-scope="scope">
             {{typeOption[scope.row.type] }}
+          </template>
+        </el-table-column> -->
+        <el-table-column label="科室名称"
+                         width="">
+          <template slot-scope="scope">
+            {{scope.row.officeName }}
           </template>
         </el-table-column>
         <!-- <el-table-column label="学科"
@@ -391,7 +397,8 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="下单人签名：">
+          <el-form-item v-if="roleTemp.yongHuQueRenQianZi"
+                        label="下单人签名：">
             <viewer :trigger="roleTemp.yongHuQueRenQianZi">
               <img style="width:100px;height:100px;"
                    :src="roleTemp.yongHuQueRenQianZi">

@@ -201,7 +201,10 @@ export default {
       axios
         .post('/smartprint/me/refresh')
         .then(res => {
-          if (res.data.code === 0) {
+          if (res.data.code === 20) {
+            // 退出登录
+            this.loginOut()
+          } else if (res.data.code === 0) {
             this.accountInfo = res.data.data.login.user
           }
         })
@@ -249,6 +252,12 @@ export default {
     polling() {
       axios.post('/smartprint/me/get-messages', qs.stringify({ getted: 0, sorts: 'id', orders: 'asc' }))
         .then(res => {
+          if (res.data.code == 20) {
+            clearTimeout(this.timer)
+            Cookies.remove('printToken')
+            window.location.reload();
+            return
+          }
           this.timer = setTimeout(() => {
             clearTimeout(this.timer)
             const messages = res.data.data.messages
@@ -256,7 +265,7 @@ export default {
               this.creatNotify(messages)
             }
             this.polling()
-          }, 20000)
+          }, 2000)
         })
     },
     creatNotify(messages) {
@@ -280,10 +289,8 @@ export default {
           });
         })
       }
-    },
-    linkToOrder() {
-      console.log(1)
     }
+
   }
 }
 </script>
