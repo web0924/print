@@ -493,8 +493,10 @@
             <el-form-item label="科室：">
               <!-- <el-input disabled
                         v-model="roleTemp.officeName"></el-input> -->
-              <el-select clearable
+              <el-select disabled
+                         clearable
                          class="filter-item form-item-width"
+                         placeholder="请选择下单人"
                          v-model="roleTemp.officeId">
                 <el-option v-for="item in  officelist"
                            :key="item.id"
@@ -1026,10 +1028,10 @@ export default {
     staffChange(val) {
       this.currentStaff = this.staffList.filter(item => item.userId === val)[0]
 
-      // if (this.currentStaff.userId !== val) {
+
       this.roleTemp.userName = this.currentStaff.userName
+      this.roleTemp.officeId = this.currentStaff.officeId
       this.multipleSelection = []
-      // }
     },
     // 导出
     exportAll() {
