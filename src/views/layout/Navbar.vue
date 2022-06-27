@@ -163,6 +163,7 @@ export default {
       }
     }
     return {
+      notifications: [],
       timer: null,
       accountInfo: {},
       log: errLogStore.state.errLog,
@@ -265,19 +266,20 @@ export default {
               this.creatNotify(messages)
             }
             this.polling()
-          }, 2000)
+          }, 20000)
         })
     },
-    creatNotify(messages) {
+    async creatNotify(messages) {
       messages = messages.filter(item => item.viewed !== 1)
       let notifyPromise = Promise.resolve()
       for (let i = 0; i < messages.length; i++) {
         notifyPromise = notifyPromise.then(() => {
-          this.$notify({
+          const notify = this.$notify({
             title: '通知',
             dangerouslyUseHTMLString: true,
             duration: 0,
             onClick: () => {
+              this.closeNotification(messages[i].id)
               axios.post('/smartprint/me/view-message', qs.stringify({ messageId: messages[i].id })).then(res => {
                 this.$router.push({
                   path: '/orderManage/orderManage',
@@ -287,10 +289,16 @@ export default {
             },
             message: `<a style="color:#409EFF"><i>${messages[i].content}</i></a>`
           });
+          this.notifications[messages[i].id] = notify
         })
       }
+    },
+    // 关闭单个通知
+    closeNotification(messageId) {
+      // console.log(this.notifications[messageId].close)
+      this.notifications[messageId].close()
+      delete this.notifications[messageId]
     }
-
   }
 }
 </script>

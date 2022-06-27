@@ -59,6 +59,9 @@ const StudentManage = _import('student-manage/studentManage');
 // 消息管理
 const messageManage = _import('message-manage/messageManage');
 
+// 个人信息
+const accountInfoManage = _import('account-info/accountInfo');
+
 /* 学生管理*/
 // const StudentList = _import('student/studentInfo/index');
 // const StudentAdd = _import('student/studentInfo/modal/studentAdd'); /* 新增修改后期改成同一个弹窗*/
@@ -204,13 +207,13 @@ const constantRouterMap = [
     ]
   },
   {
-    path: '/teacherManage',
+    path: '/accountInfoManage',
     component: Layout,
     redirect: 'noredirect',
     name: '账号管理',
     // icon: '404',
     children: [
-      { path: 'teacherManage', component: AccountManage, name: '教职工管理' }
+      { path: 'accountInfoManage', component: accountInfoManage, name: '个人信息' }
     ]
   },
   {

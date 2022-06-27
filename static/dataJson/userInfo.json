@@ -35,6 +35,7 @@
                 "/orderManage/officeOrderManage":true,
                 "/studentManage/studentManage":true,
                 "/messageManage/messageManage":true,
+                "/accountInfoManage/accountInfoManage":true,
                 "/systemSet/loginLog":true,
                 "/studentsManage/studentAdd":true,
                 "/studentsManage/studentUpdate":true,

@@ -174,7 +174,7 @@ export default {
 }
 </script>
 
-<style lang="scss" >
+<style lang="scss" scoped>
 .table-caontainer {
   max-width: 700px;
   background: #f5f5f5;

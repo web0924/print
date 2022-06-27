@@ -276,6 +276,20 @@
           </el-menu-item>
         </router-link>
       </el-submenu>
+      <el-submenu index="个人信息"
+                  v-if="routes['/accountInfoManage/accountInfoManage']">
+        <template slot="title">
+          <img style="width:18px"
+               src="../../assets/img/person_slider_icon.png"> 个人信息
+        </template>
+        <router-link class="menu-indent"
+                     to="/accountInfoManage/accountInfoManage"
+                     v-if="routes['/accountInfoManage/accountInfoManage']">
+          <el-menu-item index="/accountInfoManage/accountInfoManage">
+            个人信息
+          </el-menu-item>
+        </router-link>
+      </el-submenu>
 
       <!-- <el-submenu index="学生信息管理">
         <template slot="title">

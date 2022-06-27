@@ -91,6 +91,18 @@
                        :value="item.value">
             </el-option>
           </el-select>
+          <!-- <el-select clearable
+                     class="filter-item"
+                     style="width: 200px"
+                     v-model="listQuery.status"
+                     size="small"
+                     placeholder="按状态筛选">
+            <el-option v-for="item in  orderSelectStatus"
+                       :key="item.value"
+                       :label="item.name"
+                       :value="item.value">
+            </el-option>
+          </el-select> -->
           <el-date-picker value-format="yyyy-MM-dd 00:00:00"
                           class="filter-item"
                           v-model="listQuery.startTime"
@@ -112,19 +124,32 @@
                     placeholder="输入关键字搜索"
                     v-model="listQuery.kw">
           </el-input>
-          <el-button style="margin-left:50px"
-                     class="filter-item"
-                     type="primary"
-                     @click="handleSearch"
-                     size="small"
-                     icon="edit">搜索</el-button>
-          <el-button class="filter-item"
-                     @click="handleReset"
-                     size="small"
-                     icon="edit">重置</el-button>
-        </div>
+          <div>
+            <el-select clearable
+                       class="filter-item"
+                       style="width: 200px"
+                       v-model="listQuery.isGuanZhang"
+                       size="small"
+                       placeholder="是否关账">
+              <el-option v-for="item in guanZhangSelectOpt"
+                         :key="item.value"
+                         :label="item.name"
+                         :value="item.value">
+              </el-option>
+            </el-select>
+            <el-button style="margin-left:50px"
+                       class="filter-item"
+                       type="primary"
+                       @click="handleSearch"
+                       size="small"
+                       icon="edit">搜索</el-button>
+            <el-button class="filter-item"
+                       @click="handleReset"
+                       size="small"
+                       icon="edit">重置</el-button>
+          </div>
 
-        <!-- </div> -->
+        </div>
       </div>
       <p style="min-height:80px;width:100%;background:#F5F5F5;margin:0">
         <el-button @click="exportAll"
@@ -197,18 +222,23 @@
             <span :style="{color:orderStatus[scope.row.status].color}"> {{orderStatus[scope.row.status].name }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="价格"
+        <!-- <el-table-column label="价格"
                          sortable="custom"
                          prop="price"
                          width="">
           <template slot-scope="scope">
             {{scope.row.price}}
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="订单时间"
                          prop="createTime"
                          sortable="custom"
                          width="">
+        </el-table-column>
+        <el-table-column label="是否关账">
+          <template slot-scope="scope">
+            {{scope.row.isGuanZhang==1?'已关账':''}}
+          </template>
         </el-table-column>
 
         <!-- <el-table-column label="订单名称"
@@ -379,6 +409,9 @@
                          size="small">确认领取</el-button>
             </el-form-item>
           </el-form>
+          <el-form-item label="是否关账：">
+            <span>{{roleTemp.isGuanZhang==1?'已关账':'未关账'}}</span>
+          </el-form-item>
           <el-form-item label="文印内容：">
             <el-input class="form-item-width"
                       v-model="roleTemp.title"></el-input>
@@ -651,6 +684,9 @@
               </div>
             </el-form-item>
           </div>
+          <div class="module-title">通知单</div>
+          <div style="margin-top:20px"></div>
+          <noticeTable ref="noticeTableRef" />
         </el-form>
       </div>
     </div>
@@ -755,6 +791,7 @@ import store from '@/store'
 
 import skuSets from './children/sku-sets.vue'
 import priceSet from './children/priceSet.vue'
+import noticeTable from './children/noticeTable.vue'
 
 const GFUNC = {
   M1_findCard: 1,
@@ -780,7 +817,8 @@ let g_wantFunc = 0;
 export default {
   components: {
     skuSets,
-    priceSet
+    priceSet,
+    noticeTable
   },
   data() {
     return {
@@ -874,8 +912,15 @@ export default {
       return {
         Office: '科室',
         Common: '公共',
-        Subject: '学科'
+        Subject: '学科',
+        Class: '班级'
       }
+    },
+    guanZhangSelectOpt() {
+      return [
+        { name: '是', value: 1 },
+        { name: '否', value: 0 }
+      ]
     },
     // 订单是否可编辑
     isEditOrder() {
@@ -1258,6 +1303,7 @@ export default {
               })
             }
             this.$refs.priceSetRef.params = this.roleTemp
+            this.$refs.noticeTableRef.params = this.roleTemp
 
             // this.getSets()
             // this.getPrices()
@@ -1356,6 +1402,16 @@ export default {
         daYingShu,
         daBanShu
       } = this.$refs.priceSetRef.params
+
+      const {
+        jingBan,
+        zhiBan,
+        jieDan,
+        fenJian,
+        jiaoHuoShiJian,
+        yinShuaYaoQiu,
+        yinShuaRen,
+        yinShuaFei } = this.$refs.noticeTableRef.params
       const params = {
         orderId: id,
         title,
@@ -1385,6 +1441,14 @@ export default {
         otherSetName,
         otherSetCount,
         otherSetUnitPrice,
+        jingBan, // 通知单配置start
+        zhiBan,
+        jieDan,
+        fenJian,
+        jiaoHuoShiJian,
+        yinShuaYaoQiu,
+        yinShuaRen,
+        yinShuaFei, // 通知单配置end
         samples: this.samples + ',' + this.fileList.join(','),
         printSetType: this.tabsIndex == 1 ? 'System' : 'School',
         // printSetPrices: this.priceData,
