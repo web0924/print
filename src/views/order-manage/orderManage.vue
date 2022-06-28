@@ -60,8 +60,7 @@
             </el-option>
           </el-select>
 
-          <el-select clearable
-                     class="filter-item"
+          <el-select class="filter-item"
                      style="width: 200px"
                      v-model="listQuery.type"
                      size="small"
@@ -72,7 +71,8 @@
                        :value="item.value">
             </el-option>
           </el-select>
-          <el-select clearable
+          <el-select multiple
+                     collapse-tags
                      class="filter-item"
                      style="width: 200px"
                      v-model="listQuery.status"
@@ -253,18 +253,24 @@
                        plain
                        @click="tableOrderStatuHandle('YiShangJia',scope.row,scope.$index)"
                        size="small">确认上架</el-button>
-            <el-button v-show="scope.row.status=='YiShangJia'"
-                       type="primary"
-                       plain
-                       @click="validICTable(scope.row,scope.$index)"
-                       size="small">确认领取</el-button>
+            <el-popover placement="top-start"
+                        title="领取方式"
+                        trigger="click">
+              <el-button @click="validICTable(scope.row,scope.$index)">IC卡领取</el-button>
+              <el-button @click="unValidICTable(scope.row)">直接领取</el-button>
+              <el-button v-show="scope.row.status=='YiShangJia'"
+                         slot="reference"
+                         type="primary"
+                         plain
+                         size="small">确认领取</el-button>
+            </el-popover>
             <el-button icon="edit"
                        size="small"
                        @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
             <template>
               <el-popconfirm @confirm="handleDelete(scope.$index, scope.row)"
                              title="确定撤销吗？">
-                <el-button v-if="scope.row.status!=='YiCheXiao'"
+                <el-button v-if="isWithDrawOrder(scope.row.status)"
                            slot="reference"
                            icon="delete"
                            size="small"
@@ -378,12 +384,19 @@
                          plain
                          @click="ensureOrderHnadle('YiShangJia')"
                          size="small">确认上架</el-button>
-              <el-button style="margin-left:50px"
-                         v-show="roleTemp.status=='YiShangJia'"
-                         type="primary"
-                         plain
-                         @click="validIC"
-                         size="small">确认领取</el-button>
+              <el-popover placement="top-start"
+                          title="领取方式"
+                          trigger="click">
+                <el-button @click="validIC">IC卡领取</el-button>
+                <el-button @click="unValidICTable(roleTemp)">直接领取</el-button>
+                <el-button style="margin-left:50px"
+                           v-show="roleTemp.status=='YiShangJia'"
+                           type="primary"
+                           slot="reference"
+                           plain
+                           size="small">确认领取</el-button>
+              </el-popover>
+
             </el-form-item>
           </el-form>
           <el-form-item label="是否关账：">
@@ -659,7 +672,7 @@
               </div>
             </el-form-item>
           </div>
-          <div class="module-title">通知单</div>
+          <div class="module-title need-print">通知单</div>
           <div style="margin-top:20px"></div>
           <noticeTable ref="noticeTableRef" />
         </el-form>
@@ -1002,6 +1015,12 @@ export default {
           color: '#333333'
         }
       }
+    },
+    // 处理筛选参数
+    listQueryReset() {
+      if (!this.listQuery.status) return this.listQuery
+      this.listQuery.statuses = this.listQuery.status.join(',')
+      return this.listQuery
     }
   },
   watch: {
@@ -1041,12 +1060,11 @@ export default {
     // 获取列表数据
     getList() {
       const vm = this
-
       vm.listLoading = true
       axios
         .post(
           '/smartprint/print-room/order/get-orders',
-          qs.stringify(vm.listQuery)
+          qs.stringify(vm.listQueryReset)
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
@@ -1057,7 +1075,7 @@ export default {
     },
     // 获取列表数据总数
     getListLen() {
-      const params = JSON.parse(JSON.stringify(this.listQuery))
+      const params = JSON.parse(JSON.stringify(this.listQueryReset))
       params.isSum = 1
       axios
         .post('/smartprint/print-room/order/get-orders', qs.stringify(params))
@@ -1084,7 +1102,7 @@ export default {
       axios
         .post(
           '/smartprint/print-room/order/export-bill',
-          qs.stringify(this.listQuery)
+          qs.stringify(this.listQueryReset)
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
@@ -1266,6 +1284,18 @@ export default {
       const ids = this.choseTags.map(item => item.id)
       return ids.find(item => tag.id === item)
     },
+    // 是否可撤销
+    isWithDrawOrder(status) {
+      console.log(status)
+      const statusArr = [
+        'ShengChanZhong',
+        'YiShangJia',
+        'YiLingQu',
+        'YiCheXiao'
+      ]
+      if (statusArr.find(item => item === status)) return false
+      return true
+    },
     // 编辑回显
     editView() {
       const { id } = this.$route.query
@@ -1341,18 +1371,20 @@ export default {
       axios
         .post(
           '/smartprint/print-room/order/update-order',
-          qs.stringify({ orderId: id, status })
+          qs.stringify({ orderId: id, lingQuFangShi: 'IC', status })
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('操作成功')
           this.editView()
+          this.getList()
+          this.dialogICVisible = false
           // 对于table已领取状态的兼容
-          if (status == 'YiLingQu') {
-            const index = this.list.findIndex(item => item.id == id)
-            this.validSuccessCallback(index)
-            this.dialogICVisible = false
-          }
+          // if (status == 'YiLingQu') {
+          //   const index = this.list.findIndex(item => item.id == id)
+          //   this.validSuccessCallback(index)
+          //   this.dialogICVisible = false
+          // }
         })
         .catch(err => err)
     },
@@ -1598,7 +1630,6 @@ export default {
         this.multipleSelection.splice(index, 1)
       }
     },
-
     // 上传相关
     succcessHandle(response) {
       this.samples ? this.samples += ',' + response.data.url : this.samples = response.data.url
@@ -1664,6 +1695,19 @@ export default {
       this.tfUID = '' // 卡号
       this.tfBlockData = '' // 读取的数据
       this.dialogICGroupVisible = true
+    },
+    // 直接领取
+    unValidICTable(row) {
+      axios.post(
+        '/smartprint/print-room/order/update-order',
+        qs.stringify({ orderId: row.id, lingQuFangShi: 'Direct', status: 'YiLingQu' })
+      ).then(res => {
+        if (res.data.code !== 0) return this.$message.error(res.data.msg)
+        this.$message.success('操作成功')
+        this.editView()
+        this.getList()
+      })
+        .catch(err => err)
     },
     // table IC卡验证
     validICTable(row, index) {
@@ -2016,6 +2060,13 @@ export default {
 </script>
 
 <style scoped>
+/* 打印 */
+/* @media print {
+  div {
+    display: none !important;
+  }
+} */
+
 /* form 输入框 宽度 */
 .form-item-width {
   width: 400px;

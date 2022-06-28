@@ -23,15 +23,11 @@
         <tr>
           <td>数量</td>
           <td class=" bg-FFF">
-            <el-input v-model="params.jiaoYingDanFenShu"
+            <el-input v-model="params.jiaoYingDanBanShu"
                       style="width:100%;border: none;text-align: center;"></el-input>
           </td>
           <td class="bg-FFF">
-            <el-input v-model="params.jiaoYingDanBanShu"
-                      style="width:100%"></el-input>
-          </td>
-          <td class="bg-FFF">
-            <el-input v-model="params.jiaoYingShuangFenShu"
+            <el-input v-model="params.jiaoYingDanFenShu"
                       style="width:100%"></el-input>
           </td>
           <td class="bg-FFF">
@@ -39,7 +35,7 @@
                       style="width:100%"></el-input>
           </td>
           <td class="bg-FFF">
-            <el-input v-model="params.jiaoYingDaDanFenShu"
+            <el-input v-model="params.jiaoYingShuangFenShu"
                       style="width:100%"></el-input>
           </td>
           <td class="bg-FFF">
@@ -47,11 +43,15 @@
                       style="width:100%"></el-input>
           </td>
           <td class="bg-FFF">
-            <el-input v-model="params.jiaoYingDaShuangFenShu"
+            <el-input v-model="params.jiaoYingDaDanFenShu"
                       style="width:100%"></el-input>
           </td>
           <td class="bg-FFF">
             <el-input v-model="params.jiaoYingDaShuangBanShu"
+                      style="width:100%"></el-input>
+          </td>
+          <td class="bg-FFF">
+            <el-input v-model="params.jiaoYingDaShuangFenShu"
                       style="width:100%"></el-input>
           </td>
         </tr>

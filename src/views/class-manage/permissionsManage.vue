@@ -51,6 +51,7 @@
       <!-- 表格 -->
       <el-table ref="multipleTable"
                 @selection-change="handleSelectionChange"
+                @sort-change="tableSortChange"
                 :data="list"
                 v-loading.body="listLoading"
                 element-loading-text=""
@@ -70,45 +71,41 @@
         </el-table-column>
 
         <el-table-column label="年级名称"
+                         prop="name"
                          width="">
-          <template slot-scope="scope">
+          <!-- <template slot-scope="scope">
             {{scope.row.name}}
-          </template>
+          </template> -->
         </el-table-column>
         <el-table-column label="班级数量"
+                         prop="classesCount"
+                         width="">
+          <!-- <template slot-scope="scope">
+            {{scope.row.classesCount}}
+          </template> -->
+        </el-table-column>
+        <el-table-column label="排序"
+                         prop="num"
+                         sortable="custom"
                          width="">
           <template slot-scope="scope">
-            {{scope.row.classesCount}}
+            <el-input @change="sortIptChange(scope.row)"
+                      v-model="scope.row.num"></el-input>
+            <!-- <el-select @change="sortChange(scope.row)"
+                       class="filter-item"
+                       v-model="scope.row.num"
+                       size="small">
+              <el-option v-for="item in  list"
+                         :key="item.id"
+                         :label="item.num"
+                         :value="item.num">
+              </el-option>
+            </el-select> -->
           </template>
         </el-table-column>
-
-        <!-- <el-table-column label="年级名称"
-                         width="100">
-          <template slot-scope="scope">
-            <template v-for="item in scope.row.userbaseinfoList">
-              <span :key="item">{{ item.userName  }} &nbsp; &nbsp;</span>
-            </template>
-          </template>
-        </el-table-column> -->
-        <!-- <el-table-column label="班级数量"
-                         width="">
-          <template slot-scope="scope">
-            <template v-for="item in scope.row.userbaseinfoList">
-              <span :key="item">{{ item.identifierId  }} &nbsp; &nbsp;</span>
-            </template>
-
-          </template>
-        </el-table-column> -->
-
         <el-table-column align="center"
                          label="操作">
           <template slot-scope="scope">
-            <!-- <el-button icon="edit"
-                     size="small"
-                     @click="setPermissions(scope.$index, scope.row)">设置权限</el-button>
-          <el-button icon="edit"
-                     size="small"
-                     @click="setUser(scope.$index, scope.row)">设置成员</el-button> -->
             <el-button icon="edit"
                        size="small"
                        @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -287,6 +284,11 @@ export default {
       viewType: 0 // 0 | add | edit
     }
   },
+  // computed: {
+  //   sortListNum () {
+  //     return this.list.map(item => item.num)
+  //   }
+  // },
   mounted() {
     const vm = this
 
@@ -358,6 +360,20 @@ export default {
         })
         .catch(err => console.log(err))
     },
+    // table 排序
+    sortChange(val) {
+      console.log(val)
+    },
+    // 排序
+    sortIptChange(row) {
+      axios.post(
+        '/smartprint/print-room/grade/update-grade',
+        qs.stringify({ gradeId: row.id, num: row.num })
+      ).then(res => {
+        if (res.data.code !== 0) return this.$message.error(res.data.msg)
+        this.getList()
+      })
+    },
     // 根据当前路由参数切换视图
     setViewByQuery() {
       const { extra } = this.$route.query
@@ -423,6 +439,22 @@ export default {
           vm.list.splice(index, 1)
         })
         .then(err => err)
+    },
+    // table排序
+    tableSortChange(column) {
+      const sortMap = {
+        ascending: 'asc',
+        descending: 'desc'
+      }
+      if (column.order) {
+        this.listQuery.sorts = column.prop
+        this.listQuery.orders = sortMap[column.order]
+      } else {
+        this.listQuery.orders = this.listQuery.sorts = ''
+      }
+
+      this.listQuery.currPage = this.listQuery.start = 1
+      this.getList()
     },
     // 批量删除
     handleDelAll() {
@@ -566,3 +598,8 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.cell .el-input__inner {
+  color: #999 !important;
+}
+</style>

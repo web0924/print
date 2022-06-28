@@ -71,6 +71,7 @@
       <el-table :data="list"
                 v-loading.body="listLoading"
                 element-loading-text=""
+                @sort-change="tableSortChange"
                 border
                 fit
                 highlight-current-row>
@@ -108,6 +109,15 @@
                          width="">
           <template slot-scope="scope">
             {{scope.row.type?typeOptions.filter(item=>item.key==scope.row.type)[0].name:''  }}
+          </template>
+        </el-table-column>
+        <el-table-column label="排序"
+                         prop="num"
+                         sortable="custom"
+                         width="">
+          <template slot-scope="scope">
+            <el-input @change="sortIptChange(scope.row)"
+                      v-model="scope.row.num"></el-input>
           </template>
         </el-table-column>
         <el-table-column align="center"
@@ -662,6 +672,16 @@ export default {
         })
         .catch(err => console.log(err))
     },
+    // 排序
+    sortIptChange(row) {
+      axios.post(
+        '/smartprint/print-room/class/update-class',
+        qs.stringify({ classId: row.id, num: row.num })
+      ).then(res => {
+        if (res.data.code !== 0) return this.$message.error(res.data.msg)
+        this.getList()
+      })
+    },
     // 根据当前路由参数切换视图
     setViewByQuery() {
       const { extra } = this.$route.query
@@ -699,6 +719,22 @@ export default {
         path: '/classRoomManage/permissionsManage',
         query: { extra: 'edit', id }
       }) // 带参跳转
+    },
+    // table排序
+    tableSortChange(column) {
+      const sortMap = {
+        ascending: 'asc',
+        descending: 'desc'
+      }
+      if (column.order) {
+        this.listQuery.sorts = column.prop
+        this.listQuery.orders = sortMap[column.order]
+      } else {
+        this.listQuery.orders = this.listQuery.sorts = ''
+      }
+
+      this.listQuery.currPage = this.listQuery.start = 1
+      this.getList()
     },
     // 编辑上传
     onEditSubmit() {

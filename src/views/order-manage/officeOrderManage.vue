@@ -79,7 +79,8 @@
                          :value="item.value">
               </el-option>
             </el-select> -->
-          <el-select clearable
+          <el-select multiple
+                     collapse-tags
                      class="filter-item"
                      style="width: 200px"
                      v-model="listQuery.status"
@@ -287,12 +288,23 @@
                        plain
                        @click="tableOrderStatuHandle('YiShangJia',scope.row,scope.$index)"
                        size="small">确认上架</el-button>
-            <el-button style="margin-left:50px"
+            <el-popover placement="top-start"
+                        title="领取方式"
+                        trigger="click">
+              <el-button @click="validICTable(scope.row,scope.$index)">IC卡领取</el-button>
+              <el-button @click="unValidICTable(scope.row)">直接领取</el-button>
+              <el-button v-show="scope.row.status=='YiShangJia'"
+                         slot="reference"
+                         type="primary"
+                         plain
+                         size="small">确认领取</el-button>
+            </el-popover>
+            <!-- <el-button style="margin-left:50px"
                        v-show="scope.row.status=='YiShangJia'"
                        type="primary"
                        plain
                        @click="validICTable(scope.row,scope.$index)"
-                       size="small">确认领取</el-button>
+                       size="small">确认领取</el-button> -->
             <el-button icon="edit"
                        size="small"
                        @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -401,12 +413,24 @@
                          plain
                          @click="ensureOrderHnadle('YiShangJia')"
                          size="small">确认上架</el-button>
-              <el-button style="margin-left:50px"
+              <!-- <el-button style="margin-left:50px"
                          v-show="roleTemp.status=='YiShangJia'"
                          type="primary"
                          plain
                          @click="validIC"
-                         size="small">确认领取</el-button>
+                         size="small">确认领取</el-button> -->
+              <el-popover placement="top-start"
+                          title="领取方式"
+                          trigger="click">
+                <el-button @click="validIC">IC卡领取</el-button>
+                <el-button @click="unValidICTable(roleTemp)">直接领取</el-button>
+                <el-button style="margin-left:50px"
+                           v-show="roleTemp.status=='YiShangJia'"
+                           type="primary"
+                           slot="reference"
+                           plain
+                           size="small">确认领取</el-button>
+              </el-popover>
             </el-form-item>
           </el-form>
           <el-form-item label="是否关账：">
@@ -529,7 +553,7 @@
               <el-select disabled
                          clearable
                          class="filter-item form-item-width"
-                         placeholder="请选择下单人"
+                         placeholder="无"
                          v-model="roleTemp.officeId">
                 <el-option v-for="item in  officelist"
                            :key="item.id"
@@ -854,7 +878,8 @@ export default {
         currPage: 1,
         count: 10,
         start: 1,
-        kw: ''
+        kw: '',
+        status: ''
       },
       //       学科订单
       // types=Subject,Common
@@ -924,13 +949,13 @@ export default {
     },
     // 订单是否可编辑
     isEditOrder() {
-      const statusArr = [
+      const status = [
         'ShengChanZhong',
         'YiShangJia',
         'YiLingQu',
         'YiCheXiao'
       ]
-      if (statusArr.find(item => item === this.roleTemp.status)) return true
+      if (status.find(item => item === this.roleTemp.status)) return true
       return false
     },
     orderSelectStatus() {
@@ -1004,6 +1029,12 @@ export default {
           color: '#333333'
         }
       }
+    },
+    // 处理筛选参数
+    listQueryReset() {
+      if (!this.listQuery.status) return this.listQuery
+      this.listQuery.statuses = this.listQuery.status.join(',')
+      return this.listQuery
     }
   },
   watch: {
@@ -1032,7 +1063,7 @@ export default {
     this.getOfficeList()
     this.getSubjectList()
     this.getStaffList()
-
+    // this.getFenJianList()
     this.icTips()
   },
   methods: {
@@ -1040,15 +1071,15 @@ export default {
       // alert(boo)
       this.isShowPrice = boo
     },
+
     // 获取列表数据
     getList() {
       const vm = this
-
       vm.listLoading = true
       axios
         .post(
           '/smartprint/print-room/order/get-orders',
-          qs.stringify(vm.listQuery)
+          qs.stringify(vm.listQueryReset)
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
@@ -1059,7 +1090,7 @@ export default {
     },
     // 获取列表数据总数
     getListLen() {
-      const params = JSON.parse(JSON.stringify(this.listQuery))
+      const params = JSON.parse(JSON.stringify(this.listQueryReset))
       params.isSum = 1
       axios
         .post('/smartprint/print-room/order/get-orders', qs.stringify(params))
@@ -1080,19 +1111,16 @@ export default {
     },
     // 导出
     exportAll() {
-      if (!this.listQuery.gradeId) return this.$message.warning('请选择年级')
       if (!this.listQuery.startTime) return this.$message.warning('请选择开始时间')
       if (!this.listQuery.endTime) return this.$message.warning('请选择结束时间')
-      axios
-        .post(
-          '/smartprint/print-room/order/export-bill',
-          qs.stringify(this.listQuery)
-        )
-        .then(res => {
-          if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          window.open('https://dev.renx.cc/' + res.data.data.url)
-        })
-        .catch(err => err)
+      axios.post(
+        '/smartprint/print-room/order/export-office-bill',
+        qs.stringify(this.listQueryReset)
+      ).then(res => {
+        if (res.data.code !== 0) return this.$message.error(res.data.msg)
+        window.open('https://dev.renx.cc/' + res.data.data.url)
+      })
+        .catch(err => this.$message.error(err))
     },
     classSelectChange(val) {
       this.getClassList({ gradeId: val })
@@ -1649,6 +1677,19 @@ export default {
         }
         this.samples = res.data.data.url + ',' + this.samples
       })
+    },
+    // 直接领取
+    unValidICTable(row) {
+      axios.post(
+        '/smartprint/print-room/order/update-order',
+        qs.stringify({ orderId: row.id, lingQuFangShi: 'Direct', status: 'YiLingQu' })
+      ).then(res => {
+        if (res.data.code !== 0) return this.$message.error(res.data.msg)
+        this.$message.success('操作成功')
+        this.editView()
+        this.getList()
+      })
+        .catch(err => err)
     },
     // 领取成功回调
     validSuccessCallback(index) {
