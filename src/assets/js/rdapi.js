@@ -36,7 +36,7 @@ var WebReader=
 		};
 		
         var WSonError=function(){
-            alert("Server not running !");
+            // alert("Server not running !");
 		};
 		
         reader.createSocket=function(){

@@ -399,6 +399,10 @@
 
             </el-form-item>
           </el-form>
+          <el-form-item v-if="roleTemp.status==='YiLingQu'"
+                        label="领取方式：">
+            <span>{{lingQuFangShi[roleTemp.lingQuFangShi] }}</span>
+          </el-form-item>
           <el-form-item label="是否关账：">
             <span>{{roleTemp.isGuanZhang==1?'已关账':'未关账'}}</span>
           </el-form-item>
@@ -1021,6 +1025,13 @@ export default {
       if (!this.listQuery.status) return this.listQuery
       this.listQuery.statuses = this.listQuery.status.join(',')
       return this.listQuery
+    },
+    // 领取方式
+    lingQuFangShi() {
+      return {
+        Direct: '直接领取',
+        IC: 'IC卡领取'
+      }
     }
   },
   watch: {
@@ -1355,7 +1366,7 @@ export default {
       axios
         .post(
           '/smartprint/print-room/order/update-order',
-          qs.stringify({ orderId: id, status })
+          qs.stringify({ orderId: id, lingQuFangShi: 'IC', status })
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)

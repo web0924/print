@@ -1,0 +1,156 @@
+<template>
+  <el-dialog :visible.sync="visible"
+             title="打印通知单">
+    <div class="print">
+      <div class="prin-item">
+        <span class="print-label"> 单号：</span>
+        <span>{{orderData.id}}</span>
+      </div>
+      <div class="prin-item">
+        <span class="print-label">日期：</span>
+        <span> {{orderData.createTime}}</span>
+      </div>
+      <div class="prin-item">
+        <span class="print-label">班级：</span>
+        <span>
+          {{(orderData.gradeName||'')+(orderData.className||'')}}
+        </span>
+      </div>
+      <div class="prin-item">
+        <span class="print-label">文印内容：</span>
+        <span> {{orderData.title}}</span>
+      </div>
+      <div class="prin-item">
+        <div style="width:40%">
+          <span class="print-label">
+            单份数：
+          </span>
+          <span>{{danFenShu}}</span>
+        </div>
+        <div>
+          <span class="print-label">
+            双份数：
+          </span>
+          <span>{{shuangFenShu}}</span>
+        </div>
+      </div>
+      <div class="prin-item">
+        <div style="width:40%">
+          <span class="print-label">答单份数：</span>
+          <span> {{daDanFenShu}}</span>
+        </div>
+        <div>
+          <span class="print-label"> 答双份数：</span>
+          <span> {{daShuangnFenShu}}</span>
+        </div>
+      </div>
+      <div class="prin-item">
+        <span class="print-label">要求：</span>
+        <span> {{orderData.yinShuaYaoQiu}}</span>
+      </div>
+      <div class="prin-item">
+        <span class="print-label">交货时间：</span>
+        <span> {{orderData.jiaoHuoShiJian}}</span>
+      </div>
+      <div class="prin-item">
+        <span class="print-label">经办：</span>
+        <span>{{orderData.jingBan}}</span>
+      </div>
+      <div class="prin-item">
+        <span class="print-label"> 接单：</span>
+        <span> {{orderData.jieDan}}</span>
+      </div>
+      <div class="prin-item">
+        <span class="print-label">制版：</span>
+        <span> {{orderData.zhiBan}}</span>
+      </div>
+      <div class="prin-item">
+        <span class="print-label"> 分拣：</span>
+        <span>{{orderData.fenJian}}</span>
+      </div>
+      <div class="prin-item">
+        <span class="print-label"> 印刷人：</span>
+        <span> {{orderData.yinShuaRen }}</span>
+      </div>
+      <div class="prin-item">
+        <span class="print-label"> 印刷费：</span>
+        <span> {{orderData.yinShuaFei}}</span>
+      </div>
+    </div>
+    <span slot="footer"
+          class="dialog-footer">
+      <el-button @click="visible = false">取 消</el-button>
+      <el-button type="primary"
+                 @click="printHandle">打印</el-button>
+    </span>
+  </el-dialog>
+
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      visible: false,
+      elinputWidth: '90%',
+      orderData: {}
+    }
+  },
+  computed: {
+    danFenShu() {
+      return (this.orderData.jiaoYingDanBanShu || 0) * (this.orderData.jiaoYingDanFenShu || 0)
+    },
+    shuangFenShu() {
+      return (this.orderData.jiaoYingShuangBanShu || 0) * (this.orderData.jiaoYingShuangFenShu || 0)
+    },
+    daDanFenShu() {
+      return (this.orderData.jiaoYingDaDanBanShu || 0) * (this.orderData.jiaoYingDaDanFenShu || 0)
+    },
+    daShuangnFenShu() {
+      return (this.orderData.jiaoYingDaShuangBanShu || 0) * (this.orderData.jiaoYingDaShuangFenShu || 0)
+    }
+  },
+  methods: {
+    printHandle() {
+      window.print()
+    }
+  }
+}
+</script>
+<style>
+.print {
+  background-color: #fff;
+  height: 100%;
+}
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print,
+  .print * {
+    visibility: visible;
+  }
+  /* .print {
+    position: fixed;
+    left: 0;
+    top: 0;
+  } */
+}
+</style>
+
+<style scoped lang="scss">
+.prin-item {
+  display: flex;
+  align-items: center;
+  // justify-content: center;
+  font-size: 18px;
+  margin-bottom: 10px;
+  padding-left: 25px;
+  color: #666;
+  .print-label {
+    color: #333;
+    font-size: 19px;
+    font-weight: 600px;
+  }
+}
+</style>

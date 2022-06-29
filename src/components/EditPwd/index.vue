@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import md5 from 'blueimp-md5';
 export default {
   props: {
     successFun: {

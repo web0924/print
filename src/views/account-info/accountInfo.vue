@@ -26,7 +26,7 @@
           <el-input readonly
                     style="width:50%"
                     v-model.number="ruleForm.phone"></el-input>
-          <el-button @click="handleEditPwd"
+          <el-button @click="handleEditPhone"
                      type="text">修改手机号</el-button>
         </el-form-item>
         <p style="height:1px;background:#EEEEEE;margin:50px 0"></p>
@@ -56,9 +56,14 @@
       </el-form>
 
       <!-- 弹窗 -->
-      <!-- <EditPwd :successFun="successFun"
-               ref="EditPwd" /> -->
-               <VerifyDialog ref="VerifyDialogRef" />
+      <EditPhone :successFun="successFunByEditPhone"
+                 :phone="ruleForm.phone"
+                 ref="EditPhoneRef" />
+      <EditPwd :successFun="successFun"
+               ref="EditPwd" />
+      <VerifyDialog :validSuccess="validSuccess"
+                    :phone="ruleForm.phone"
+                    ref="VerifyDialogRef" />
       <!-- <el-dialog title="表单新增"
                  :visible.sync="dialogFormVisible">
         <el-form class="small-space"
@@ -93,11 +98,14 @@
 <script>
 import axios from 'axios'
 import qs from 'qs'
+import md5 from 'blueimp-md5';
 import { mapGetters } from 'vuex'
 import EditPwd from '../../components/EditPwd'
+import EditPhone from '../../components/EditPhone'
 import VerifyDialog from '../../components/VerifyDialog'
 export default {
   components: {
+    EditPhone,
     EditPwd,
     VerifyDialog
   },
@@ -184,19 +192,36 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields()
     },
+    // 修改手机号
+    handleEditPhone() {
+      this.$refs.EditPhoneRef.visible = true
+    },
     // 修改密码
     handleEditPwd() {
-      // this.$refs.EditPwd.visible = true
-      // this.$refs.VerifyDialogRef.visible = true
+      this.$refs.VerifyDialogRef.visible = true
+    },
+    validSuccess() {
+      this.$refs.EditPwd.visible = true
     },
     // 修改密码提交
     successFun(params) {
       axios
-        .post('/smartprint/me/update-pwd', qs.stringify(params))
+        .post('/smartprint/me/update-pwd', qs.stringify({ pwd: md5(md5(params.pwd)) }))
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('修改成功')
           this.$refs.EditPwd.visible = false
+        })
+        .catch(err => console.log(err))
+    },
+    // 修改手机号提交
+    successFunByEditPhone(params) {
+      axios
+        .post('/smartprint/me/bind-phone', qs.stringify(params))
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          this.$message.success('修改成功')
+          this.$refs.EditPhoneRef.visible = false
         })
         .catch(err => console.log(err))
     }

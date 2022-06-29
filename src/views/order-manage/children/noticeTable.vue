@@ -1,6 +1,10 @@
 <template>
-  <div class="need-print">
-    <div style="margin-top:20px">
+  <div>
+    <div class="operator-box">
+      <el-button style="color:#FFF; background: #09bb07;"
+                 @click="printHandle">打印通知单</el-button>
+    </div>
+    <div>
       <div class="extra">
         <label>
           <span class="title"> 经办人：</span>
@@ -18,21 +22,45 @@
         </label>
         <label>
           <span class="title">接单人：</span>
-          <el-input v-model="params.jieDan">
-            <!-- <template slot="append">￥</template> -->
-          </el-input>
+          <!-- <el-input v-model="params.jieDan" /> -->
+          <el-select v-model="params.jieDan"
+                     clearable
+                     placeholder=" "
+                     filterable
+                     @blur="(e)=>{selectBlur(e, 'jieDan')} ">
+            <el-option v-for="(item,index) in jieDanRens"
+                       :key="index"
+                       :label="item.name"
+                       :value="item.id" />
+          </el-select>
         </label>
         <label>
           <span class="title"> 制版人：</span>
-          <el-input v-model="params.zhiBan">
-            <!-- <template slot="append">份</template> -->
-          </el-input>
+          <!-- <el-input v-model="params.zhiBan" /> -->
+          <el-select v-model="params.zhiBan"
+                     clearable
+                     placeholder=" "
+                     filterable
+                     @blur="(e)=>{selectBlur(e, 'zhiBan')} ">
+            <el-option v-for="(item,index) in zhiBanRens"
+                       :key="index"
+                       :label="item.name"
+                       :value="item.id" />
+          </el-select>
         </label>
         <label>
           <span class="title"> 分拣人：</span>
-          <el-input v-model="params.fenJian">
-            <!-- <template slot="append">份</template> -->
-          </el-input>
+          <!-- <el-input v-model="params.fenJian" /> -->
+          <el-select v-model="params.fenJian"
+                     clearable
+                     placeholder=" "
+                     filterable
+                     @blur="(e)=>{selectBlur(e, 'fenJian')} ">
+            <el-option v-for="(item,index) in fenJianRens"
+                       :key="index"
+                       :label="item.name"
+                       :value="item.id" />
+          </el-select>
         </label>
         <label>
           <span class="title">交货时间:</span>
@@ -52,9 +80,17 @@
         </label>
         <label>
           <span class="title"> 印刷人:</span>
-          <el-input v-model="params.yinShuaRen">
-            <!-- <template slot="append">份</template> -->
-          </el-input>
+          <!-- <el-input v-model="params.yinShuaRen" /> -->
+          <el-select v-model="params.yinShuaRen"
+                     clearable
+                     placeholder=" "
+                     filterable
+                     @blur="(e)=>{selectBlur(e, 'yinShuaRen')} ">
+            <el-option v-for="(item,index) in  yinShuaRens"
+                       :key="index"
+                       :label="item.name"
+                       :value="item.id" />
+          </el-select>
         </label>
         <label>
           <span class="title"> 印刷费:</span>
@@ -64,13 +100,18 @@
         </label>
       </div>
     </div>
+    <printDialog ref="printDialogRef" />
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import printDialog from './printDialog.vue'
 // import qs from 'qs'
 export default {
+  components: {
+    printDialog
+  },
   data() {
     return {
       fenJianRens: [],
@@ -92,10 +133,10 @@ export default {
   },
   mounted() {
     this.getFenJianList()
-    // this.getJieDanList()
-    // this.getJingBnaList()
-    // this.getYinShuaList()
-    // this.getZhiBanList()
+    this.getJieDanList()
+    this.getJingBnaList()
+    this.getYinShuaList()
+    this.getZhiBanList()
   },
   methods: {
     // 获取分拣人列表
@@ -104,7 +145,7 @@ export default {
         '/smartprint/print-room/order/get-fen-jian-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
-        vm.fenJianRens = res.data.data.fenJianRens
+        this.fenJianRens = res.data.data.fenJianRens
       }).catch(err => err)
     },
     // 接单人列表
@@ -113,7 +154,7 @@ export default {
         '/smartprint/print-room/order/get-jie-dan-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
-        vm.jieDanRens = res.data.data.jieDanRens
+        this.jieDanRens = res.data.data.jieDanRens
       }).catch(err => err)
     },
     // 经办人列表
@@ -122,7 +163,7 @@ export default {
         '/smartprint/print-room/order/get-jing-ban-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
-        vm.jingBanRens = res.data.data.jingBanRens
+        this.jingBanRens = res.data.data.jingBanRens
       }).catch(err => err)
     },
     // 印刷人列表
@@ -131,7 +172,7 @@ export default {
         '/smartprint/print-room/order/get-yin-shua-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
-        vm.yinShuaRens = res.data.data.yinShuaRens
+        this.yinShuaRens = res.data.data.yinShuaRens
       }).catch(err => err)
     },
     // 制版人列表
@@ -140,18 +181,25 @@ export default {
         '/smartprint/print-room/order/get-zhi-ban-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
-        vm.zhiBanRens = res.data.data.zhiBanRens
+        this.zhiBanRens = res.data.data.zhiBanRens
       }).catch(err => err)
     },
+    // 手动填写 失去焦点赋值
     selectBlur(e, val) {
       if (e.target.value) {
         this.params[val] = e.target.value
         this.$forceUpdate()   // 强制更新
       }
+    },
+    printHandle() {
+      // window.print()
+      this.$refs.printDialogRef.visible = true
+      this.$refs.printDialogRef.orderData = this.params
     }
   }
 }
 </script>
+
 
 <style lang="scss" scoped>
 .extra {
@@ -171,5 +219,10 @@ export default {
     margin-right: 20px;
     margin-bottom: 10px;
   }
+}
+.operator-box {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
 }
 </style>
