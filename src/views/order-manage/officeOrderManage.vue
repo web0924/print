@@ -369,7 +369,8 @@
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/orderManage/officeOrderManage' }">科室订单</el-breadcrumb-item>
+            <el-breadcrumb-item @click.native="fakeBackHandle"
+                                :to="{ path: '/orderManage/officeOrderManage' }">科室订单</el-breadcrumb-item>
             <el-breadcrumb-item>编辑订单</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
@@ -1309,8 +1310,8 @@ export default {
       return ids.find(item => tag.id === item)
     },
     // 编辑回显
-    editView() {
-      const { id } = this.$route.query
+    editView(id) {
+      // const { id } = this.$route.query
       if (id) {
         axios
           .post(
@@ -1352,14 +1353,13 @@ export default {
     },
     // 编辑
     handleEdit(index, { id }) {
-      const vm = this
-      console.log('编辑的row：', index, '-----', id)
-      // 跳页面进行修改
-      // this.$router.push('/example/form');
-      this.$router.push({
-        path: '/orderManage/officeOrderManage',
-        query: { extra: 'edit', id }
-      }) // 带参跳转
+      this.viewType = 'edit'
+      this.editView(id)
+      // const vm = this
+      // this.$router.push({
+      //   path: '/orderManage/officeOrderManage',
+      //   query: { extra: 'edit', id }
+      // })
     },
     // 修改table订单状态
     tableOrderStatuHandle(status, row, index) {
@@ -1404,7 +1404,10 @@ export default {
     deleteFile(index) {
       this.roleTemp.attachmentFiles.splice(index, 1)
     },
-
+    // 伪装返回
+    fakeBackHandle() {
+      this.$FakeBack(this)
+    },
     // 编辑上传
     submitHandle() {
       const {

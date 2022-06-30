@@ -340,7 +340,9 @@
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/orderManage/orderManage' }">学科订单</el-breadcrumb-item>
+            <!-- <el-breadcrumb-item :to="{ path: '/orderManage/orderManage' }">学科订单</el-breadcrumb-item> -->
+            <el-breadcrumb-item :to="{ path: '/orderManage/orderManage' }"
+                                @click.native="fakeBackHandle">学科订单</el-breadcrumb-item>
             <el-breadcrumb-item>编辑订单</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
@@ -1092,7 +1094,7 @@ export default {
         .post('/smartprint/print-room/order/get-orders', qs.stringify(params))
         .then(res => {
           this.total = res.data.data.sum.count
-          console.log(this.total)
+          // console.log(this.total)
         })
         .catch(err => console.log(err))
     },
@@ -1258,22 +1260,6 @@ export default {
       const upperIds = list.map(item => item.upperId)
       return [...new Set(upperIds)].sort()
     },
-    // 获取文印规格设置
-    getSets() {
-      axios
-        .post(
-          '/smartprint/print-room/price-book/get-sets',
-          qs.stringify({ schoolId: this.roleTemp.schoolID })
-        )
-        .then(res => {
-          if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          this.dynamicTags = res.data.data.sets
-          this.maxFloor = this.getMaxFloor(this.dynamicTags)
-          console.log(this.dynamicTags)
-          console.log(this.maxFloor)
-        })
-        .catch(err => err)
-    },
     // 获取价格设置
     getPrices() {
       const params = {
@@ -1297,7 +1283,7 @@ export default {
     },
     // 是否可撤销
     isWithDrawOrder(status) {
-      console.log(status)
+      // console.log(status)
       const statusArr = [
         'ShengChanZhong',
         'YiShangJia',
@@ -1308,8 +1294,8 @@ export default {
       return true
     },
     // 编辑回显
-    editView() {
-      const { id } = this.$route.query
+    editView(id) {
+      // const { id } = this.$route.query
       if (id) {
         axios
           .post(
@@ -1317,7 +1303,7 @@ export default {
             qs.stringify({ orderId: id })
           )
           .then(res => {
-            console.log(res)
+            // console.log(res)
             if (res.data.code !== 0) return this.$message.error(res.data.msg)
             // this.roleTemp2 = res.data.data.order
             this.roleTemp = res.data.data.order
@@ -1349,16 +1335,20 @@ export default {
           .catch(err => console.log(err))
       }
     },
+    // 伪装返回
+    fakeBackHandle() {
+      this.$FakeBack(this)
+    },
     // 编辑
     handleEdit(index, { id }) {
-      const vm = this
-      console.log('编辑的row：', index, '-----', id)
-      // 跳页面进行修改
-      // this.$router.push('/example/form');
-      this.$router.push({
-        path: '/orderManage/orderManage',
-        query: { extra: 'edit', id }
-      }) // 带参跳转
+      this.viewType = 'edit'
+      this.editView(id)
+
+      // const vm = this
+      // this.$router.push({
+      //   path: '/orderManage/orderManage',
+      //   query: { extra: 'edit', id }
+      // })
     },
     // 修改table订单状态
     tableOrderStatuHandle(status, row, index) {
@@ -1505,8 +1495,19 @@ export default {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('修改成功')
           this.editView()
+          this.updateTableList(params)
         })
         .catch(err => err)
+    },
+    // 前端更新根据修改详情更新订单列表
+    updateTableList(params) {
+      const { orderId } = params
+      this.list.forEach((item, index) => {
+        if (item.id == orderId) {
+          this.list[index] = params
+          this.$forceUpdate()
+        }
+      })
     },
     // 单个删除（撤销）
     handleDelete(index, row) {

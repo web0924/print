@@ -25,6 +25,14 @@ import Cookies from 'js-cookie';
 
 import reader from './assets/js/rdapi'
 Vue.prototype.$Reader = reader
+// 伪装的返回
+Vue.prototype.$FakeBack = function(_this) {
+  NProgress.start()
+  setTimeout(() => {
+    _this.viewType = 0
+    NProgress.done()
+  }, 200)
+}
 
 
 import Viewer from 'v-viewer'
