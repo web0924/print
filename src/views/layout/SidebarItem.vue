@@ -156,14 +156,14 @@
         </template>
 
         <router-link class="menu-indent"
-                     to="/orderManage/orderManage"
+                     :to="'/orderManage/orderManage?randomID='+randomID"
                      v-if="routes['/orderManage/orderManage']">
           <el-menu-item index="/orderManage/orderManage">
             学科订单
           </el-menu-item>
         </router-link>
         <router-link class="menu-indent"
-                     to="/orderManage/officeOrderManage"
+                     :to="'/orderManage/officeOrderManage?randomID='+randomID"
                      v-if="routes['/orderManage/officeOrderManage']">
           <el-menu-item index="/orderManage/officeOrderManage">
             科室订单
@@ -178,7 +178,7 @@
           年级管理
         </template>
         <router-link class="menu-indent"
-                     to="/classManage/permissionsManage"
+                     :to="'/classManage/permissionsManage?randomID='+randomID"
                      v-if="routes['/classManage/permissionsManage']">
           <el-menu-item index="/classManage/permissionsManage">
             年级列表
@@ -193,7 +193,7 @@
         </template>
 
         <router-link class="menu-indent"
-                     to="/classRoomManage/permissionsManage"
+                     :to="'/classRoomManage/permissionsManage?randomID='+randomID"
                      v-if="routes['/classRoomManage/permissionsManage']">
           <el-menu-item index="/classRoomManage/permissionsManage">
             班级列表
@@ -208,7 +208,7 @@
         </template>
 
         <router-link class="menu-indent"
-                     to="/studentManage/studentManage"
+                     :to="'/studentManage/studentManage?randomID='+randomID"
                      v-if="routes['/studentManage/studentManage']">
           <el-menu-item index="/studentManage/studentManage">
             学生列表
@@ -223,7 +223,7 @@
         </template>
 
         <router-link class="menu-indent"
-                     to="/department/department"
+                     :to="'/department/department?randomID='+randomID"
                      v-if="routes['/department/department']">
           <el-menu-item index="/department/department">
             科室列表
@@ -238,7 +238,7 @@
         </template>
 
         <router-link class="menu-indent"
-                     to="/subject/subject"
+                     :to="'/subject/subject?randomID='+randomID"
                      v-if="routes['/subject/subject']">
           <el-menu-item index="/subject/subject">
             学科列表
@@ -254,7 +254,7 @@
         </template>
 
         <router-link class="menu-indent"
-                     to="/teacherManage/teacherManage"
+                     :to="'/teacherManage/teacherManage?randomID='+randomID"
                      v-if="routes['/teacherManage/teacherManage']">
           <el-menu-item index="/teacherManage/teacherManage">
             教职工列表
@@ -269,7 +269,7 @@
         </template>
 
         <router-link class="menu-indent"
-                     to="/messageManage/messageManage"
+                     :to="'/messageManage/messageManage?randomID='+randomID"
                      v-if="routes['/messageManage/messageManage']">
           <el-menu-item index="/messageManage/messageManage">
             消息列表
@@ -283,7 +283,7 @@
                src="../../assets/img/person_slider_icon.png"> 个人信息
         </template>
         <router-link class="menu-indent"
-                     to="/accountInfoManage/accountInfoManage"
+                     :to="'/accountInfoManage/accountInfoManage?randomID='+randomID"
                      v-if="routes['/accountInfoManage/accountInfoManage']">
           <el-menu-item index="/accountInfoManage/accountInfoManage">
             个人信息
@@ -343,8 +343,21 @@ export default {
       // type: Array
     }
   },
+  data() {
+    return {
+      randomID: null,
+      timer: null
+
+    }
+  },
   mounted() {
-    console.log(this.$props.routes)
+    // console.log(this.$props.routes)
+    this.timer = setInterval(() => {
+      this.randomID = new Date().getTime()
+    }, 2000)
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
   }
 
 }

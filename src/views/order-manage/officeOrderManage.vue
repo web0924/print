@@ -369,8 +369,7 @@
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item @click.native="fakeBackHandle"
-                                :to="{ path: '/orderManage/officeOrderManage' }">科室订单</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/orderManage/officeOrderManage' }">科室订单</el-breadcrumb-item>
             <el-breadcrumb-item>编辑订单</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
@@ -1126,7 +1125,7 @@ export default {
       if (!this.listQuery.startTime) return this.$message.warning('请选择开始时间')
       if (!this.listQuery.endTime) return this.$message.warning('请选择结束时间')
       axios.post(
-        '/smartprint/print-room/order/export-office-bill',
+      '/smartprint/print-room/order/export-office-bill',
         qs.stringify(this.listQueryReset)
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
@@ -1310,8 +1309,8 @@ export default {
       return ids.find(item => tag.id === item)
     },
     // 编辑回显
-    editView(id) {
-      // const { id } = this.$route.query
+    editView() {
+      const { id } = this.$route.query
       if (id) {
         axios
           .post(
@@ -1353,13 +1352,14 @@ export default {
     },
     // 编辑
     handleEdit(index, { id }) {
-      this.viewType = 'edit'
-      this.editView(id)
-      // const vm = this
-      // this.$router.push({
-      //   path: '/orderManage/officeOrderManage',
-      //   query: { extra: 'edit', id }
-      // })
+      // this.viewType = 'edit'
+      // this.editView(id)
+      const vm = this
+      this.$router.push({
+        path: '/orderManage/officeOrderManage',
+        query: { extra: 'edit', id }
+      })
+      this.editView()
     },
     // 修改table订单状态
     tableOrderStatuHandle(status, row, index) {
@@ -1669,7 +1669,8 @@ export default {
       // 发送请求的参数格式为FormData
       const formData = new FormData()
       formData.append('file', file)
-      axios.post('/smartprint/upload-file', formData).then(res => {
+      axios.post(
+      '/smartprint/upload-file', formData).then(res => {
         if (res.data.code !== 0) {
           return this.$message.error(res.data.msg)
         }
@@ -1687,7 +1688,8 @@ export default {
       // 发送请求的参数格式为FormData
       const formData = new FormData()
       formData.append('file', file)
-      axios.post('/smartprint/upload-file', formData).then(res => {
+      axios.post(
+      '/smartprint/upload-file', formData).then(res => {
         if (res.data.code !== 0) {
           return this.$message.error(res.data.msg)
         }
@@ -1697,7 +1699,7 @@ export default {
     // 直接领取
     unValidICTable(row) {
       axios.post(
-        '/smartprint/print-room/order/update-order',
+      '/smartprint/print-room/order/update-order',
         qs.stringify({ orderId: row.id, lingQuFangShi: 'Direct', status: 'YiLingQu' })
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)

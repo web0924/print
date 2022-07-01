@@ -36,7 +36,8 @@ export default {
     handleInputConfirm(upperId) {
       const inputValue = this.inputValue
       if (inputValue) {
-        axios.post('/smartprint/company/price-book/create-set', qs.stringify({ name: inputValue, schoolId: this.$props.schoolID, upperId }))
+        axios.post(
+      '/smartprint/print-room/company/price-book/create-set', qs.stringify({ name: inputValue, schoolId: this.$props.schoolID, upperId }))
           .then(res => {
             if (res.data.code !== 0) return this.$message.error(res.data.msg)
             this.$emit('getSets')

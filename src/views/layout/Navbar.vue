@@ -200,7 +200,7 @@ export default {
     const vm = this
     try {
       axios
-        .post('/smartprint/me/refresh')
+        .post('/smartprint/print-room/me/refresh')
         .then(res => {
           if (res.data.code === 20) {
             // 退出登录
@@ -251,7 +251,8 @@ export default {
     },
     // 轮训
     polling() {
-      axios.post('/smartprint/me/get-messages', qs.stringify({ getted: 0, sorts: 'id', orders: 'asc' }))
+      axios.post(
+        '/smartprint/print-room/me/get-messages', qs.stringify({ getted: 0, sorts: 'id', orders: 'asc' }))
         .then(res => {
           if (res.data.code == 20) {
             clearTimeout(this.timer)
@@ -280,12 +281,13 @@ export default {
             duration: 0,
             onClick: () => {
               this.closeNotification(messages[i].id)
-              axios.post('/smartprint/me/view-message', qs.stringify({ messageId: messages[i].id })).then(res => {
-                this.$router.push({
-                  path: '/orderManage/orderManage',
-                  query: { extra: 'edit', id: messages[i].linkId }
+              axios.post(
+                '/smartprint/print-room/me/view-message', qs.stringify({ messageId: messages[i].id })).then(res => {
+                  this.$router.push({
+                    path: '/orderManage/orderManage',
+                    query: { extra: 'edit', id: messages[i].linkId }
+                  })
                 })
-              })
             },
             message: `<a style="color:#409EFF"><i>${messages[i].content}</i></a>`
           });

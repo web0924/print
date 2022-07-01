@@ -65,11 +65,23 @@ if (localStorage.getItem('themeValue')) {
   global.changeTheme(localStorage.getItem('themeValue'));
 }
 
+
+
 // lss 2017-7-1。遍历vuex的权限列表，假如去到的路径未在true列表中，则直接重定向到401。
 
 // register global progress.
 const whiteList = ['/login', '/authredirect', '/reset', '/sendpwd', '/401', '404'];// 不重定向白名单
 router.beforeEach((to, from, next) => {
+  if (to.query.extra) {
+    sessionStorage.setItem('scrollTop', document.documentElement.scrollTop)
+  } else {
+    if (!to.query.randomID) {
+      setTimeout(() => {
+        document.documentElement.scrollTop = sessionStorage.getItem('scrollTop')
+      }, 201)
+    }
+  }
+
   NProgress.start(); // 开启Progress
 
   // 获取先获取用户信息，从用户信息中拿权限，判断是否手敲

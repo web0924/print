@@ -152,7 +152,7 @@ const constantRouterMap = [
     name: '订单管理',
     // icon: '404',
     children: [
-      { path: 'orderManage', component: OrderManage, name: '订单列表' },
+      { path: 'orderManage', meta: { keepAlive: true }, component: OrderManage, name: 'orderList' },
       { path: 'officeOrderManage', component: officeOrderManage, name: '科室订单' }
     ]
   },
@@ -279,7 +279,12 @@ const constantRouterMap = [
 
 export default new Router({
   // mode: 'history', //后端支持可开
-  scrollBehavior: () => ({ y: 0 }),
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    }
+    return { x: 0, y: 0 };
+  },
   routes: constantRouterMap
 });
 

@@ -178,19 +178,21 @@ export default {
           this.loading = true;
           const par = JSON.parse(JSON.stringify(this.loginForm));
           par.pwd = md5(md5(par.pwd));
-          axios.post('/smartprint/login-by-pwd', qs.stringify(par))
+          axios.post(
+            '/smartprint/print-room/login-by-pwd', qs.stringify(par))
             .then(response => {
               this.loading = false;
               if (response.data.code !== 0) return this.$message.error(response.data.msg);
-              axios.post('/smartprint/me/refresh').then(res2 => {
-                if (res2.data.code !== 0) return vm.$message.error(res2.data.msg)
-                this.$store.dispatch('LoginByEmail', par).then(() => {
-                  this.loading = false;
-                  this.$router.push({ path: '/classManage/permissionsManage' });
-                  // this.$store.commit('SET_ACCOUNTINFO', res2.data.login.user);
-                  // this.showDialog = true;
-                })
-              }).catch(err => err)
+              axios.post(
+                '/smartprint/print-room/me/refresh').then(res2 => {
+                  if (res2.data.code !== 0) return vm.$message.error(res2.data.msg)
+                  this.$store.dispatch('LoginByEmail', par).then(() => {
+                    this.loading = false;
+                    this.$router.push({ path: '/classManage/permissionsManage' });
+                    // this.$store.commit('SET_ACCOUNTINFO', res2.data.login.user);
+                    // this.showDialog = true;
+                  })
+                }).catch(err => err)
 
                 .catch(err => {
                   this.$message.error(err);

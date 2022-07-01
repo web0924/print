@@ -68,7 +68,8 @@ export default {
     return {
       visible: false,
       activeName: '1',
-      vccode: ''
+      vccode: '',
+      pwd: ''
     }
   },
   watch: {

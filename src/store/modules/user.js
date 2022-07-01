@@ -10,7 +10,8 @@ const user = {
   state: {
     uid: Cookies.get('userId'),
     token: Cookies.get('printToken'),
-    userInfo: null
+    userInfo: null,
+    scrollTop: 0
 
   },
 
@@ -23,6 +24,9 @@ const user = {
     },
     SET_USERINFO: (state, userInfo) => {
       state.userInfo = userInfo;
+    },
+    SET_SCROLL_TOP: (state, scrollTop) => {
+      state.scrollTop = scrollTop;
     },
 
 

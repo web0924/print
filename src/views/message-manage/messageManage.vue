@@ -10,7 +10,8 @@
                      style="margin-left:20px;color:#666"
                      round
                      size="mini">
-            <img style="width:15px" src="../../assets/img/clear-svg-icon.svg">
+            <img style="width:15px"
+                 src="../../assets/img/clear-svg-icon.svg">
             一键清除未读
           </el-button>
           <!-- 搜索条件 -->
@@ -114,7 +115,7 @@ export default {
       vm.listLoading = true
       axios
         .post(
-          '/smartprint/me/get-messages',
+          '/smartprint/print-room/me/get-messages',
           qs.stringify(vm.listQuery)
         )
         .then(res => {
@@ -129,7 +130,7 @@ export default {
       const params = JSON.parse(JSON.stringify(this.listQuery))
       params.isSum = 1
       axios
-        .post('/smartprint/me/get-messages', qs.stringify(params))
+        .post('/smartprint/print-room/me/get-messages', qs.stringify(params))
         .then(res => {
           this.total = res.data.data.sum.count
           console.log(this.total)
@@ -139,7 +140,7 @@ export default {
     // 一键已读
     viewAllMessage() {
       axios
-        .post('/smartprint/me/view-all-message')
+        .post('/smartprint/print-room/me/view-all-message')
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.getList()
@@ -149,7 +150,7 @@ export default {
     // 查看消息
     messageHndle(id) {
       axios
-        .post('/smartprint/me/view-message', qs.stringify({ messageId: id }))
+        .post('/smartprint/print-room/me/view-message', qs.stringify({ messageId: id }))
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.currentViewMessage = res.data.data.message
@@ -225,8 +226,10 @@ export default {
 
 <style scoped lang="scss">
 .list-container {
+  min-height: 500px;
   .list-container-item-box {
     width: 100%;
+
     display: flex;
     align-items: center;
     justify-content: space-between;

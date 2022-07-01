@@ -167,7 +167,7 @@ export default {
   },
   mounted() {
     axios
-      .post('/smartprint/me/refresh')
+      .post('/smartprint/print-room/me/refresh')
       .then(res => {
         if (res.data.code === 20) {
           // 退出登录
@@ -206,7 +206,7 @@ export default {
     // 修改密码提交
     successFun(params) {
       axios
-        .post('/smartprint/me/update-pwd', qs.stringify({ pwd: md5(md5(params.pwd)) }))
+        .post('/smartprint/print-room/me/update-pwd', qs.stringify({ pwd: md5(md5(params.pwd)) }))
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('修改成功')
@@ -217,7 +217,7 @@ export default {
     // 修改手机号提交
     successFunByEditPhone(params) {
       axios
-        .post('/smartprint/me/bind-phone', qs.stringify(params))
+        .post('/smartprint/print-room/me/bind-phone', qs.stringify(params))
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('修改成功')

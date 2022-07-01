@@ -136,7 +136,8 @@ export default {
       this.$emit('choseCompleteEvent')
     },
     closeTag(tag, index) {
-      axios.post('/smartprint/company/price-book/delete-set', qs.stringify({ setId: tag.id })).then(res => {
+      axios.post(
+      '/smartprint/print-room/company/price-book/delete-set', qs.stringify({ setId: tag.id })).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
         this.$emit('choseCompleteEvent')
         for (let i = 0; i < this.choseTags.length; i++) {
@@ -157,7 +158,8 @@ export default {
     handleFloorInputConfirm() {
       const inputValue = this.addFloorValue
       if (inputValue) {
-        axios.post('/smartprint/company/price-book/create-set', qs.stringify({ name: inputValue, schoolId: this.$props.schoolID, upperId: this.choseTags[this.choseTags.length - 1].id }))
+        axios.post(
+      '/smartprint/print-room/company/price-book/create-set', qs.stringify({ name: inputValue, schoolId: this.$props.schoolID, upperId: this.choseTags[this.choseTags.length - 1].id }))
           .then(res => {
             if (res.data.code !== 0) return this.$message.error(res.data.msg)
             this.$emit('choseCompleteEvent')

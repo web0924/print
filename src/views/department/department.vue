@@ -385,6 +385,7 @@ export default {
         path: '/department/department',
         query: { extra: 'edit', id }
       }) // 带参跳转
+      this.editView()
     },
     // 编辑上传
     onEditSubmit() {

@@ -564,6 +564,7 @@ export default {
     this.getStudentList()
     this.getSubjectList()
   },
+
   methods: {
     // 获取年级数据
     getGradeList() {
@@ -675,7 +676,7 @@ export default {
     // 排序
     sortIptChange(row) {
       axios.post(
-        '/smartprint/print-room/class/update-class',
+      '/smartprint/print-room/class/update-class',
         qs.stringify({ classId: row.id, num: row.num })
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
@@ -719,6 +720,7 @@ export default {
         path: '/classRoomManage/permissionsManage',
         query: { extra: 'edit', id }
       }) // 带参跳转
+      this.editView()
     },
     // table排序
     tableSortChange(column) {

@@ -340,9 +340,9 @@
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <!-- <el-breadcrumb-item :to="{ path: '/orderManage/orderManage' }">学科订单</el-breadcrumb-item> -->
-            <el-breadcrumb-item :to="{ path: '/orderManage/orderManage' }"
-                                @click.native="fakeBackHandle">学科订单</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/orderManage/orderManage' }">学科订单</el-breadcrumb-item>
+            <!-- <el-breadcrumb-item :to="{ path: '/orderManage/orderManage' }"
+                                @click.native="fakeBackHandle">学科订单</el-breadcrumb-item> -->
             <el-breadcrumb-item>编辑订单</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
@@ -835,6 +835,7 @@ let g_vale;
 let g_wantFunc = 0;
 
 export default {
+  name: 'orderList',
   components: {
     skuSets,
     priceSet,
@@ -1294,8 +1295,8 @@ export default {
       return true
     },
     // 编辑回显
-    editView(id) {
-      // const { id } = this.$route.query
+    editView() {
+      const { id } = this.$route.query
       if (id) {
         axios
           .post(
@@ -1341,14 +1342,15 @@ export default {
     },
     // 编辑
     handleEdit(index, { id }) {
-      this.viewType = 'edit'
-      this.editView(id)
+      // this.viewType = 'edit'
+      // this.editView(id)
 
-      // const vm = this
-      // this.$router.push({
-      //   path: '/orderManage/orderManage',
-      //   query: { extra: 'edit', id }
-      // })
+      const vm = this
+      this.$router.push({
+        path: '/orderManage/orderManage',
+        query: { extra: 'edit', id }
+      })
+      this.editView()
     },
     // 修改table订单状态
     tableOrderStatuHandle(status, row, index) {
@@ -1523,9 +1525,9 @@ export default {
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('撤销成功')
-          // this.getListLen()
+          this.getList()
           // 前端更新。
-          vm.list[index].status = 'YiCheXiao'
+          // vm.list[index].status = 'YiCheXiao'
           // vm.list.splice(index, 1)
         })
         .then(err => err)
@@ -1670,7 +1672,8 @@ export default {
       // 发送请求的参数格式为FormData
       const formData = new FormData()
       formData.append('file', file)
-      axios.post('/smartprint/upload-file', formData).then(res => {
+      axios.post(
+      '/smartprint/upload-file', formData).then(res => {
         if (res.data.code !== 0) {
           return this.$message.error(res.data.msg)
         }
@@ -1688,7 +1691,8 @@ export default {
       // 发送请求的参数格式为FormData
       const formData = new FormData()
       formData.append('file', file)
-      axios.post('/smartprint/upload-file', formData).then(res => {
+      axios.post(
+      '/smartprint/upload-file', formData).then(res => {
         if (res.data.code !== 0) {
           return this.$message.error(res.data.msg)
         }
@@ -1711,7 +1715,7 @@ export default {
     // 直接领取
     unValidICTable(row) {
       axios.post(
-        '/smartprint/print-room/order/update-order',
+      '/smartprint/print-room/order/update-order',
         qs.stringify({ orderId: row.id, lingQuFangShi: 'Direct', status: 'YiLingQu' })
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)

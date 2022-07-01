@@ -142,7 +142,7 @@ export default {
     // 获取分拣人列表
     getFenJianList() {
       axios.post(
-        '/smartprint/print-room/order/get-fen-jian-rens'
+      '/smartprint/print-room/order/get-fen-jian-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
         this.fenJianRens = res.data.data.fenJianRens
@@ -151,7 +151,7 @@ export default {
     // 接单人列表
     getJieDanList() {
       axios.post(
-        '/smartprint/print-room/order/get-jie-dan-rens'
+      '/smartprint/print-room/order/get-jie-dan-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
         this.jieDanRens = res.data.data.jieDanRens
@@ -160,7 +160,7 @@ export default {
     // 经办人列表
     getJingBnaList() {
       axios.post(
-        '/smartprint/print-room/order/get-jing-ban-rens'
+      '/smartprint/print-room/order/get-jing-ban-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
         this.jingBanRens = res.data.data.jingBanRens
@@ -169,7 +169,7 @@ export default {
     // 印刷人列表
     getYinShuaList() {
       axios.post(
-        '/smartprint/print-room/order/get-yin-shua-rens'
+      '/smartprint/print-room/order/get-yin-shua-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
         this.yinShuaRens = res.data.data.yinShuaRens
@@ -178,7 +178,7 @@ export default {
     // 制版人列表
     getZhiBanList() {
       axios.post(
-        '/smartprint/print-room/order/get-zhi-ban-rens'
+      '/smartprint/print-room/order/get-zhi-ban-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
         this.zhiBanRens = res.data.data.zhiBanRens
