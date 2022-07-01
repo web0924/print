@@ -31,6 +31,7 @@
           <span>输入密码：</span>
           <el-input style="width:400px"
                     v-model="pwd"
+                    type="password"
                     placeholder="请输入当前密码"></el-input>
         </div>
       </el-tab-pane>
@@ -82,7 +83,7 @@ export default {
     submitOk() {
       if (this.activeName == 2) {
         axios
-          .post('/smartprint/me/self-authentication-by-pwd', qs.stringify({ pwd: md5(md5(this.pwd)) }))
+          .post('/smartprint/print-room/me/self-authentication-by-pwd', qs.stringify({ pwd: md5(md5(this.pwd)) }))
           .then(res => {
             if (res.data.code == 0) {
               this.$message.success('身份验证成功')

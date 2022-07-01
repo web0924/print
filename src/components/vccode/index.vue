@@ -67,11 +67,11 @@ export default {
       // const phone = this.$parent.loginForm.phone
 
       axios.post(
-      '/smartprint/me/send-sms-vcode-to-me', qs.stringify({ phone: this.$props.phone })).then(res => {
-        if (res.data.code !== 0) return this.$message.error(res.data.msg)
-        this.$message.success('验证码发送成功')
-        this.isCountDown = true
-      }).catch(err => err)
+        '/smartprint/me/send-sms-vcode', qs.stringify({ phone: this.$props.phone })).then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          this.$message.success('验证码发送成功')
+          this.isCountDown = true
+        }).catch(err => err)
     }
   }
 }
