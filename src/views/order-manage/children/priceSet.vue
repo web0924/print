@@ -87,11 +87,11 @@
                       style="width:100%"></el-input>
           </td>
           <td>
-            <el-input v-model="params.fuYingB4Shu"
+            <el-input v-model="params.fuYingA4Shu"
                       style="width:100%"></el-input>
           </td>
           <td>
-            <el-input v-model="params.fuYingA4Shu"
+            <el-input v-model="params.fuYingB4Shu"
                       style="width:100%"></el-input>
           </td>
           <td>

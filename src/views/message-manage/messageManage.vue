@@ -39,8 +39,8 @@
 
       <!-- 表格 -->
       <div class="list-container">
-        <div @click="messageHndle(item.id)"
-             v-for="item in list"
+        <div @click="messageHndle(item.id,index)"
+             v-for="(item , index) in list"
              :key="item.id"
              class="list-container-item-box">
           <div>
@@ -148,13 +148,14 @@ export default {
         .catch(err => err)
     },
     // 查看消息
-    messageHndle(id) {
+    messageHndle(id, index) {
       axios
         .post('/smartprint/print-room/me/view-message', qs.stringify({ messageId: id }))
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.currentViewMessage = res.data.data.message
           this.dialogVisible = true
+          this.list[index].viewed = 1
         })
         .catch(err => err)
     },

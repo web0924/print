@@ -353,7 +353,9 @@ import qs from 'qs'
 import md5 from 'blueimp-md5';
 
 import store from '@/store'
-import { toThousandslsFilter } from '../../filters';
+
+import $Reader from '../../assets/js/rdapi'
+
 
 const GFUNC = {
   M1_findCard: 1,
@@ -431,8 +433,8 @@ export default {
     this.getclassList()
     this.getsubjectList()
     this.getofficeList()
-
     this.icTips()
+    // console.log(this.onResult)
   },
   methods: {
     // 获取年级数据
@@ -692,11 +694,18 @@ export default {
       this.tfUID = '' // 卡号
       this.tfBlockData = '' // 读取的数据
       g_blockData = userId
-      this.dialogPermissionsVisible = true
+      // this.dialogPermissionsVisible = true
+      this.Connect()
+      setTimeout(() => {
+        this.WriteBlock()
+      }, 200)
+      setTimeout(() => {
+        this.$message.info(this.tips)
+      }, 400)
     },
     // ic卡返回提示
     icTips() {
-      this.$Reader.onResult(rData => {
+      $Reader.onResult(rData => {
         switch (rData.strCmdCode) {
           case '0007': // Sys_Open
             if (rData.strStatus != '00') {
@@ -745,7 +754,7 @@ export default {
               case GFUNC.M1_decrement:
               case GFUNC.M1_readVal:
               case GFUNC.M1_updateKey:
-                this.$Reader.send(g_device + '1002'); // TyA_Anticollision
+                $Reader.send(g_device + '1002'); // TyA_Anticollision
                 break;
             }
 
@@ -770,7 +779,7 @@ export default {
               case GFUNC.M1_decrement:
               case GFUNC.M1_readVal:
               case GFUNC.M1_updateKey:
-                this.$Reader.send(g_device + '1003' + rData.strData); // TyA_Select
+                $Reader.send(g_device + '1003' + rData.strData); // TyA_Select
                 break;
             }
 
@@ -791,7 +800,7 @@ export default {
               case GFUNC.M1_decrement:
               case GFUNC.M1_readVal:
               case GFUNC.M1_updateKey:
-                this.$Reader.send(g_device + '100A' + g_keyType + g_blockAddr + g_key); // TyA_CS_Authentication2
+                $Reader.send(g_device + '100A' + g_keyType + g_blockAddr + g_key); // TyA_CS_Authentication2
                 break;
             }
 
@@ -805,27 +814,27 @@ export default {
 
             switch (g_wantFunc) {
               case GFUNC.M1_read:
-                this.$Reader.send(g_device + '100B' + g_blockAddr); // TyA_CS_Read
+                $Reader.send(g_device + '100B' + g_blockAddr); // TyA_CS_Read
                 break;
 
               case GFUNC.M1_write:
-                this.$Reader.send(g_device + '100C' + g_blockAddr + g_blockData);
+                $Reader.send(g_device + '100C' + g_blockAddr + g_blockData);
                 break;
 
               case GFUNC.M1_initVal:
-                this.$Reader.send(g_device + '100D' + g_blockAddr + g_value);
+                $Reader.send(g_device + '100D' + g_blockAddr + g_value);
                 break;
 
               case GFUNC.M1_readVal:
-                this.$Reader.send(g_device + '100E' + g_blockAddr);
+                $Reader.send(g_device + '100E' + g_blockAddr);
                 break;
 
               case GFUNC.M1_decrement:
-                this.$Reader.send(g_device + '100F' + g_blockAddr + g_value);
+                $Reader.send(g_device + '100F' + g_blockAddr + g_value);
                 break;
 
               case GFUNC.M1_increment:
-                this.$Reader.send(g_device + '1010' + g_blockAddr + g_value);
+                $Reader.send(g_device + '1010' + g_blockAddr + g_value);
                 break;
             }
 
@@ -845,7 +854,8 @@ export default {
             if (rData.strStatus != '00') {
               this.tips = 'TyA_CS_Write faild !';
             } else {
-              this.tips = 'Write block successfully !';
+              // this.tips = 'Write block successfully !';
+              this.tips = 'IC卡制作成功！';
             }
             break;
 
@@ -912,7 +922,7 @@ export default {
  * (亮绿灯)
 **/
     LedGreen() {
-      this.$Reader.send(g_device + '0107' + '02');
+      $Reader.send(g_device + '0107' + '02');
     },
 
     /**
@@ -920,19 +930,19 @@ export default {
      * (亮红灯)
     **/
     LedRed() {
-      this.$Reader.send(g_device + '0107' + '01');
+      $Reader.send(g_device + '0107' + '01');
     },
     /**
      * 连接设备
      *
      * **/
     Connect() {
-      this.$Reader.send(g_device + '0007' + '00'); // Open the USB device with index number 0. (打开索引号为0的USB设备)
-      this.$Reader.send(g_device + '0109' + '41'); // Set to ISO14443a working mode. (设置为ISO14443A工作模式)
-      this.$Reader.send(g_device + '0108' + '01'); // Turn on the this.$Reader antenna. (打开读卡器天线)
+      $Reader.send(g_device + '0007' + '00'); // Open the USB device with index number 0. (打开索引号为0的USB设备)
+      $Reader.send(g_device + '0109' + '41'); // Set to ISO14443a working mode. (设置为ISO14443A工作模式)
+      $Reader.send(g_device + '0108' + '01'); // Turn on the $Reader antenna. (打开读卡器天线)
       this.LedGreen();
       setTimeout(this.LedRed(), 200);
-      // this.$Reader.send(g_device + '0106' + '10'); // Beeps. (蜂鸣提示)
+      // $Reader.send(g_device + '0106' + '10'); // Beeps. (蜂鸣提示)
     },
     /**
      * 获取卡号
@@ -948,7 +958,7 @@ export default {
       this.tfUID = '';
 
       // Start read UID
-      this.$Reader.send(g_device + '1001' + '52'); // TyA_Request
+      $Reader.send(g_device + '1001' + '52'); // TyA_Request
       g_wantFunc = GFUNC.M1_findCard;
     },
 
@@ -988,7 +998,7 @@ export default {
       // }
 
       // Start read block
-      this.$Reader.send(g_device + '1001' + '52'); // TyA_Request
+      $Reader.send(g_device + '1001' + '52'); // TyA_Request
       g_wantFunc = GFUNC.M1_read;
     },
     /**
@@ -1034,7 +1044,7 @@ export default {
       }
 
       // Start write block
-      this.$Reader.send(g_device + '1001' + '52'); // TyA_Request
+      $Reader.send(g_device + '1001' + '52'); // TyA_Request
       g_wantFunc = GFUNC.M1_write;
     },
     /**

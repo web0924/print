@@ -23,16 +23,8 @@ import errLog from 'store/errLog';// error log组件
 import { global } from 'src/global/global';
 import Cookies from 'js-cookie';
 
-import reader from './assets/js/rdapi'
-Vue.prototype.$Reader = reader
-// 伪装的返回
-Vue.prototype.$FakeBack = function(_this) {
-  NProgress.start()
-  setTimeout(() => {
-    _this.viewType = 0
-    NProgress.done()
-  }, 200)
-}
+// import reader from './assets/js/rdapi'
+// Vue.prototype.$Reader = reader
 
 
 import Viewer from 'v-viewer'

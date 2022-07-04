@@ -288,9 +288,12 @@
                        plain
                        @click="tableOrderStatuHandle('YiShangJia',scope.row,scope.$index)"
                        size="small">确认上架</el-button>
-            <el-popover placement="top-start"
-                        title="领取方式"
-                        trigger="click">
+            <el-popover placement="left"
+                        title=" "
+                        trigger="hover">
+              <el-input style="margin-bottom:10px;width:100px"
+                        v-model="lingQuRen"
+                        placeholder="领取人"></el-input>
               <el-button @click="validICTable(scope.row,scope.$index)">IC卡领取</el-button>
               <el-button @click="unValidICTable(scope.row)">直接领取</el-button>
               <el-button v-show="scope.row.status=='YiShangJia'"
@@ -361,7 +364,6 @@
             <el-button type="primary"
                        @click="onAddSubmit">上传</el-button>
           </el-form-item>
-
         </el-form>
       </div>
     </div>
@@ -420,8 +422,11 @@
                          @click="validIC"
                          size="small">确认领取</el-button> -->
               <el-popover placement="top-start"
-                          title="领取方式"
-                          trigger="click">
+                          title=" "
+                          trigger="hover">
+                <el-input style="margin-bottom:10px"
+                          v-model="lingQuRen"
+                          placeholder="领取人"></el-input>
                 <el-button @click="validIC">IC卡领取</el-button>
                 <el-button @click="unValidICTable(roleTemp)">直接领取</el-button>
                 <el-button style="margin-left:50px"
@@ -436,6 +441,10 @@
           <el-form-item v-if="roleTemp.status==='YiLingQu'"
                         label="领取方式：">
             <span>{{lingQuFangShi[roleTemp.lingQuFangShi] }}</span>
+          </el-form-item>
+          <el-form-item v-if="roleTemp.status==='YiLingQu'"
+                        label="领取人：">
+            <span>{{roleTemp.lingQuRen}}</span>
           </el-form-item>
           <el-form-item label="是否关账：">
             <span>{{roleTemp.isGuanZhang==1?'已关账':'未关账'}}</span>
@@ -821,6 +830,8 @@ import skuSets from './children/sku-sets.vue'
 import priceSet from './children/priceSet.vue'
 import noticeTable from './children/noticeTable.vue'
 
+import $Reader from '../../assets/js/rdapi'
+
 const GFUNC = {
   M1_findCard: 1,
   M1_authentication: 2,
@@ -858,6 +869,7 @@ export default {
       tfUID: '', // 卡号
       tfBlockData: '', // 读取的数据
       isValidSuccess: false, // 身份验证是否成功
+      lingQuRen: '', // 领取人
 
       // list: null,
       listLoading: false,
@@ -1125,7 +1137,7 @@ export default {
       if (!this.listQuery.startTime) return this.$message.warning('请选择开始时间')
       if (!this.listQuery.endTime) return this.$message.warning('请选择结束时间')
       axios.post(
-      '/smartprint/print-room/order/export-office-bill',
+        '/smartprint/print-room/order/export-office-bill',
         qs.stringify(this.listQueryReset)
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
@@ -1383,20 +1395,15 @@ export default {
       axios
         .post(
           '/smartprint/print-room/order/update-order',
-          qs.stringify({ orderId: id, status, ingQuFangShi: 'IC' })
+          qs.stringify({ orderId: id, lingQuRen: this.lingQuRen, status, ingQuFangShi: 'IC' })
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('操作成功')
           this.editView()
           this.getList()
+          this.lingQuRen = ''
           this.dialogICVisible = false
-          // 对于table已领取状态的兼容
-          // if (status == 'YiLingQu') {
-          //   const index = this.list.findIndex(item => item.id == id)
-          //   this.validSuccessCallback(index)
-          //   this.dialogICVisible = false
-          // }
         })
         .catch(err => err)
     },
@@ -1670,16 +1677,16 @@ export default {
       const formData = new FormData()
       formData.append('file', file)
       axios.post(
-      '/smartprint/upload-file', formData).then(res => {
-        if (res.data.code !== 0) {
-          return this.$message.error(res.data.msg)
-        }
-        this.roleTemp.attachmentFiles = this.roleTemp.attachmentFiles
-          ? this.roleTemp.attachmentFiles
-          : []
-        this.roleTemp.attachmentFiles.push(res.data.data)
-        this.$forceUpdate()
-      })
+        '/smartprint/upload-file', formData).then(res => {
+          if (res.data.code !== 0) {
+            return this.$message.error(res.data.msg)
+          }
+          this.roleTemp.attachmentFiles = this.roleTemp.attachmentFiles
+            ? this.roleTemp.attachmentFiles
+            : []
+          this.roleTemp.attachmentFiles.push(res.data.data)
+          this.$forceUpdate()
+        })
     },
     // 覆盖element的默认上传文件
     uploadHttpRequestOfSamples(param) {
@@ -1689,23 +1696,25 @@ export default {
       const formData = new FormData()
       formData.append('file', file)
       axios.post(
-      '/smartprint/upload-file', formData).then(res => {
-        if (res.data.code !== 0) {
-          return this.$message.error(res.data.msg)
-        }
-        this.samples = res.data.data.url + ',' + this.samples
-      })
+        '/smartprint/upload-file', formData).then(res => {
+          if (res.data.code !== 0) {
+            return this.$message.error(res.data.msg)
+          }
+          this.samples = res.data.data.url + ',' + this.samples
+        })
     },
     // 直接领取
     unValidICTable(row) {
+      // if (!this.lingQuRen) return this.$message.warning('请输入领取人')
       axios.post(
-      '/smartprint/print-room/order/update-order',
-        qs.stringify({ orderId: row.id, lingQuFangShi: 'Direct', status: 'YiLingQu' })
+        '/smartprint/print-room/order/update-order',
+        qs.stringify({ orderId: row.id, lingQuRen: this.lingQuRen, lingQuFangShi: 'Direct', status: 'YiLingQu' })
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
         this.$message.success('操作成功')
         this.editView()
         this.getList()
+        this.lingQuRen = ''
       })
         .catch(err => err)
     },
@@ -1715,24 +1724,50 @@ export default {
     },
     // table IC卡验证
     validICTable(row, index) {
+      // if (!this.lingQuRen) return this.$message.warning('请输入领取人')
       this.roleTemp = row
-      this.active = 0
-      this.tips = '' // 提示
-      this.tfUID = '' // 卡号
-      this.tfBlockData = '' // 读取的数据
-      this.dialogICVisible = true
+      // this.active = 0
+      // this.tips = '' // 提示
+      // this.tfUID = '' // 卡号
+      // this.tfBlockData = '' // 读取的数据
+      // this.dialogICVisible = true
+      this.icAuto()
     },
     // IC卡验证领取
     validIC() {
-      this.active = 0
-      this.tips = '' // 提示
-      this.tfUID = '' // 卡号
-      this.tfBlockData = '' // 读取的数据
-      this.dialogICVisible = true
+      // if (!this.lingQuRen) return this.$message.warning('请输入领取人')
+      // this.active = 0
+      // this.tips = '' // 提示
+      // this.tfUID = '' // 卡号
+      // this.tfBlockData = '' // 读取的数据
+      // this.dialogICVisible = true
+
+      this.icAuto()
     },
+    // IC卡自动领取
+    icAuto() {
+      this.Connect()
+      setTimeout(() => {
+        this.ReadBlock()
+      }, 200)
+      setTimeout(() => {
+        const cardData = parseInt(this.tfBlockData + '')
+        const userId = this.roleTemp.userId
+        if (cardData == userId) {
+          this.tips = '身份验证成功！'
+          this.ensureOrderHnadle('YiLingQu')
+        } else {
+          this.tips = '身份验证失败！'
+          // this.$message.info(userId + '-----' + cardData)
+        }
+
+        this.$message.info(this.tips)
+      }, 400)
+    },
+
     // ic卡返回提示
     icTips() {
-      this.$Reader.onResult(rData => {
+      $Reader.onResult(rData => {
         switch (rData.strCmdCode) {
           case '0007': // Sys_Open
             if (rData.strStatus != '00') {
@@ -1781,7 +1816,7 @@ export default {
               case GFUNC.M1_decrement:
               case GFUNC.M1_readVal:
               case GFUNC.M1_updateKey:
-                this.$Reader.send(g_device + '1002'); // TyA_Anticollision
+                $Reader.send(g_device + '1002'); // TyA_Anticollision
                 break;
             }
 
@@ -1806,7 +1841,7 @@ export default {
               case GFUNC.M1_decrement:
               case GFUNC.M1_readVal:
               case GFUNC.M1_updateKey:
-                this.$Reader.send(g_device + '1003' + rData.strData); // TyA_Select
+                $Reader.send(g_device + '1003' + rData.strData); // TyA_Select
                 break;
             }
 
@@ -1827,7 +1862,7 @@ export default {
               case GFUNC.M1_decrement:
               case GFUNC.M1_readVal:
               case GFUNC.M1_updateKey:
-                this.$Reader.send(g_device + '100A' + g_keyType + g_blockAddr + g_key); // TyA_CS_Authentication2
+                $Reader.send(g_device + '100A' + g_keyType + g_blockAddr + g_key); // TyA_CS_Authentication2
                 break;
             }
 
@@ -1841,27 +1876,27 @@ export default {
 
             switch (g_wantFunc) {
               case GFUNC.M1_read:
-                this.$Reader.send(g_device + '100B' + g_blockAddr); // TyA_CS_Read
+                $Reader.send(g_device + '100B' + g_blockAddr); // TyA_CS_Read
                 break;
 
               case GFUNC.M1_write:
-                this.$Reader.send(g_device + '100C' + g_blockAddr + g_blockData);
+                $Reader.send(g_device + '100C' + g_blockAddr + g_blockData);
                 break;
 
               case GFUNC.M1_initVal:
-                this.$Reader.send(g_device + '100D' + g_blockAddr + g_value);
+                $Reader.send(g_device + '100D' + g_blockAddr + g_value);
                 break;
 
               case GFUNC.M1_readVal:
-                this.$Reader.send(g_device + '100E' + g_blockAddr);
+                $Reader.send(g_device + '100E' + g_blockAddr);
                 break;
 
               case GFUNC.M1_decrement:
-                this.$Reader.send(g_device + '100F' + g_blockAddr + g_value);
+                $Reader.send(g_device + '100F' + g_blockAddr + g_value);
                 break;
 
               case GFUNC.M1_increment:
-                this.$Reader.send(g_device + '1010' + g_blockAddr + g_value);
+                $Reader.send(g_device + '1010' + g_blockAddr + g_value);
                 break;
             }
 
@@ -1924,33 +1959,34 @@ export default {
       }
       )
     },
-    next() {
-      if (this.active == 0) { // 连接设备
-        this.$Reader.send(g_device + '0007' + '00'); // Open the USB device with index number 0. (打开索引号为0的USB设备)
-        this.$Reader.send(g_device + '0109' + '41'); // Set to ISO14443a working mode. (设置为ISO14443A工作模式)
-        this.$Reader.send(g_device + '0108' + '01'); // Turn on the this.$Reader antenna. (打开读卡器天线)
-        this.LedGreen();
-        setTimeout(this.LedRed(), 200);
-        // this.$Reader.send(g_device + '0106' + '10'); // Beeps. (蜂鸣提示)
+    next2() {
+      if (this.active == 0) {  // 连接设备
+        this.Connect()
       }
       if (this.active == 1) { // 读取设备卡号
-        // Check whether the reader is opened or not.
-        if (g_isOpen != true) {
-          this.tips = 'Please connect the device first !';
-          return;
-        }
-        // Clear UID edit box
-        this.tfUID = '';
-
-        // Start read UID
-        this.$Reader.send(g_device + '1001' + '52'); // TyA_Request
-        g_wantFunc = GFUNC.M1_findCard;
+        this.getCardId()
+      }
+      if (this.active == 2) { // 读取卡内数据
+        this.ReadBlock()
+      }
+      if (this.active == 3) { // 查询可领取订单
+        const cardData = parseInt(this.tfBlockData + '')
+        const filterBycardIdList = this.list.filter(item => item.userId == cardData)
+        console.log(filterBycardIdList)
+      }
+      this.active += 1
+    },
+    next() {
+      if (this.active == 0) { // 连接设备
+        this.Connect()
+      }
+      if (this.active == 1) { // 读取设备卡号
+        this.getCardId()
       }
       if (this.active == 2) { // 读取卡内数据
         this.ReadBlock()
       }
       if (this.active == 3) { // 验证身份
-        // this.tfBlockData = this.tfBlockData
         const cardData = parseInt(this.tfBlockData + '')
         const userId = this.roleTemp.userId
         // return
@@ -1961,14 +1997,13 @@ export default {
           this.tips = '身份验证失败！'
         }
       }
-      this.active += 1
     },
     /**
  * Turn on the green light
  * (亮绿灯)
 **/
     LedGreen() {
-      this.$Reader.send(g_device + '0107' + '02');
+      $Reader.send(g_device + '0107' + '02');
     },
 
     /**
@@ -1976,7 +2011,38 @@ export default {
      * (亮红灯)
     **/
     LedRed() {
-      this.$Reader.send(g_device + '0107' + '01');
+      $Reader.send(g_device + '0107' + '01');
+    },
+    /**
+    * 连接设备
+    *
+    * **/
+    Connect() {
+      $Reader.send(g_device + '0007' + '00'); // Open the USB device with index number 0. (打开索引号为0的USB设备)
+      $Reader.send(g_device + '0109' + '41'); // Set to ISO14443a working mode. (设置为ISO14443A工作模式)
+      $Reader.send(g_device + '0108' + '01'); // Turn on the $Reader antenna. (打开读卡器天线)
+      this.LedGreen();
+      setTimeout(this.LedRed(), 200);
+      this.active += 1
+      // $Reader.send(g_device + '0106' + '10'); // Beeps. (蜂鸣提示)
+    },
+    /**
+ * 获取卡号
+ *
+ * **/
+    getCardId() {
+      // Check whether the reader is opened or not.
+      if (g_isOpen != true) {
+        this.tips = 'Please connect the device first !';
+        this.active = 0
+        return;
+      }
+      // Clear UID edit box
+      this.tfUID = '';
+
+      // Start read UID
+      $Reader.send(g_device + '1001' + '52'); // TyA_Request
+      g_wantFunc = GFUNC.M1_findCard;
     },
     /**
      * Read a block of M1 card
@@ -1986,6 +2052,7 @@ export default {
       // Check whether the reader is opened or not.
       if (g_isOpen != true) {
         this.tips = 'Please connect the device first !';
+        this.active = 0
         return;
       }
 
@@ -2014,7 +2081,7 @@ export default {
       // }
 
       // Start read block
-      this.$Reader.send(g_device + '1001' + '52'); // TyA_Request
+      $Reader.send(g_device + '1001' + '52'); // TyA_Request
       g_wantFunc = GFUNC.M1_read;
     },
     /**
