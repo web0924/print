@@ -1030,7 +1030,7 @@ export default {
     this.getOfficeList()
     this.getSubjectList()
     this.getStaffList()
-
+    $Reader.createSocket()// 页面加载创建新的socket
     this.icTips()
   },
   methods: {

@@ -291,7 +291,7 @@
             <el-popover placement="left"
                         title=" "
                         trigger="hover">
-              <el-input style="margin-bottom:10px;width:100px"
+              <el-input style="margin-bottom:10px"
                         v-model="lingQuRen"
                         placeholder="领取人"></el-input>
               <el-button @click="validICTable(scope.row,scope.$index)">IC卡领取</el-button>
@@ -1087,6 +1087,7 @@ export default {
     this.getSubjectList()
     this.getStaffList()
     // this.getFenJianList()
+    $Reader.createSocket()// 页面加载创建新的socket
     this.icTips()
   },
   methods: {

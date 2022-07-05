@@ -433,6 +433,7 @@ export default {
     this.getclassList()
     this.getsubjectList()
     this.getofficeList()
+    $Reader.createSocket()// 页面加载创建新的socket
     this.icTips()
     // console.log(this.onResult)
   },
