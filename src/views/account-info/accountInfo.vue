@@ -21,14 +21,16 @@
                     style="width:50%"
                     v-model.number="ruleForm.name"></el-input>
         </el-form-item>
-        <el-form-item label="手机号"
+        <!-- <el-form-item label="手机号"
                       prop="phone">
           <el-input readonly
                     style="width:50%"
                     v-model.number="ruleForm.phone"></el-input>
           <el-button @click="handleEditPhone"
                      type="text">修改手机号</el-button>
-        </el-form-item>
+        </el-form-item> -->
+        <FormItemPhone @handleEditPhone="handleEditPhone"
+                       :phone="ruleForm.phone" />
         <p style="height:1px;background:#EEEEEE;margin:50px 0"></p>
         <el-form-item label="账号"
                       prop="account">
@@ -48,7 +50,6 @@
           <el-button @click="handleEditPwd"
                      type="text">修改密码</el-button>
         </el-form-item>
-
         <!-- <el-form-item>
           <el-button type="primary"
                      @click="submitForm('ruleForm')">提交</el-button>
@@ -61,7 +62,7 @@
                  ref="EditPhoneRef" />
       <EditPwd :successFun="successFun"
                ref="EditPwd" />
-      <VerifyDialog :validSuccess="validSuccess"
+      <VerifyDialog :validSuccess="validSuccessByPwd"
                     :phone="ruleForm.phone"
                     ref="VerifyDialogRef" />
       <!-- <el-dialog title="表单新增"
@@ -103,8 +104,10 @@ import { mapGetters } from 'vuex'
 import EditPwd from '../../components/EditPwd'
 import EditPhone from '../../components/EditPhone'
 import VerifyDialog from '../../components/VerifyDialog'
+import FormItemPhone from './children/formItemPhone.vue'
 export default {
   components: {
+    FormItemPhone,
     EditPhone,
     EditPwd,
     VerifyDialog
@@ -195,12 +198,13 @@ export default {
     // 修改手机号
     handleEditPhone() {
       this.$refs.EditPhoneRef.visible = true
+      // this.$refs.VerifyDialogRef.visible = true
     },
     // 修改密码
     handleEditPwd() {
       this.$refs.VerifyDialogRef.visible = true
     },
-    validSuccess() {
+    validSuccessByPwd() {
       this.$refs.EditPwd.visible = true
     },
     // 修改密码提交

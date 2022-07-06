@@ -11,15 +11,17 @@
           <!-- 手机号 -->
           <div>
             <span>手机号：</span>
-            <el-input style="width:400px"
+            <el-input readonly
+                      style="width:400px"
                       :value="phone"></el-input>
           </div>
-          <div>
+          <div style="margin-top:20px">
             <span>验证码：</span>
             <el-input style="width:50%"
                       v-model="vccode" />
             <div style="display:inline-block;width:30%">
-              <vccode :phone="phone" />
+              <vccode url="/smartprint/print-room/me/send-sms-vcode-to-me"
+                      :phone="phone" />
             </div>
           </div>
         </div>
@@ -97,7 +99,7 @@ export default {
           .catch(err => console.log(err))
       } else {
         axios
-          .post('/smartprint/me/self-authentication-by-sms', qs.stringify({ vccode: this.vccode }))
+          .post('/smartprint/print-room/me/self-authentication-by-sms', qs.stringify({ vccode: this.vccode }))
           .then(res => {
             if (res.data.code == 0) {
               this.$message.success('身份验证成功')
