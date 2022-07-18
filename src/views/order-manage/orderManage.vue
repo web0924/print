@@ -140,6 +140,8 @@
       <p style="min-height:80px;width:100%;background:#F5F5F5;margin:0">
         <el-button @click="exportAll"
                    style="margin-top:20px; background:#09BB07;color:#FFF">全部导出</el-button>
+        <el-button @click="exportProducting"
+                   style="margin-top:20px; background:#09BB07;color:#FFF">导出生产通知单</el-button>
         <!-- <el-button @click="validICTableGroup"
                    style="margin-top:20px; background:#09BB07;color:#FFF">批量领取</el-button> -->
       </p>
@@ -762,10 +764,13 @@
                    type="primary">领取</el-button>
       </div>
     </el-dialog>
+    <!-- 通知单 -->
+    <printDialog ref="printDialogRef" />
   </div>
 </template>
 <script>
 // import { getList } from 'api/article';
+import printDialog from './children/printDialog.vue'
 import { global } from 'src/global/global'
 import { api } from 'src/global/api'
 import axios from 'axios'
@@ -805,7 +810,8 @@ export default {
   components: {
     skuSets,
     priceSet,
-    noticeTable
+    noticeTable,
+    printDialog
   },
   data() {
     return {
@@ -1091,6 +1097,22 @@ export default {
         })
         .catch(err => err)
     },
+    // 导出生产中通知单
+    exportProducting() {
+      if (!this.listQuery.gradeId) return this.$message.warning('请选择年级')
+      if (!this.listQuery.startTime) return this.$message.warning('请选择开始时间')
+      if (!this.listQuery.endTime) return this.$message.warning('请选择结束时间')
+      axios
+        .post(
+          '/smartprint/print-room/order/export-sheng-chan-tong-zhi-dan',
+          qs.stringify(this.listQueryReset)
+        )
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          window.open('https://dev.renx.cc/' + res.data.data.url)
+        })
+        .catch(err => err)
+    },
     classSelectChange(val) {
       this.getClassList({ gradeId: val })
     },
@@ -1322,6 +1344,7 @@ export default {
     // 修改table订单状态
     tableOrderStatuHandle(status, row, index) {
       const { id } = row
+      const _this = this
       axios
         .post(
           '/smartprint/print-room/order/update-order',
@@ -1332,8 +1355,24 @@ export default {
           this.$message.success('操作成功')
           //  前端更新table状态
           this.list[index].status = status
+
+          // 如果为确认生产询问打印通知单
+          if (status === 'ShengChanZhong') {
+            if (!this.checkIsJiaoYin(row)) return
+            this.$confirm('是否打印通知单', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              _this.printHandle(row)
+            })
+          }
         })
         .catch(err => err)
+    },
+    // 判断是否为胶印
+    checkIsJiaoYin({ jiaoYingDanBanShu, jiaoYingShuangBanShu, jiaoYingDaDanBanShu, jiaoYingDaShuangBanShu }) {
+      return (jiaoYingDanBanShu > 0) && (jiaoYingShuangBanShu > 0) && (jiaoYingDaDanBanShu > 0) && (jiaoYingDaShuangBanShu > 0)
     },
     // 修改订单状态
     ensureOrderHnadle(status) {
@@ -1473,6 +1512,7 @@ export default {
     updateTableList(params) {
       const { orderId } = params
       this.list.forEach((item, index) => {
+        console.log(orderId)
         if (item.id == orderId) {
           this.list[index] = params
           this.$forceUpdate()
@@ -1487,16 +1527,16 @@ export default {
       params.status = 'YiCheXiao'
       axios
         .post(
-          '/smartprint/print-room/order/update-order',
+          '/smartprint/print-room/order/delete-order',
           qs.stringify(params)
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('撤销成功')
-          this.getList()
+          this.getListLen()
           // 前端更新。
-          // vm.list[index].status = 'YiCheXiao'
-          // vm.list.splice(index, 1)
+          vm.list[index].status = 'YiCheXiao'
+          vm.list.splice(index, 1)
         })
         .then(err => err)
     },
@@ -1994,6 +2034,13 @@ export default {
       setTimeout(this.LedRed(), 200);
       this.active += 1
       // $Reader.send(g_device + '0106' + '10'); // Beeps. (蜂鸣提示)
+    },
+
+    // 打印通知单
+    printHandle(params) {
+      // window.print()
+      this.$refs.printDialogRef.visible = true
+      this.$refs.printDialogRef.orderData = params
     },
     /**
  * 获取卡号

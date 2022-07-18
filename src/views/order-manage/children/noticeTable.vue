@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="operator-box">
-      <el-button style="color:#FFF; background: #09bb07;"
+      <el-button v-if="checkIsJiaoYin(params)"
+                 style="color:#FFF; background: #09bb07;"
                  @click="printHandle">打印通知单</el-button>
     </div>
     <div>
@@ -142,7 +143,7 @@ export default {
     // 获取分拣人列表
     getFenJianList() {
       axios.post(
-      '/smartprint/print-room/order/get-fen-jian-rens'
+        '/smartprint/print-room/order/get-fen-jian-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
         this.fenJianRens = res.data.data.fenJianRens
@@ -151,7 +152,7 @@ export default {
     // 接单人列表
     getJieDanList() {
       axios.post(
-      '/smartprint/print-room/order/get-jie-dan-rens'
+        '/smartprint/print-room/order/get-jie-dan-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
         this.jieDanRens = res.data.data.jieDanRens
@@ -160,7 +161,7 @@ export default {
     // 经办人列表
     getJingBnaList() {
       axios.post(
-      '/smartprint/print-room/order/get-jing-ban-rens'
+        '/smartprint/print-room/order/get-jing-ban-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
         this.jingBanRens = res.data.data.jingBanRens
@@ -169,7 +170,7 @@ export default {
     // 印刷人列表
     getYinShuaList() {
       axios.post(
-      '/smartprint/print-room/order/get-yin-shua-rens'
+        '/smartprint/print-room/order/get-yin-shua-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
         this.yinShuaRens = res.data.data.yinShuaRens
@@ -178,7 +179,7 @@ export default {
     // 制版人列表
     getZhiBanList() {
       axios.post(
-      '/smartprint/print-room/order/get-zhi-ban-rens'
+        '/smartprint/print-room/order/get-zhi-ban-rens'
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
         this.zhiBanRens = res.data.data.zhiBanRens
@@ -195,6 +196,11 @@ export default {
       // window.print()
       this.$refs.printDialogRef.visible = true
       this.$refs.printDialogRef.orderData = this.params
+    },
+    // 判断是否为胶印
+    checkIsJiaoYin({ jiaoYingDanBanShu, jiaoYingShuangBanShu, jiaoYingDaDanBanShu, jiaoYingDaShuangBanShu }) {
+      console.log(jiaoYingDanBanShu, jiaoYingShuangBanShu, jiaoYingDaDanBanShu, jiaoYingDaShuangBanShu)
+      return (jiaoYingDanBanShu > 0) && (jiaoYingShuangBanShu > 0) && (jiaoYingDaDanBanShu > 0) && (jiaoYingDaShuangBanShu > 0)
     }
   }
 }

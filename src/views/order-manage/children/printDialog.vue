@@ -23,25 +23,45 @@
       <div class="prin-item">
         <div style="width:40%">
           <span class="print-label">
-            单份数：
+            单版：
           </span>
-          <span>{{danFenShu}}</span>
+          <span>{{orderData.jiaoYingDanBanShu}}</span>
         </div>
         <div>
           <span class="print-label">
-            双份数：
+            份：
           </span>
-          <span>{{shuangFenShu}}</span>
+          <span>{{orderData.jiaoYingDanFenShu}}</span>
         </div>
       </div>
       <div class="prin-item">
         <div style="width:40%">
-          <span class="print-label">答单份数：</span>
-          <span> {{daDanFenShu}}</span>
+          <span class="print-label">双版：</span>
+          <span> {{orderData.jiaoYingShuangBanShu}}</span>
         </div>
         <div>
-          <span class="print-label"> 答双份数：</span>
-          <span> {{daShuangnFenShu}}</span>
+          <span class="print-label"> 份：</span>
+          <span> {{orderData.jiaoYingShuangFenShu}}</span>
+        </div>
+      </div>
+      <div class="prin-item">
+        <div style="width:40%">
+          <span class="print-label">答单版：</span>
+          <span> {{orderData.jiaoYingDaDanBanShu}}</span>
+        </div>
+        <div>
+          <span class="print-label"> 份：</span>
+          <span> {{orderData.jiaoYingDaDanFenShu}}</span>
+        </div>
+      </div>
+      <div class="prin-item">
+        <div style="width:40%">
+          <span class="print-label">答双版：</span>
+          <span> {{orderData.jiaoYingDaShuangBanShu}}</span>
+        </div>
+        <div>
+          <span class="print-label"> 份：</span>
+          <span> {{orderData.jiaoYingDaShuangFenShu}}</span>
         </div>
       </div>
       <div class="prin-item">
@@ -97,18 +117,19 @@ export default {
     }
   },
   computed: {
-    danFenShu() {
-      return (this.orderData.jiaoYingDanBanShu || 0) * (this.orderData.jiaoYingDanFenShu || 0)
-    },
-    shuangFenShu() {
-      return (this.orderData.jiaoYingShuangBanShu || 0) * (this.orderData.jiaoYingShuangFenShu || 0)
-    },
-    daDanFenShu() {
-      return (this.orderData.jiaoYingDaDanBanShu || 0) * (this.orderData.jiaoYingDaDanFenShu || 0)
-    },
-    daShuangnFenShu() {
-      return (this.orderData.jiaoYingDaShuangBanShu || 0) * (this.orderData.jiaoYingDaShuangFenShu || 0)
-    }
+    // danFenShu() {
+    //   return (this.orderData.jiaoYingDanBanShu || 0) * (this.orderData.jiaoYingDanFenShu || 0)
+    // },
+    // shuangFenShu() {
+    //   return (this.orderData.jiaoYingShuangBanShu || 0) * (this.orderData.jiaoYingShuangFenShu || 0)
+    // },
+    // daDanFenShu() {
+    //   return (this.orderData.jiaoYingDaDanBanShu || 0) * (this.orderData.jiaoYingDaDanFenShu || 0)
+    // },
+    // daShuangnFenShu() {
+    //   return (this.orderData.jiaoYingDaShuangBanShu || 0) * (this.orderData.jiaoYingDaShuangFenShu || 0)
+    // }
+
   },
   methods: {
     printHandle() {
