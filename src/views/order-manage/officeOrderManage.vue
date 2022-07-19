@@ -464,7 +464,7 @@
                        class="filter-item form-item-width">
               <el-option v-for="item in  staffList"
                          :key="item.userId"
-                         :label="item.userName+' / '+item.officeName+' / '+item.subjectName "
+                         :label="staffLabelReset(item)"
                          :value="item.userId">
               </el-option>
             </el-select>
@@ -480,6 +480,15 @@
             <el-date-picker class="form-item-width"
                             value-format="yyyy-MM-dd HH:mm:ss"
                             v-model="roleTemp.createTime"
+                            type="datetime">
+            </el-date-picker>
+            <!-- <el-input disabled
+                      v-model="roleTemp.createTime"></el-input> -->
+          </el-form-item>
+          <el-form-item label="使用时间：">
+            <el-date-picker class="form-item-width"
+                            value-format="yyyy-MM-dd HH:mm:ss"
+                            v-model="roleTemp.jiaoHuoShiJian"
                             type="datetime">
             </el-date-picker>
             <!-- <el-input disabled
@@ -1095,6 +1104,7 @@ export default {
     // this.getFenJianList()
     $Reader.createSocket()// 页面加载创建新的socket
     this.icTips()
+    this.getAccountInfo()
   },
   methods: {
     lastLevelChange(boo) {
@@ -1410,6 +1420,9 @@ export default {
     },
     // 修改table订单状态
     tableOrderStatuHandle(status, row, index) {
+      if (status === 'DaiQueRen') {
+        if (!this.checkSkuIsComplte(row)) return this.$message.warning('请补充文印配置项')
+      }
       const { id } = row
       const _this = this
       axios
@@ -1447,6 +1460,9 @@ export default {
     },
     // 修改订单状态
     ensureOrderHnadle(status) {
+      if (status === 'DaiQueRen') {
+        if (!this.checkSkuIsComplte(this.roleTemp)) return this.$message.warning('请补充文印配置项')
+      }
       const { id } = this.roleTemp
       axios
         .post(
@@ -1761,7 +1777,7 @@ export default {
     },
     // 直接领取
     unValidICTable(row) {
-      // if (!this.lingQuRen) return this.$message.warning('请输入领取人')
+      if (!this.lingQuRen) return this.$message.warning('请输入领取人')
       axios.post(
         '/smartprint/print-room/order/update-order',
         qs.stringify({ orderId: row.id, lingQuRen: this.lingQuRen, lingQuFangShi: 'Direct', status: 'YiLingQu' })
@@ -1809,6 +1825,7 @@ export default {
       setTimeout(() => {
         const cardData = parseInt(this.tfBlockData + '')
         const userId = this.roleTemp.userId
+        this.lingQuRen = this.roleId.userName// 领取人只能是下单人
         if (cardData == userId) {
           this.tips = '身份验证成功！'
           this.ensureOrderHnadle('YiLingQu')
@@ -1816,7 +1833,7 @@ export default {
           this.tips = '身份验证失败！'
           // this.$message.info(userId + '-----' + cardData)
         }
-
+        this.lingQuRen = ''
         this.$message.info(this.tips)
       }, 400)
     },
@@ -2039,14 +2056,45 @@ export default {
     },
     // 判断是否为胶印
     checkIsJiaoYin({ jiaoYingDanBanShu, jiaoYingShuangBanShu, jiaoYingDaDanBanShu, jiaoYingDaShuangBanShu }) {
-      console.log(jiaoYingDanBanShu, jiaoYingShuangBanShu, jiaoYingDaDanBanShu, jiaoYingDaShuangBanShu)
-      return (jiaoYingDanBanShu > 0) && (jiaoYingShuangBanShu > 0) && (jiaoYingDaDanBanShu > 0) && (jiaoYingDaShuangBanShu > 0)
+      return (jiaoYingDanBanShu > 0) || (jiaoYingShuangBanShu > 0) || (jiaoYingDaDanBanShu > 0) || (jiaoYingDaShuangBanShu > 0)
+    },
+    // 给用户确认时判断配置项是否填写完整
+    checkSkuIsComplte({ count,
+      jiaoYingDanBanShu,
+      jiaoYingDanFenShu,
+      jiaoYingShuangBanShu,
+      jiaoYingShuangFenShu,
+      jiaoYingDaDanBanShu,
+      jiaoYingDaDanFenShu,
+      jiaoYingDaShuangBanShu,
+      jiaoYingDaShuangFenShu,
+      fuYingB5Shu,
+      fuYingB4Shu,
+      fuYingA4Shu,
+      fuYingA3Shu,
+      daYingShu,
+      daBanShu,
+      otherSetName,
+      otherSetCount,
+      otherSetUnitPrice }) {
+      return count && (jiaoYingDanBanShu || jiaoYingDanFenShu || jiaoYingShuangBanShu || jiaoYingShuangFenShu || jiaoYingDaDanBanShu || jiaoYingDaDanFenShu || jiaoYingDaShuangBanShu || jiaoYingDaShuangFenShu || fuYingB5Shu || fuYingB4Shu || fuYingA4Shu || fuYingA3Shu || daYingShu || daBanShu || otherSetName || otherSetCount || otherSetUnitPrice)
+    },
+    // 获取账号信息
+    getAccountInfo() {
+      axios
+        .post('/smartprint/print-room/me/refresh')
+        .then(res => {
+          if (res.data.code === 0) {
+            this.roleTemp.jieDan = res.data.data.login.user.name
+          }
+        })
+        .catch(err => err)
     },
 
-  /**
-* Turn on the green light
-* (亮绿灯)
-**/
+    /**
+  * Turn on the green light
+  * (亮绿灯)
+  **/
     LedGreen() {
       $Reader.send(g_device + '0107' + '02');
     },
@@ -2140,6 +2188,13 @@ export default {
       const num = Number(decimalStr);
       const str = (Array(length).join('0') + num.toString(16)).slice(-length);
       return str;
+    },
+    // 处理下单人某一项为空的情况
+    staffLabelReset(item) {
+      const userName = item.userName ? item.userName : ''
+      const officeName = item.officeName ? ' / ' + item.officeName : ''
+      const subjectName = item.subjectName ? ' / ' + item.subjectName : ''
+      return userName + officeName + subjectName
     }
   }
 }

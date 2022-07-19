@@ -110,7 +110,7 @@
       </tbody>
     </table>
     <!-- 其他配置 -->
-    <div style="margin-top:60px">
+    <div style="margin-top:20px">
       <div style="color:#333;font-size:20px;font-weight:500;margin-bottom: 20px;">其他配置</div>
       <div class="extra">
         <label>

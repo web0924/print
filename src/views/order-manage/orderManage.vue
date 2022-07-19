@@ -434,7 +434,7 @@
                        class="filter-item form-item-width">
               <el-option v-for="item in  staffList"
                          :key="item.userId"
-                         :label="item.userName+' / '+item.officeName+' / '+item.subjectName "
+                         :label="staffLabelReset(item)"
                          :value="item.userId">
               </el-option>
             </el-select>
@@ -450,6 +450,15 @@
             <el-date-picker class="form-item-width"
                             value-format="yyyy-MM-dd HH:mm:ss"
                             v-model="roleTemp.createTime"
+                            type="datetime">
+            </el-date-picker>
+            <!-- <el-input disabled
+                      v-model="roleTemp.createTime"></el-input> -->
+          </el-form-item>
+          <el-form-item label="使用时间：">
+            <el-date-picker class="form-item-width"
+                            value-format="yyyy-MM-dd HH:mm:ss"
+                            v-model="roleTemp.jiaoHuoShiJian"
                             type="datetime">
             </el-date-picker>
             <!-- <el-input disabled
@@ -709,59 +718,6 @@
 
         <el-button type="primary"
                    @click="setPermissionsSubmit">确 定</el-button>
-      </div>
-    </el-dialog>
-
-    <!-- 领取 -->
-    <!-- const { id } = this.$route.query -->
-    <el-dialog title="IC卡验证"
-               @close="dialogICVisible=false"
-               :visible="dialogICVisible">
-      <p>{{this.tips}}</p>
-      <el-steps :active="active"
-                finish-status="success">
-        <el-step description="请将IC卡放入感应区内"
-                 title="连接设备"></el-step>
-        <el-step :description="tfUID"
-                 title="获取卡号"></el-step>
-        <el-step :description="tfBlockData"
-                 title="读取卡内数据"></el-step>
-        <el-step title="验证身份"></el-step>
-      </el-steps>
-      <el-button v-if="active<=3"
-                 style="margin-top: 12px;"
-                 @click="next">下一步</el-button>
-      <div slot="footer"
-           class="dialog-footer">
-        <el-button :disabled="!isValidSuccess"
-                   @click="ensureOrderHnadle('YiLingQu')"
-                   type="primary">领取</el-button>
-      </div>
-    </el-dialog>
-    <!-- 批量领取 -->
-    <!-- const { id } = this.$route.query -->
-    <el-dialog title="批量领取"
-               @close="dialogICGroupVisible=false"
-               :visible="dialogICGroupVisible">
-      <p>{{this.tips}}</p>
-      <el-steps :active="active"
-                finish-status="success">
-        <el-step description="请将IC卡放入感应区内"
-                 title="连接设备"></el-step>
-        <el-step :description="tfUID"
-                 title="获取卡号"></el-step>
-        <el-step :description="tfBlockData"
-                 title="获取卡内数据"></el-step>
-        <el-step title="查询可领取的订单"></el-step>
-      </el-steps>
-      <el-button v-if="active<=3"
-                 style="margin-top: 12px;"
-                 @click="next2">下一步</el-button>
-      <div slot="footer"
-           class="dialog-footer">
-        <el-button :disabled="!isValidSuccess"
-                   @click="ensureOrderHnadle('YiLingQu')"
-                   type="primary">领取</el-button>
       </div>
     </el-dialog>
     <!-- 通知单 -->
@@ -1038,6 +994,7 @@ export default {
     this.getStaffList()
     $Reader.createSocket()// 页面加载创建新的socket
     this.icTips()
+    this.getAccountInfo()
   },
   methods: {
     lastLevelChange(boo) {
@@ -1250,23 +1207,6 @@ export default {
       const upperIds = list.map(item => item.upperId)
       return [...new Set(upperIds)].sort()
     },
-    // 获取价格设置
-    getPrices() {
-      const params = {
-        schoolId: this.roleTemp.schoolId,
-        setIds: this.choseTags.map(item => item.id).join(',')
-      }
-      axios
-        .post(
-          '/smartprint/print-room/price-book/get-prices',
-          qs.stringify(params)
-        )
-        .then(res => {
-          if (res.data.code !== 0) return this.$message.error(res.data.msg)
-          this.priceData = res.data.data.prices || []
-        })
-        .catch(err => err)
-    },
     isActive(tag) {
       const ids = this.choseTags.map(item => item.id)
       return ids.find(item => tag.id === item)
@@ -1318,9 +1258,6 @@ export default {
             }
             this.$refs.priceSetRef.params = this.roleTemp
             this.$refs.noticeTableRef.params = this.roleTemp
-
-            // this.getSets()
-            // this.getPrices()
           })
           .catch(err => console.log(err))
       }
@@ -1343,6 +1280,9 @@ export default {
     },
     // 修改table订单状态
     tableOrderStatuHandle(status, row, index) {
+      if (status === 'DaiQueRen') {
+        if (!this.checkSkuIsComplte(row)) return this.$message.warning('请补充文印配置项')
+      }
       const { id } = row
       const _this = this
       axios
@@ -1372,10 +1312,34 @@ export default {
     },
     // 判断是否为胶印
     checkIsJiaoYin({ jiaoYingDanBanShu, jiaoYingShuangBanShu, jiaoYingDaDanBanShu, jiaoYingDaShuangBanShu }) {
-      return (jiaoYingDanBanShu > 0) && (jiaoYingShuangBanShu > 0) && (jiaoYingDaDanBanShu > 0) && (jiaoYingDaShuangBanShu > 0)
+      return (jiaoYingDanBanShu > 0) || (jiaoYingShuangBanShu > 0) || (jiaoYingDaDanBanShu > 0) || (jiaoYingDaShuangBanShu > 0)
+    },
+    // 给用户确认时判断配置项是否填写完整
+    checkSkuIsComplte({ count,
+      jiaoYingDanBanShu,
+      jiaoYingDanFenShu,
+      jiaoYingShuangBanShu,
+      jiaoYingShuangFenShu,
+      jiaoYingDaDanBanShu,
+      jiaoYingDaDanFenShu,
+      jiaoYingDaShuangBanShu,
+      jiaoYingDaShuangFenShu,
+      fuYingB5Shu,
+      fuYingB4Shu,
+      fuYingA4Shu,
+      fuYingA3Shu,
+      daYingShu,
+      daBanShu,
+      otherSetName,
+      otherSetCount,
+      otherSetUnitPrice }) {
+      return count && (jiaoYingDanBanShu || jiaoYingDanFenShu || jiaoYingShuangBanShu || jiaoYingShuangFenShu || jiaoYingDaDanBanShu || jiaoYingDaDanFenShu || jiaoYingDaShuangBanShu || jiaoYingDaShuangFenShu || fuYingB5Shu || fuYingB4Shu || fuYingA4Shu || fuYingA3Shu || daYingShu || daBanShu || otherSetName || otherSetCount || otherSetUnitPrice)
     },
     // 修改订单状态
     ensureOrderHnadle(status) {
+      if (status === 'DaiQueRen') {
+        if (!this.checkSkuIsComplte(this.roleTemp)) return this.$message.warning('请补充文印配置项')
+      }
       const { id } = this.roleTemp
       axios
         .post(
@@ -1389,12 +1353,6 @@ export default {
           this.getList()
           this.lingQuRen = ''
           this.dialogICVisible = false
-          // 对于table已领取状态的兼容
-          // if (status == 'YiLingQu') {
-          //   const index = this.list.findIndex(item => item.id == id)
-          //   this.validSuccessCallback(index)
-          //   this.dialogICVisible = false
-          // }
         })
         .catch(err => err)
     },
@@ -1418,7 +1376,6 @@ export default {
         officeId,
         createTime
       } = this.roleTemp
-      // const priceData = this.priceData
       this.priceData.forEach(item => {
         item.totalPrice = (item.count - 0) * (item.unitPrice - 0)
       })
@@ -1488,8 +1445,6 @@ export default {
         yinShuaRen,
         yinShuaFei, // 通知单配置end
         samples: this.samples + ',' + this.fileList.join(','),
-        printSetType: this.tabsIndex == 1 ? 'System' : 'School',
-        // printSetPrices: this.priceData,
         attachments:
           this.roleTemp.attachmentFiles &&
           this.roleTemp.attachmentFiles.map(item => item.url).join(','),
@@ -1642,12 +1597,11 @@ export default {
     },
     deleteClass(index) {
       this.deleteClassIds.push(this.multipleSelection[index].id)
+      // this.multipleSelection.splice(index, 1)
 
       if (this.$refs.multipleTable) {
-        this.$refs.multipleTable.toggleRowSelection(
-          this.multipleSelection[index],
-          false
-        )
+        this.$refs.multipleTable.toggleRowSelection(this.multipleSelection[index], false)
+        this.multipleSelection.splice(index, 1)
       } else {
         this.multipleSelection.splice(index, 1)
       }
@@ -1721,7 +1675,7 @@ export default {
     },
     // 直接领取
     unValidICTable(row) {
-      // if (!this.lingQuRen) return this.$message.warning('请输入领取人')
+      if (!this.lingQuRen) return this.$message.warning('请输入领取人')
       axios.post(
         '/smartprint/print-room/order/update-order',
         qs.stringify({ orderId: row.id, lingQuRen: this.lingQuRen, lingQuFangShi: 'Direct', status: 'YiLingQu' })
@@ -1736,13 +1690,7 @@ export default {
     },
     // table IC卡验证
     validICTable(row, index) {
-      // if (!this.lingQuRen) return this.$message.warning('请输入领取人')
       this.roleTemp = row
-      // this.active = 0
-      // this.tips = '' // 提示
-      // this.tfUID = '' // 卡号
-      // this.tfBlockData = '' // 读取的数据
-      // this.dialogICVisible = true
       this.icAuto()
     },
     // IC卡验证领取
@@ -1764,11 +1712,14 @@ export default {
       setTimeout(() => {
         const cardData = parseInt(this.tfBlockData + '')
         const userId = this.roleTemp.userId
+        this.lingQuRen = this.roleId.userName// 领取人只能是下单人
         if (cardData == userId) {
           this.tips = '身份验证成功！'
           this.ensureOrderHnadle('YiLingQu')
+          this.lingQuRen = ''
         } else {
           this.tips = '身份验证失败！'
+          this.lingQuRen = ''
           // this.$message.info(userId + '-----' + cardData)
         }
 
@@ -2042,6 +1993,17 @@ export default {
       this.$refs.printDialogRef.visible = true
       this.$refs.printDialogRef.orderData = params
     },
+    // 获取账号信息
+    getAccountInfo() {
+      axios
+        .post('/smartprint/print-room/me/refresh')
+        .then(res => {
+          if (res.data.code === 0) {
+            this.roleTemp.jieDan = res.data.data.login.user.name
+          }
+        })
+        .catch(err => err)
+    },
     /**
  * 获取卡号
  *
@@ -2111,6 +2073,13 @@ export default {
       const num = Number(decimalStr);
       const str = (Array(length).join('0') + num.toString(16)).slice(-length);
       return str;
+    },
+    // 处理下单人某一项为空的情况
+    staffLabelReset(item) {
+      const userName = item.userName ? item.userName : ''
+      const officeName = item.officeName ? ' / ' + item.officeName : ''
+      const subjectName = item.subjectName ? ' / ' + item.subjectName : ''
+      return userName + officeName + subjectName
     }
   }
 }

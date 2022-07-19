@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="operator-box">
+      <!--  -->
       <el-button v-if="checkIsJiaoYin(params)"
                  style="color:#FFF; background: #09bb07;"
                  @click="printHandle">打印通知单</el-button>
@@ -9,11 +10,11 @@
       <div class="extra">
         <label>
           <span class="title"> 经办人：</span>
-          <!-- <el-input v-model="params.jingBan"></el-input> -->
           <el-select v-model="params.jingBan"
                      clearable
                      placeholder=" "
                      filterable
+                     @change="selectChange"
                      @blur="(e)=>{selectBlur(e, 'jingBan')} ">
             <el-option v-for="(item,index) in jingBanRens"
                        :key="index"
@@ -24,7 +25,8 @@
         <label>
           <span class="title">接单人：</span>
           <!-- <el-input v-model="params.jieDan" /> -->
-          <el-select v-model="params.jieDan"
+          <el-select disabled
+                     v-model="params.jieDan"
                      clearable
                      placeholder=" "
                      filterable
@@ -75,8 +77,7 @@
         </label>
         <label>
           <span class="title">印刷要求:</span>
-          <el-input v-model="params.yinShuaYaoQiu">
-            <!-- <template slot="append">份</template> -->
+          <el-input readonly v-model="params.yinShuaYaoQiu">
           </el-input>
         </label>
         <label>
@@ -94,9 +95,11 @@
           </el-select>
         </label>
         <label>
+          <!-- 计算属性 -->
+          <i v-show="false">{{yinshuafei}}</i>
+          <i v-show="false">  {{yinShuaYaoQiuMap}}</i>
           <span class="title"> 印刷费:</span>
           <el-input v-model="params.yinShuaFei">
-            <!-- <template slot="append">份</template> -->
           </el-input>
         </label>
       </div>
@@ -139,7 +142,40 @@ export default {
     this.getYinShuaList()
     this.getZhiBanList()
   },
+  computed: {
+    yinshuafei() {
+      if (!this.params.jiaoYingDanBanShu) return false
+      let yinShuaFei = 0;
+      if (this.params.count || 0 <= 500) yinShuaFei = (this.params.jiaoYingDanBanShu || 0 + this.params.jiaoYingShuangBanShu || 0) * this.params.count || 0 * 0.003 + (this.params.jiaoYingDanBanShu || 0 + this.params.jiaoYingShuangBanShu || 0) * 1;
+      else yinShuaFei = (this.params.jiaoYingDanBanShu || 0 + this.params.jiaoYingShuangBanShu || 0) * this.params.count || 0 * 0.003;
+      this.params.yinShuaFei = yinShuaFei
+    },
+    // 印刷要求
+    yinShuaYaoQiuMap() {
+      let str = ''
+
+      if (this.params.jiaoYingDanBanShu) { str += '胶印-单面:' + this.params.jiaoYingDanBanShu + '(版)' }
+      if (this.params.jiaoYingDanFenShu) { str += '，胶印-单面:' + this.params.jiaoYingDanFenShu + '(张)' }
+      if (this.params.jiaoYingShuangBanShu) { str += '，胶印-双面:' + this.params.jiaoYingShuangBanShu + '(版)' }
+      if (this.params.jiaoYingShuangFenShu) { str += '，胶印-双面:' + this.params.jiaoYingShuangFenShu + '(张)' }
+      if (this.params.jiaoYingDaDanBanShu) { str += '，胶印-答单:' + this.params.jiaoYingDaDanBanShu + '(版)' }
+      if (this.params.jiaoYingDaDanFenShu) { str += '，胶印-答单:' + this.params.jiaoYingDaDanFenShu + '(张)' }
+      if (this.params.jiaoYingDaShuangBanShu) { str += '，胶印-答双:' + this.params.jiaoYingDaShuangBanShu + '(版)' }
+      if (this.params.jiaoYingDaShuangFenShu) { str += '，胶印-答双:' + this.params.jiaoYingDaShuangFenShu + '(张)' }
+      if (this.params.fuYingB5Shu) { str += '，复印-B5:' + this.params.fuYingB5Shu + '(张)' }
+      if (this.params.fuYingA4Shu) { str += '，复印-A4:' + this.params.fuYingA4Shu + '(张)' }
+      if (this.params.fuYingB4Shu) { str += '，复印-B4:' + this.params.fuYingB4Shu + '(张)' }
+      if (this.params.fuYingA3Shu) { str += '，复印-B4:' + this.params.fuYingA3Shu + '(张)' }
+      if (this.params.daYingShu) { str += '，打印:' + this.params.daYingShu + '(张)' }
+      if (this.params.daBanShu) { str += '，打印:' + this.params.daBanShu + '(张)' }
+
+      this.params.yinShuaYaoQiu = str + '   ，备注： ' + this.params.printRoomRemark
+    }
+  },
   methods: {
+    selectChange(val) {
+      console.log(val)
+    },
     // 获取分拣人列表
     getFenJianList() {
       axios.post(
@@ -185,6 +221,7 @@ export default {
         this.zhiBanRens = res.data.data.zhiBanRens
       }).catch(err => err)
     },
+
     // 手动填写 失去焦点赋值
     selectBlur(e, val) {
       if (e.target.value) {
@@ -199,8 +236,7 @@ export default {
     },
     // 判断是否为胶印
     checkIsJiaoYin({ jiaoYingDanBanShu, jiaoYingShuangBanShu, jiaoYingDaDanBanShu, jiaoYingDaShuangBanShu }) {
-      console.log(jiaoYingDanBanShu, jiaoYingShuangBanShu, jiaoYingDaDanBanShu, jiaoYingDaShuangBanShu)
-      return (jiaoYingDanBanShu > 0) && (jiaoYingShuangBanShu > 0) && (jiaoYingDaDanBanShu > 0) && (jiaoYingDaShuangBanShu > 0)
+      return jiaoYingDanBanShu || jiaoYingShuangBanShu || jiaoYingDaDanBanShu || jiaoYingDaShuangBanShu
     }
   }
 }
