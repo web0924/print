@@ -47,6 +47,20 @@
                        :value="item.id">
             </el-option>
           </el-select>
+          <el-select clearable
+                     placeholder="按教职工筛选"
+                     filterable
+                     size="small"
+                     style="width: 200px"
+                     v-model="listQuery.staffId"
+                     @change="staffChange"
+                     class="filter-item">
+            <el-option v-for="item in  staffList"
+                       :key="item.userId"
+                       :label="staffLabelReset(item)"
+                       :value="item.userId">
+            </el-option>
+          </el-select>
           <!-- <el-select clearable
                      class="filter-item"
                      style="width: 200px"
@@ -118,13 +132,7 @@
                           size="small"
                           placeholder="结束日期">
           </el-date-picker>
-          <el-input @keyup.enter.native="handleSearch"
-                    size="small"
-                    style="width: 200px;"
-                    class="filter-item"
-                    placeholder="输入关键字搜索"
-                    v-model="listQuery.kw">
-          </el-input>
+
           <div>
             <el-select clearable
                        class="filter-item"
@@ -138,6 +146,13 @@
                          :value="item.value">
               </el-option>
             </el-select>
+            <el-input @keyup.enter.native="handleSearch"
+                      size="small"
+                      style="width: 200px;"
+                      class="filter-item"
+                      placeholder="输入关键字搜索"
+                      v-model="listQuery.kw">
+            </el-input>
             <el-button style="margin-left:50px"
                        class="filter-item"
                        type="primary"
@@ -488,7 +503,7 @@
           <el-form-item label="使用时间：">
             <el-date-picker class="form-item-width"
                             value-format="yyyy-MM-dd HH:mm:ss"
-                            v-model="roleTemp.jiaoHuoShiJian"
+                            v-model="roleTemp.useTime"
                             type="datetime">
             </el-date-picker>
             <!-- <el-input disabled
@@ -1089,6 +1104,11 @@ export default {
         }, 0)
       }
     }
+  },
+  activated() {
+    this.editView()
+    this.getList()
+    this.getListLen()
   },
   mounted() {
     const vm = this

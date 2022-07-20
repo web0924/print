@@ -59,6 +59,20 @@
                        :value="item.id">
             </el-option>
           </el-select>
+          <el-select clearable
+                     placeholder="按教职工筛选"
+                     filterable
+                     size="small"
+                     style="width: 200px"
+                     v-model="listQuery.staffId"
+                     @change="staffChange"
+                     class="filter-item">
+            <el-option v-for="item in  staffList"
+                       :key="item.userId"
+                       :label="staffLabelReset(item)"
+                       :value="item.userId">
+            </el-option>
+          </el-select>
 
           <el-select class="filter-item"
                      style="width: 200px"
@@ -84,13 +98,7 @@
                        :value="item.value">
             </el-option>
           </el-select>
-          <el-input @keyup.enter.native="handleSearch"
-                    size="small"
-                    style="width: 200px;"
-                    class="filter-item"
-                    placeholder="输入关键字搜索"
-                    v-model="listQuery.kw">
-          </el-input>
+
           <el-button class="filter-item"
                      style="position:absolute;right:40px;background:#000"
                      type="primary"
@@ -124,6 +132,13 @@
                          :value="item.value">
               </el-option>
             </el-select>
+            <el-input @keyup.enter.native="handleSearch"
+                      size="small"
+                      style="width: 200px;"
+                      class="filter-item"
+                      placeholder="输入关键字搜索"
+                      v-model="listQuery.kw">
+            </el-input>
             <el-button style="margin-left:50px"
                        class="filter-item"
                        type="primary"
@@ -458,7 +473,7 @@
           <el-form-item label="使用时间：">
             <el-date-picker class="form-item-width"
                             value-format="yyyy-MM-dd HH:mm:ss"
-                            v-model="roleTemp.jiaoHuoShiJian"
+                            v-model="roleTemp.useTime"
                             type="datetime">
             </el-date-picker>
             <!-- <el-input disabled
@@ -491,7 +506,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <div v-if="roleTemp.type!=='Office'">
+          <div>
             <el-form-item label="年级：">
               <el-input class="form-item-width"
                         disabled
@@ -518,7 +533,7 @@
                 </el-option>
               </el-select>
             </el-form-item> -->
-            <el-form-item label="选择班级：">
+            <el-form-item v-if="roleTemp.type==='Class'" label="选择班级：">
               <div>
                 <!-- dialogPermissionsVisible=true -->
                 <el-button @click="addClassDialogHnadle">添加班级</el-button>
@@ -981,6 +996,11 @@ export default {
       }
     }
   },
+  activated() {
+    this.editView()
+    this.getList()
+    this.getListLen()
+  },
   mounted() {
     const vm = this
     vm.getList()
@@ -1233,12 +1253,8 @@ export default {
             qs.stringify({ orderId: id })
           )
           .then(res => {
-            // console.log(res)
             if (res.data.code !== 0) return this.$message.error(res.data.msg)
-            // this.roleTemp2 = res.data.data.order
             this.roleTemp = res.data.data.order
-            // this.roleTemp.allGrades == 1 ? this.roleTemp.grade = 'allGrades' : this.roleTemp.grade = this.roleTemp.grades[0].gradeId
-            // this.roleTemp.allClasses == 1 ? this.classval = 'allClasses' : this.classval = 'diy'
             this.roleTemp.classes
               ? this.roleTemp.classes = this.roleTemp.classes.map(item => {
                 item.id = item.classId
@@ -1268,15 +1284,11 @@ export default {
     },
     // 编辑
     handleEdit(index, { id }) {
-      // this.viewType = 'edit'
-      // this.editView(id)
-
       const vm = this
       this.$router.push({
         path: '/orderManage/orderManage',
         query: { extra: 'edit', id }
       })
-      this.editView()
     },
     // 修改table订单状态
     tableOrderStatuHandle(status, row, index) {

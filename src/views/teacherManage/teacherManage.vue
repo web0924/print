@@ -283,7 +283,7 @@
                        v-model="roleTemp2.subjectId">
               <el-option v-for="item in  subjectList"
                          :key="item.id"
-                         :label="item.name"
+                         :label="subjectLabel(item)"
                          :value="item.id">
               </el-option>
             </el-select>
@@ -386,6 +386,11 @@ export default {
       tfUID: '', // 卡号
       tfBlockData: '', // 读取的数据
 
+      typeOptions: {
+        Common: '公共',
+        WenKe: '文科',
+        LiKe: '理科'
+      },
 
       userPwd: '',
       // list: null,
@@ -406,11 +411,6 @@ export default {
       ruleForm: {
         permissions: []
       },
-      typeOptions: [
-        { key: '001', display_name: '类型1' },
-        { key: '002', display_name: '类型2' },
-        { key: '003', display_name: '类型3' }
-      ],
       dialogFormVisible: false,
       dialogPermissionsVisible: false,
       multipleSelection: [],
@@ -662,6 +662,12 @@ export default {
           }
         })
         .catch(err => console.log(err))
+    },
+    subjectLabel(item) {
+      console.log(item)
+      const name = item.name || ''
+      const type = this.typeOptions[item.type]
+      return name + ' / ' + type
     },
     setUser() {
       const vm = this
@@ -919,9 +925,9 @@ export default {
       // if (this.active++ > 2) this.active = 0;
     },
     /**
- * Turn on the green light
- * (亮绿灯)
-**/
+  * Turn on the green light
+  * (亮绿灯)
+  **/
     LedGreen() {
       $Reader.send(g_device + '0107' + '02');
     },
@@ -1005,7 +1011,7 @@ export default {
     /**
   * Read a block of M1 card
   * (写入M1卡的一个块)
- **/
+  **/
     WriteBlock() {
       // Check whether the reader is opened or not.
       if (g_isOpen != true) {

@@ -9,13 +9,11 @@
 
     <transition name="fade"
                 mode="out-in">
+
+      <!-- keep-alive 只缓存列表页（query.extra为false） -->
       <keep-alive>
         <router-view :key="$route.fullPath"></router-view>
       </keep-alive>
-      <!-- <keep-alive>
-        <router-view v-if="this.$route.meta.keepAlive"></router-view>
-      </keep-alive>
-      <router-view v-if="!this.$route.meta.keepAlive"></router-view> -->
 
     </transition>
   </section>
@@ -56,7 +54,7 @@ export default {
   },
   computed: {
     fullPath() {
-      console.log(this.$route.fullPath)
+      // console.log(this.$route.query.extra == 'edit')
     },
     key() {
       return this.$route.name !== undefined ? this.$route.name + +new Date() : this.$route + +new Date()

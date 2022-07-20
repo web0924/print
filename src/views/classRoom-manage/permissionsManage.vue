@@ -518,7 +518,8 @@ export default {
       },
       typeOptions: [
         { key: 'WenKe', name: '文科' },
-        { key: 'LiKe', name: '理科' }
+        { key: 'LiKe', name: '理科' },
+        { key: 'Common', name: '公共' }
       ],
       dialogFormVisible: false,
       dialogPermissionsVisible: false,
