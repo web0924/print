@@ -52,7 +52,7 @@
                      filterable
                      size="small"
                      style="width: 200px"
-                     v-model="listQuery.staffId"
+                     v-model="listQuery.userId"
                      @change="staffChange"
                      class="filter-item">
             <el-option v-for="item in  staffList"
@@ -501,7 +501,8 @@
                       v-model="roleTemp.createTime"></el-input> -->
           </el-form-item>
           <el-form-item label="使用时间：">
-            <el-date-picker class="form-item-width"
+            <el-date-picker disabled
+                            class="form-item-width"
                             value-format="yyyy-MM-dd HH:mm:ss"
                             v-model="roleTemp.useTime"
                             type="datetime">
@@ -1520,6 +1521,7 @@ export default {
         type,
         subjectId,
         officeId,
+        useTime,
         createTime
       } = this.roleTemp
       // const priceData = this.priceData
@@ -1563,6 +1565,7 @@ export default {
         userName,
         remark,
         createTime,
+        useTime,
         type,
         subjectId: type === 'Subject' ? subjectId : '',
         officeId: type === 'Office' ? officeId : '',

@@ -1,9 +1,15 @@
 <template>
   <div>
     <div class="operator-box">
-      <!--  -->
-      <el-button style="color:#FFF; background: #09bb07;"
-                 @click="printHandle">打印通知单</el-button>
+      <el-form class="small-space"
+               label-position="left"
+               label-width="120px">
+        <el-form-item :disabled="false"
+                      label=" ">
+          <el-button style="color:#FFF; background: #09bb07;"
+                     @click="printHandle">打印通知单</el-button>
+        </el-form-item>
+      </el-form>
     </div>
     <div>
       <div class="extra">

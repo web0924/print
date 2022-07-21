@@ -64,7 +64,7 @@
                      filterable
                      size="small"
                      style="width: 200px"
-                     v-model="listQuery.staffId"
+                     v-model="listQuery.userId"
                      @change="staffChange"
                      class="filter-item">
             <el-option v-for="item in  staffList"
@@ -157,8 +157,13 @@
                    style="margin-top:20px; background:#09BB07;color:#FFF">全部导出</el-button>
         <el-button @click="exportProducting"
                    style="margin-top:20px; background:#09BB07;color:#FFF">导出生产通知单</el-button>
-        <!-- <el-button @click="validICTableGroup"
+        <!-- <el-button v-show="!receiveGroupVisible"
+                   @click="validICTableGroup"
                    style="margin-top:20px; background:#09BB07;color:#FFF">批量领取</el-button> -->
+        <el-button v-show="receiveGroupVisible">IC卡领取</el-button>
+        <el-button v-show="receiveGroupVisible">直接领取</el-button>
+        <el-button v-show="receiveGroupVisible"
+                   @click="receiveGroupVisible=false">取消</el-button>
       </p>
       <!-- 表格 -->
       <!-- @selection-change="handleSelectionChange" -->
@@ -169,7 +174,10 @@
                 border
                 fit
                 highlight-current-row>
-
+        <el-table-column v-if="receiveGroupVisible"
+                         type="selection"
+                         width="55">
+        </el-table-column>
         <el-table-column align="center"
                          label='序号'
                          width="100">
@@ -471,7 +479,8 @@
                       v-model="roleTemp.createTime"></el-input> -->
           </el-form-item>
           <el-form-item label="使用时间：">
-            <el-date-picker class="form-item-width"
+            <el-date-picker disabled
+                            class="form-item-width"
                             value-format="yyyy-MM-dd HH:mm:ss"
                             v-model="roleTemp.useTime"
                             type="datetime">
@@ -533,7 +542,8 @@
                 </el-option>
               </el-select>
             </el-form-item> -->
-            <el-form-item v-if="roleTemp.type==='Class'" label="选择班级：">
+            <el-form-item v-if="roleTemp.type==='Class'"
+                          label="选择班级：">
               <div>
                 <!-- dialogPermissionsVisible=true -->
                 <el-button @click="addClassDialogHnadle">添加班级</el-button>
@@ -651,8 +661,6 @@
             </el-form-item>
             <el-form-item label="上传小样：">
               <div style="border:1px solid #E2E2E2;padding:20px">
-                <!-- https://dev.renx.cc/smartprint/upload-file -->
-                <!-- :http-request="uploadHttpRequestOfSamples" -->
                 <el-upload action="/smartprint/upload-file"
                            :on-preview="handlePreview"
                            :on-remove="handleRemove"
@@ -787,13 +795,17 @@ export default {
   data() {
     return {
       dialogICVisible: false,
-      dialogICGroupVisible: false,
+      receiveGroupVisible: false,
       active: 0,
       tips: '', // 提示
       tfUID: '', // 卡号
       tfBlockData: '', // 读取的数据
       isValidSuccess: false, // 身份验证是否成功
       lingQuRen: '', // 领取人
+      roleTemp: {
+        name: '',
+        grade: ''
+      },
 
       // list: null,
       listLoading: false,
@@ -819,13 +831,6 @@ export default {
         count: 10,
         start: 1,
         kw: ''
-      },
-      roleTemp: {
-        name: '',
-        grade: ''
-      },
-      roleTemp2: {
-        name: ''
       },
       ruleForm: {
         permissions: []
@@ -1278,10 +1283,6 @@ export default {
           .catch(err => console.log(err))
       }
     },
-    // 伪装返回
-    fakeBackHandle() {
-      this.$FakeBack(this)
-    },
     // 编辑
     handleEdit(index, { id }) {
       const vm = this
@@ -1386,7 +1387,8 @@ export default {
         type,
         subjectId,
         officeId,
-        createTime
+        createTime,
+        useTime
       } = this.roleTemp
       this.priceData.forEach(item => {
         item.totalPrice = (item.count - 0) * (item.unitPrice - 0)
@@ -1427,6 +1429,7 @@ export default {
         userName,
         remark,
         createTime,
+        useTime,
         type,
         subjectId: type === 'Subject' ? subjectId : '',
         officeId: type === 'Office' ? officeId : '',
@@ -1679,11 +1682,12 @@ export default {
     },
     // 批量IC卡验证领取
     validICTableGroup() {
-      this.active = 0
-      this.tips = '' // 提示
-      this.tfUID = '' // 卡号
-      this.tfBlockData = '' // 读取的数据
-      this.dialogICGroupVisible = true
+      // 筛选出已上架的订单
+      this.listQuery.status = ['YiShangJia']
+      // console.log(this.listQueryReset)
+      this.getList()
+      // 打开多选按钮
+      this.receiveGroupVisible = true
     },
     // 直接领取
     unValidICTable(row) {
