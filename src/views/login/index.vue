@@ -188,7 +188,7 @@ export default {
                   if (res2.data.code !== 0) return vm.$message.error(res2.data.msg)
                   this.$store.dispatch('LoginByEmail', par).then(() => {
                     this.loading = false;
-                    this.$router.push({ path: '/classManage/permissionsManage' });
+                    this.$router.push({ path: '/orderManage/orderManage' });
                     // this.$store.commit('SET_ACCOUNTINFO', res2.data.login.user);
                     // this.showDialog = true;
                   })

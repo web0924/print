@@ -40,6 +40,18 @@
                      size="small"
                      icon="edit">重置</el-button>
           <el-button class="filter-item"
+                     style="position:absolute;right:280px;background:#000"
+                     type="primary"
+                     @click="handleImport"
+                     size="small"
+                     icon="edit">模板导入</el-button>
+          <el-button class="filter-item"
+                     @click="handleDowload"
+                     style="position:absolute;right:180px;background:#000"
+                     type="primary"
+                     size="small"
+                     icon="edit">下载模板</el-button>
+          <el-button class="filter-item"
                      style="position:absolute;right:40px;background:#000"
                      type="primary"
                      @click="handleCreate"
@@ -664,7 +676,7 @@ export default {
         .catch(err => console.log(err))
     },
     subjectLabel(item) {
-      console.log(item)
+      // console.log(item)
       const name = item.name || ''
       const type = this.typeOptions[item.type]
       return name + ' / ' + type
@@ -694,6 +706,7 @@ export default {
         kw: ''
       }
       this.handleSearch()
+      this.receiveGroupCancle()
     },
     createICCard(index, { userId }) {
       this.active = 0
@@ -923,6 +936,45 @@ export default {
       }
       this.active += 1
       // if (this.active++ > 2) this.active = 0;
+    },
+    // 导入模板
+    handleImport() {
+      // 创建一个input标签
+      const vinput = document.createElement('input')
+      vinput.setAttribute('type', 'file')
+      vinput.setAttribute('id', 'data-upload')
+      vinput.style.display = 'none'
+      // 防止反复添加
+      if (document.getElementById('data-upload')) document.body.removeChild(document.getElementById('data-upload'))
+
+      document.body.appendChild(vinput)
+      vinput.click()
+      // 上传
+      vinput.onchange = async () => {
+        const formData = new window.FormData()
+        console.log(vinput.files[0])
+
+        formData.append('file', vinput.files[0])
+        axios({ method: 'post', url: '/smartprint/upload-file', data: formData, headers: { 'Content-Type': 'multipart/form-data' } }).then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          const url = res.data.data.url
+          console.log(url)
+
+          axios.post('/smartprint/print-room/staff/import-staffs-from-excel', qs.stringify({ url }))
+            .then(res2 => {
+              if (res2.data.code !== 0) return this.$message.error(res2.data.msg)
+              this.getList()
+            })
+            .catch(err => err)
+        })
+      }
+    },
+    handleDowload() {
+      const a = document.createElement('a')
+      a.href = '/static/staffs.xlsx'
+      a.download = 'staffs'
+
+      a.click()
     },
     /**
   * Turn on the green light

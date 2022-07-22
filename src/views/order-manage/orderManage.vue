@@ -152,24 +152,32 @@
           </div>
         </div>
       </div>
-      <p style="min-height:80px;width:100%;background:#F5F5F5;margin:0">
+      <div style="min-height:80px;width:100%;background:#F5F5F5;margin:0">
         <el-button @click="exportAll"
                    style="margin-top:20px; background:#09BB07;color:#FFF">全部导出</el-button>
         <el-button @click="exportProducting"
                    style="margin-top:20px; background:#09BB07;color:#FFF">导出生产通知单</el-button>
-        <!-- <el-button v-show="!receiveGroupVisible"
-                   @click="validICTableGroup"
-                   style="margin-top:20px; background:#09BB07;color:#FFF">批量领取</el-button> -->
-        <el-button v-show="receiveGroupVisible">IC卡领取</el-button>
-        <el-button v-show="receiveGroupVisible">直接领取</el-button>
-        <el-button v-show="receiveGroupVisible"
-                   @click="receiveGroupVisible=false">取消</el-button>
-      </p>
+        <div style="display:inline-block;position: absolute;right: 20px;">
+          <el-button v-show="!receiveGroupVisible"
+                     @click="validICTableGroup"
+                     style="margin-top:20px; background:#09BB07;color:#FFF">批量领取</el-button>
+          <el-button style="margin-top:20px;"
+                     @click="groupReceiveByIc"
+                     v-show="receiveGroupVisible">IC卡领取</el-button>
+          <el-button style="margin-top:20px;"
+                     @click="groupReceiveByauto"
+                     v-show="receiveGroupVisible">直接领取</el-button>
+          <el-button style="margin-top:20px"
+                     v-show="receiveGroupVisible"
+                     @click="receiveGroupCancle">取消</el-button>
+        </div>
+      </div>
       <!-- 表格 -->
       <!-- @selection-change="handleSelectionChange" -->
       <el-table :data="list"
                 v-loading.body="listLoading"
                 element-loading-text=""
+                @selection-change="selectionTableChange"
                 @sort-change="tableSortChange"
                 border
                 fit
@@ -479,8 +487,7 @@
                       v-model="roleTemp.createTime"></el-input> -->
           </el-form-item>
           <el-form-item label="使用时间：">
-            <el-date-picker disabled
-                            class="form-item-width"
+            <el-date-picker class="form-item-width"
                             value-format="yyyy-MM-dd HH:mm:ss"
                             v-model="roleTemp.useTime"
                             type="datetime">
@@ -504,7 +511,8 @@
           </el-form-item>
           <el-form-item v-if="roleTemp.type==='Subject'"
                         label="选择学科：">
-            <el-select clearable
+            <el-select disabled
+                       clearable
                        class="filter-item form-item-width"
                        v-model="roleTemp.subjectId"
                        placeholder="学科：">
@@ -618,8 +626,9 @@
               </div>
             </div>
           </el-form-item>
-          <el-form-item>
-            <el-button type="primary"
+          <el-form-item label-width="0">
+            <el-button style="width:520px;margin-top: 140px;"
+                       type="primary"
                        @click="submitHandle">提交</el-button>
           </el-form-item>
         </el-form>
@@ -863,7 +872,9 @@ export default {
 
       staffList: [],
       currentStaff: {
-      }
+      },
+      userInfoName: '',
+      receiveGroupData: [] // 批量领取数据
     }
   },
   computed: {
@@ -1279,6 +1290,7 @@ export default {
             }
             this.$refs.priceSetRef.params = this.roleTemp
             this.$refs.noticeTableRef.params = this.roleTemp
+            this.$refs.noticeTableRef.params.jieDan = this.userInfoName
           })
           .catch(err => console.log(err))
       }
@@ -1609,6 +1621,7 @@ export default {
       }
       this.getList()
       this.getListLen()
+      this.receiveGroupCancle()
     },
     deleteClass(index) {
       this.deleteClassIds.push(this.multipleSelection[index].id)
@@ -1680,14 +1693,79 @@ export default {
     validSuccessCallback(index) {
       this.list[index].status = 'YiLingQu'
     },
-    // 批量IC卡验证领取
+    // 批量IC卡验证领取开关
     validICTableGroup() {
+      // 提示筛选订单
+      if (!this.listQuery.userId) return this.$message.warning('请选择教职工')
       // 筛选出已上架的订单
       this.listQuery.status = ['YiShangJia']
       // console.log(this.listQueryReset)
       this.getList()
       // 打开多选按钮
       this.receiveGroupVisible = true
+    },
+    // 批量领取关闭
+    receiveGroupCancle() {
+      this.listQuery.status = []
+      this.getList()
+      this.receiveGroupVisible = false
+    },
+    // IC卡批量领取
+    groupReceiveByIc() {
+      if (this.receiveGroupData.length < 1) return this.$message.warning('请勾选')
+      this.Connect()
+      setTimeout(() => {
+        this.ReadBlock()
+      }, 200)
+      setTimeout(() => {
+        const cardData = parseInt(this.tfBlockData + '')
+
+        if (cardData == this.listQuery.userId) {
+          this.tips = '身份验证成功！'
+          const params = {
+            orderIds: this.receiveGroupData.map(item => item.id).join(','),
+            lingQuFangShi: 'IC',
+            lingQuRen: this.listQuery.userId
+          }
+          axios.post(
+            '/smartprint/print-room/order/batch-recieve',
+            qs.stringify(params)
+          )
+            .then(res => {
+              if (res.data.code !== 0) return this.$message.error(res.data.msg)
+              this.$message.success('领取成功')
+              this.receiveGroupCancle()
+            })
+            .catch(err => err)
+        } else {
+          this.tips = '身份验证失败！'
+        }
+
+        this.$message.info(this.tips)
+      }, 400)
+    },
+    // 批量直接领取
+    groupReceiveByauto() {
+      if (this.receiveGroupData.length < 1) return this.$message.warning('请勾选')
+      const params = {
+        orderIds: this.receiveGroupData.map(item => item.id).join(','),
+        lingQuFangShi: 'Direct',
+        lingQuRen: this.listQuery.userId
+      }
+      axios.post(
+        '/smartprint/print-room/order/batch-recieve',
+        qs.stringify(params)
+      )
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          this.$message.success('领取成功')
+          this.receiveGroupCancle()
+        })
+        .catch(err => err)
+    },
+    // table勾选事件
+    selectionTableChange(rows) {
+      this.receiveGroupData = rows
     },
     // 直接领取
     unValidICTable(row) {
@@ -2015,7 +2093,7 @@ export default {
         .post('/smartprint/print-room/me/refresh')
         .then(res => {
           if (res.data.code === 0) {
-            this.roleTemp.jieDan = res.data.data.login.user.name
+            this.userInfoName = res.data.data.login.user.name
           }
         })
         .catch(err => err)

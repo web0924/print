@@ -29,8 +29,8 @@
         </label>
         <label>
           <span class="title">接单人：</span>
-          <!-- <el-input v-model="params.jieDan" /> -->
-          <el-select disabled
+          <el-input disabled v-model="params.jieDan" />
+          <!-- <el-select disabled
                      v-model="params.jieDan"
                      clearable
                      placeholder=" "
@@ -40,7 +40,7 @@
                        :key="index"
                        :label="item.name"
                        :value="item.name" />
-          </el-select>
+          </el-select> -->
         </label>
         <label>
           <span class="title"> 制版人：</span>
@@ -82,8 +82,7 @@
         </label>
         <label>
           <span class="title">印刷要求:</span>
-          <el-input readonly
-                    v-model="params.yinShuaYaoQiu">
+          <el-input v-model="params.yinShuaYaoQiu">
           </el-input>
         </label>
         <label>
@@ -103,7 +102,7 @@
         <label>
           <!-- 计算属性 -->
           <i v-show="false">{{yinshuafei}}</i>
-          <i v-show="false"> {{yinShuaYaoQiuMap}}</i>
+          <!-- <i v-show="false"> {{yinShuaYaoQiuMap}}</i> -->
           <span class="title"> 印刷费:</span>
           <el-input v-model="params.yinShuaFei">
           </el-input>
@@ -160,28 +159,28 @@ export default {
       if (count <= 500) yinShuaFei = (jiaoYingDanBanShu + jiaoYingShuangBanShu) * count * 0.003 + (jiaoYingDanBanShu + jiaoYingShuangBanShu) * 1;
       else yinShuaFei = (jiaoYingDanBanShu + jiaoYingShuangBanShu) * count * 0.003;
 
-      this.params.yinShuaFei = yinShuaFei
-    },
-    // 印刷要求
-    yinShuaYaoQiuMap() {
-      let str = ''
-      if (this.params.jiaoYingDanBanShu) { str += '胶印-单面:' + this.params.jiaoYingDanBanShu + '(版)' }
-      if (this.params.jiaoYingDanFenShu) { str += ' 胶印-单面:' + this.params.jiaoYingDanFenShu + '(张)' }
-      if (this.params.jiaoYingShuangBanShu) { str += ' 胶印-双面:' + this.params.jiaoYingShuangBanShu + '(版)' }
-      if (this.params.jiaoYingShuangFenShu) { str += ' 胶印-双面:' + this.params.jiaoYingShuangFenShu + '(张)' }
-      if (this.params.jiaoYingDaDanBanShu) { str += ' 胶印-答单:' + this.params.jiaoYingDaDanBanShu + '(版)' }
-      if (this.params.jiaoYingDaDanFenShu) { str += ' 胶印-答单:' + this.params.jiaoYingDaDanFenShu + '(张)' }
-      if (this.params.jiaoYingDaShuangBanShu) { str += ' 胶印-答双:' + this.params.jiaoYingDaShuangBanShu + '(版)' }
-      if (this.params.jiaoYingDaShuangFenShu) { str += ' 胶印-答双:' + this.params.jiaoYingDaShuangFenShu + '(张)' }
-      if (this.params.fuYingB5Shu) { str += ' 复印-B5:' + this.params.fuYingB5Shu + '(张)' }
-      if (this.params.fuYingA4Shu) { str += ' 复印-A4:' + this.params.fuYingA4Shu + '(张)' }
-      if (this.params.fuYingB4Shu) { str += ' 复印-B4:' + this.params.fuYingB4Shu + '(张)' }
-      if (this.params.fuYingA3Shu) { str += ' 复印-B4:' + this.params.fuYingA3Shu + '(张)' }
-      if (this.params.daYingShu) { str += ' 打印:' + this.params.daYingShu + '(张)' }
-      if (this.params.daBanShu) { str += ' 打印:' + this.params.daBanShu + '(张)' }
-
-      this.params.yinShuaYaoQiu = str + '   备注： ' + (this.params.printRoomRemark || '')
+      this.params.yinShuaFei = Math.floor(yinShuaFei * 100) / 100// 保留两位小数
     }
+    // 印刷要求
+    // yinShuaYaoQiuMap() {
+    //   let str = ''
+    //   if (this.params.jiaoYingDanBanShu) { str += '胶印-单面:' + this.params.jiaoYingDanBanShu + '(版)' }
+    //   if (this.params.jiaoYingDanFenShu) { str += ' 胶印-单面:' + this.params.jiaoYingDanFenShu + '(张)' }
+    //   if (this.params.jiaoYingShuangBanShu) { str += ' 胶印-双面:' + this.params.jiaoYingShuangBanShu + '(版)' }
+    //   if (this.params.jiaoYingShuangFenShu) { str += ' 胶印-双面:' + this.params.jiaoYingShuangFenShu + '(张)' }
+    //   if (this.params.jiaoYingDaDanBanShu) { str += ' 胶印-答单:' + this.params.jiaoYingDaDanBanShu + '(版)' }
+    //   if (this.params.jiaoYingDaDanFenShu) { str += ' 胶印-答单:' + this.params.jiaoYingDaDanFenShu + '(张)' }
+    //   if (this.params.jiaoYingDaShuangBanShu) { str += ' 胶印-答双:' + this.params.jiaoYingDaShuangBanShu + '(版)' }
+    //   if (this.params.jiaoYingDaShuangFenShu) { str += ' 胶印-答双:' + this.params.jiaoYingDaShuangFenShu + '(张)' }
+    //   if (this.params.fuYingB5Shu) { str += ' 复印-B5:' + this.params.fuYingB5Shu + '(张)' }
+    //   if (this.params.fuYingA4Shu) { str += ' 复印-A4:' + this.params.fuYingA4Shu + '(张)' }
+    //   if (this.params.fuYingB4Shu) { str += ' 复印-B4:' + this.params.fuYingB4Shu + '(张)' }
+    //   if (this.params.fuYingA3Shu) { str += ' 复印-B4:' + this.params.fuYingA3Shu + '(张)' }
+    //   if (this.params.daYingShu) { str += ' 打印:' + this.params.daYingShu + '(张)' }
+    //   if (this.params.daBanShu) { str += ' 打印:' + this.params.daBanShu + '(张)' }
+
+    //   this.params.yinShuaYaoQiu = str + '   备注： ' + (this.params.printRoomRemark || '')
+    // }
   },
   methods: {
     selectChange(val) {

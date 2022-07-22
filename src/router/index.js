@@ -92,7 +92,7 @@ const constantRouterMap = [
     path: '/',
     // component: Layout,
     // redirect: '/index/readme',  // 重定向到默认首页
-    redirect: '/classManage/permissionsManage',  // 重定向到默认首页
+    redirect: '/orderManage/orderManage',  // 重定向到默认首页
     hidden: true
   },
   {

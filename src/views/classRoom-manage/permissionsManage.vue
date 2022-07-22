@@ -52,17 +52,23 @@
                      size="small"
                      icon="edit">重置</el-button>
           <el-button class="filter-item"
-                     style="position:absolute;right:200px;background:#000"
+                     style="position:absolute;right:350px;background:#000"
                      type="primary"
                      @click="handleCreate"
                      size="small"
                      icon="edit">添加班级</el-button>
           <el-button class="filter-item"
-                     style="position:absolute;right:40px;background:#000"
+                     style="position:absolute;right:180px;background:#000"
                      type="primary"
                      @click="handleCreateGroup"
                      size="small"
                      icon="edit">批量添加班级</el-button>
+          <el-button class="filter-item"
+                     style="position:absolute;right:40px;background:#000"
+                     type="primary"
+                     @click="handleDeleteGroup"
+                     size="small"
+                     icon="edit">批量删除班级</el-button>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
@@ -72,13 +78,14 @@
                 v-loading.body="listLoading"
                 element-loading-text=""
                 @sort-change="tableSortChange"
+                @selection-change="selectionTableChange"
                 border
                 fit
                 highlight-current-row>
-        <!-- <el-table-column type="selection"
-                       width="65">
-      </el-table-column> -->
 
+        <el-table-column type="selection"
+                         width="55">
+        </el-table-column>
         <el-table-column align="center"
                          label='序号'
                          width="100">
@@ -551,7 +558,8 @@ export default {
         count: 10,
         start: 1,
         kw: ''
-      }
+      },
+      receiveGroupData: []
     }
   },
   mounted() {
@@ -677,7 +685,7 @@ export default {
     // 排序
     sortIptChange(row) {
       axios.post(
-      '/smartprint/print-room/class/update-class',
+        '/smartprint/print-room/class/update-class',
         qs.stringify({ classId: row.id, num: row.num })
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
@@ -773,10 +781,34 @@ export default {
         })
         .then(err => err)
     },
+    // 批量勾选
+    selectionTableChange(rows) {
+      this.receiveGroupData = rows
+    },
     // 批量删除
-    handleDelAll() {
-      const vm = this
-      console.log('批量删除选择的row：', vm.multipleSelection)
+    handleDeleteGroup() {
+      if (this.receiveGroupData.length < 1) return this.$message.warning('请勾选')
+      const _this = this
+      const classIds = this.receiveGroupData.map(item => item.id).join(',')
+      this.$confirm('确认删除？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios.post(
+          '/smartprint/print-room/class/delete-classes',
+          qs.stringify({ classIds })
+        ).then(res => {
+          if (res.data.code !== 0) return _this.$message.error(res.data.msg)
+          _this.$message.success('删除成功')
+          // 前端更新
+          _this.receiveGroupData.forEach((item, index) => {
+            _this.list.forEach((ditem, dindex) => {
+              if (ditem.id == item.id) _this.list.splice(dindex, 1)
+            })
+          })
+        }).catch(err => err)
+      }).catch(() => this.$message.info('已取消删除'));
     },
     // 搜索
     handleFilter() {
