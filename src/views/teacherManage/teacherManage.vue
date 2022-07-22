@@ -971,9 +971,11 @@ export default {
     },
     handleDowload() {
       const a = document.createElement('a')
-      a.href = '/static/staffs.xlsx'
+      a.href = './staffs.xlsx'
+
       a.download = 'staffs'
 
+      console.log(a)
       a.click()
     },
     /**
