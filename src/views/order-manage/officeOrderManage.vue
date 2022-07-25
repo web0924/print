@@ -178,18 +178,19 @@
                      style="margin-top:20px; background:#09BB07;color:#FFF">批量领取</el-button>
           <el-button style="margin-top:20px;"
                      @click="groupReceiveByIc"
-                     v-show="receiveGroupVisible">IC卡领取</el-button>
+                     v-show="receiveGroupVisible">批量IC卡领取</el-button>
           <el-button style="margin-top:20px;"
                      @click="groupReceiveByauto"
-                     v-show="receiveGroupVisible">直接领取</el-button>
-          <el-button style="margin-top:20px"
+                     v-show="receiveGroupVisible">批量直接领取</el-button>
+          <!-- <el-button style="margin-top:20px"
                      v-show="receiveGroupVisible"
-                     @click="receiveGroupCancle">取消</el-button>
+                     @click="receiveGroupCancle">取消</el-button> -->
         </div>
       </div>
       <!-- 表格 -->
       <!-- @selection-change="handleSelectionChange" -->
       <el-table :data="list"
+                ref="tableListRef"
                 v-loading.body="listLoading"
                 element-loading-text=""
                 @sort-change="tableSortChange"
@@ -324,20 +325,20 @@
                        plain
                        @click="tableOrderStatuHandle('YiShangJia',scope.row,scope.$index)"
                        size="small">确认上架</el-button>
-            <el-popover placement="left"
+            <!-- <el-popover placement="left"
                         title=" "
                         trigger="hover">
               <el-input style="margin-bottom:10px"
                         v-model="lingQuRen"
                         placeholder="领取人"></el-input>
               <el-button @click="validICTable(scope.row,scope.$index)">IC卡领取</el-button>
-              <el-button @click="unValidICTable(scope.row)">直接领取</el-button>
-              <el-button v-show="scope.row.status=='YiShangJia'"
-                         slot="reference"
-                         type="primary"
-                         plain
-                         size="small">确认领取</el-button>
-            </el-popover>
+              <el-button @click="unValidICTable(scope.row)">直接领取</el-button> -->
+            <el-button v-show="scope.row.status=='YiShangJia'"
+                       type="primary"
+                       @click="ensureLingquHandle(scope.row)"
+                       plain
+                       size="small">确认领取</el-button>
+            <!-- </el-popover> -->
             <!-- <el-button style="margin-left:50px"
                        v-show="scope.row.status=='YiShangJia'"
                        type="primary"
@@ -864,6 +865,19 @@
     </el-dialog>
     <!-- 通知单 -->
     <printDialog ref="printDialogRef" />
+    <!-- table领取弹窗 -->
+    <el-dialog title="提示"
+               :visible.sync="ensureDialogVisible"
+               width="30%">
+      <span>请输入领取人</span>
+      <el-input v-model="lingQuRen"></el-input>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="validICTable">IC卡验证领取</el-button>
+        <el-button type="primary"
+                   @click="diaLogUnValidICTable">直接领取</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -913,8 +927,9 @@ export default {
   data() {
     return {
       types: 'Office',
-      receiveGroupVisible: false,
+      receiveGroupVisible: true,
       dialogICVisible: false,
+      ensureDialogVisible: false,
       active: 0,
       tips: '', // 提示
       tfUID: '', // 卡号
@@ -1819,6 +1834,25 @@ export default {
           this.samples = res.data.data.url + ',' + this.samples
         })
     },
+    // table 领取点击事件
+    ensureLingquHandle(row) {
+      this.roleTemp = row
+      this.ensureDialogVisible = true
+    },
+    // dialog直接领取
+    diaLogUnValidICTable() {
+      this.unValidICTable(this.roleTemp)
+      this.ensureDialogVisible = false
+    },
+    // 领取人弹窗
+    lingqurenPrompt() {
+      // 领取人
+      return this.$prompt('请输入领取人', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => Promise.resolve(value))
+        .catch(() => Promise.resolve(false))
+    },
     // 批量IC卡验证领取开关
     validICTableGroup() {
       // 提示筛选订单
@@ -1834,10 +1868,13 @@ export default {
     receiveGroupCancle() {
       this.listQuery.status = []
       this.getList()
-      this.receiveGroupVisible = false
+      // this.receiveGroupVisible = false
     },
     // IC卡批量领取
-    groupReceiveByIc() {
+    async groupReceiveByIc() {
+      if (this.receiveGroupData.length < 1) return this.$message.warning('请勾选')
+      const lingQuRen = await this.lingqurenPrompt()
+
       this.Connect()
       setTimeout(() => {
         this.ReadBlock()
@@ -1845,12 +1882,12 @@ export default {
       setTimeout(() => {
         const cardData = parseInt(this.tfBlockData + '')
 
-        if (cardData == this.listQuery.userId) {
+        if (cardData == this.receiveGroupData[0].userId) {
           this.tips = '身份验证成功！'
           const params = {
             orderIds: this.receiveGroupData.map(item => item.id).join(','),
             lingQuFangShi: 'IC',
-            lingQuRen: this.listQuery.userId
+            lingQuRen: lingQuRen || ''
           }
           axios.post(
             '/smartprint/print-room/order/batch-recieve',
@@ -1870,11 +1907,14 @@ export default {
       }, 400)
     },
     // 批量直接领取
-    groupReceiveByauto() {
+    async groupReceiveByauto() {
+      if (this.receiveGroupData.length < 1) return this.$message.warning('请勾选')
+      const lingQuRen = await this.lingqurenPrompt()
+
       const params = {
         orderIds: this.receiveGroupData.map(item => item.id).join(','),
         lingQuFangShi: 'Direct',
-        lingQuRen: this.listQuery.userId
+        lingQuRen: lingQuRen || ''
       }
       axios.post(
         '/smartprint/print-room/order/batch-recieve',
@@ -1889,7 +1929,52 @@ export default {
     },
     // table勾选事件
     selectionTableChange(rows) {
+      const currentRow = this.findCurrentRow(rows)
+
+      if (!this.isCheck(currentRow)) {
+        setTimeout(() => {
+          this.cancleSelection(currentRow)
+          this.$message.warning('订单状态不可选')
+        }, 200)
+        return
+      }
+      if (!this.isSameUser(rows, currentRow)) {
+        this.cancleSelection(currentRow)
+        this.$message.warning('只能选择相同的教职工订单')
+        return
+      }
+
       this.receiveGroupData = rows
+    },
+    // 找出当前的勾选项
+    findCurrentRow(rows) {
+      // const copyRow = JSON.parse(JSON.stringify(rows))
+      const copyRow = rows
+      for (let i = 0; i < this.receiveGroupData.length; i++) {
+        for (let j = 0; j < copyRow.length; j++) {
+          if (this.receiveGroupData[i].id == copyRow[j].id) {
+            copyRow.splice(j, 1)
+            break;
+          }
+        }
+      }
+      return copyRow[0]
+    },
+    // 判断状态是否可勾选
+    isCheck(row) {
+      if (row.status === 'YiShangJia') return true
+      return false
+    },
+    // 判断是否选择的同一个user
+    isSameUser(rows, row) {
+      const oId = rows[0].id
+      const nId = row.id
+      if (oId === nId) return true
+      return false
+    },
+    // 取消勾选
+    cancleSelection(row) {
+      this.$refs.tableListRef.toggleRowSelection(row);
     },
     // 直接领取
     unValidICTable(row) {
@@ -1911,15 +1996,11 @@ export default {
       this.list[index].status = 'YiLingQu'
     },
     // table IC卡验证
+    // table IC卡证
     validICTable(row, index) {
-      // if (!this.lingQuRen) return this.$message.warning('请输入领取人')
-      this.roleTemp = row
-      // this.active = 0
-      // this.tips = '' // 提示
-      // this.tfUID = '' // 卡号
-      // this.tfBlockData = '' // 读取的数据
-      // this.dialogICVisible = true
+      // this.roleTemp = row
       this.icAuto()
+      this.ensureDialogVisible = false
     },
     // IC卡验证领取
     validIC() {
@@ -2384,13 +2465,5 @@ export default {
   align-items: center;
   color: #0053b5;
   padding-left: 20px;
-}
-.tabs-box {
-  width: calc(100vw - 250px);
-  position: relative;
-  left: -100px;
-  border-bottom: 1px solid #cccccc;
-  padding-left: 60px;
-  margin-bottom: 20px;
 }
 </style>
