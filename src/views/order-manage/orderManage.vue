@@ -185,6 +185,7 @@
                 highlight-current-row>
         <el-table-column v-if="receiveGroupVisible"
                          type="selection"
+                         :selectable="selectableHandle"
                          width="55">
         </el-table-column>
         <el-table-column align="center"
@@ -1045,7 +1046,7 @@ export default {
         }
       }
       if (nrows.length - orows.length > 1) {
-        // 判断是都有不可选的订单
+        // 判断是否有不可选的订单
         for (let i = 0; i < nrows.length; i++) {
           if (!this.isCheck(nrows[i])) {
             this.$refs.tableListRef.clearSelection();
@@ -1064,6 +1065,7 @@ export default {
       }
     }
   },
+
   activated() {
     this.editView()
     this.getList()
@@ -1085,6 +1087,16 @@ export default {
     this.getAccountInfo()
   },
   methods: {
+    // 是否可勾选
+    selectableHandle(row) {
+      return row.status === 'YiShangJia'
+    },
+    // 是否包含跳过的订单
+    isIncludesSkpStatus(status) {
+      const skipArr = ['YiLingQu']
+
+      return skipArr.includes(status)
+    },
     lastLevelChange(boo) {
       // alert(boo)
       this.isShowPrice = boo

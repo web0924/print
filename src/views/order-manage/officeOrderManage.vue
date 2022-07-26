@@ -199,6 +199,7 @@
                 fit
                 highlight-current-row>
         <el-table-column v-if="receiveGroupVisible"
+                         :selectable="selectableHandle"
                          type="selection"
                          width="55">
         </el-table-column>
@@ -1203,6 +1204,10 @@ export default {
     lastLevelChange(boo) {
       // alert(boo)
       this.isShowPrice = boo
+    },
+    // 是否可勾选
+    selectableHandle(row) {
+      return row.status === 'YiShangJia'
     },
 
     // 获取列表数据
