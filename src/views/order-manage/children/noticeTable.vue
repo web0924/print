@@ -24,12 +24,17 @@
             <el-option v-for="(item,index) in jingBanRens"
                        :key="index"
                        :label="item.name"
-                       :value="item.name" />
+                       :value="item.name">
+              <span>{{item.name}}</span>
+              <span @click.stop="deleteHnadle('jingBan',item.id)"
+                    style="float:right"><i class="el-icon-delete"></i></span>
+            </el-option>
           </el-select>
         </label>
         <label>
           <span class="title">接单人：</span>
-          <el-input disabled v-model="params.jieDan" />
+          <el-input disabled
+                    v-model="params.jieDan" />
           <!-- <el-select disabled
                      v-model="params.jieDan"
                      clearable
@@ -53,7 +58,12 @@
             <el-option v-for="(item,index) in zhiBanRens"
                        :key="index"
                        :label="item.name"
-                       :value="item.name" />
+                       :value="item.name">
+              <span>{{item.name}}</span>
+              <span @click.stop="deleteHnadle('zhiBan',item.id)"
+                    style="float:right"><i class="el-icon-delete"></i></span>
+            </el-option>
+
           </el-select>
         </label>
         <label>
@@ -67,7 +77,11 @@
             <el-option v-for="(item,index) in fenJianRens"
                        :key="index"
                        :label="item.name"
-                       :value="item.name" />
+                       :value="item.name">
+              <span>{{item.name}}</span>
+              <span @click.stop="deleteHnadle('fenJian',item.id)"
+                    style="float:right"><i class="el-icon-delete"></i></span>
+            </el-option>
           </el-select>
         </label>
         <label>
@@ -96,7 +110,11 @@
             <el-option v-for="(item,index) in  yinShuaRens"
                        :key="index"
                        :label="item.name"
-                       :value="item.name" />
+                       :value="item.name">
+              <span>{{item.name}}</span>
+              <span @click.stop="deleteHnadle('yinShua',item.id)"
+                    style="float:right"><i class="el-icon-delete"></i></span>
+            </el-option>
           </el-select>
         </label>
         <label>
@@ -116,7 +134,7 @@
 <script>
 import axios from 'axios'
 import printDialog from './printDialog.vue'
-// import qs from 'qs'
+import qs from 'qs'
 export default {
   components: {
     printDialog
@@ -247,6 +265,30 @@ export default {
     // 判断是否为胶印
     checkIsJiaoYin({ jiaoYingDanBanShu, jiaoYingShuangBanShu, jiaoYingDaDanBanShu, jiaoYingDaShuangBanShu }) {
       return jiaoYingDanBanShu || jiaoYingShuangBanShu || jiaoYingDaDanBanShu || jiaoYingDaShuangBanShu
+    },
+    // 删除记录
+    // @{str} 删除的字段
+    // @{name} 删除的记录
+    deleteHnadle(str, id) {
+      const strMap = {
+        jingBan: '/smartprint/print-room/order/delete-jing-ban-ren',
+        zhiBan: '/smartprint/print-room/order/delete-zhi-ban-ren',
+        fenJian: '/smartprint/print-room/order/delete-fen-jian-ren',
+        yinShua: '/smartprint/print-room/order/delete-yin-shua-ren'
+      }
+      const parmas = {
+        [str + 'RenId']: id
+      }
+
+      axios.post(strMap[str], qs.stringify(parmas)).then(res => {
+        if (res.data.code !== 0) return this.$message.error(res.data.msg)
+
+        this.getFenJianList()
+        this.getJieDanList()
+        this.getJingBnaList()
+        this.getYinShuaList()
+        this.getZhiBanList()
+      }).catch(err => err)
     }
   }
 }

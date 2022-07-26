@@ -462,7 +462,7 @@
         <el-table-column label="学科名称"
                          width="">
           <template slot-scope="scope">
-            {{scope.row.name}}
+            {{subjectLabel(scope.row)}}
           </template>
         </el-table-column>
       </el-table>
@@ -625,11 +625,6 @@ export default {
       const vm = this
 
       vm.listLoading = true
-      // fetchList(this.listQuery).then(response => {
-      //   this.list = response.data.items;
-      //   this.total = response.data.total;
-      //   this.listLoading = false;
-      // })
       axios
         .post(
           '/smartprint/print-room/class/get-classes',
@@ -639,35 +634,8 @@ export default {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           vm.list = res.data.data.classes
           console.log('列表数据：', vm.list)
-          // vm.listQuery.currPage = data.data.currPage;
-          // vm.listQuery.count = data.data.count;
-          // vm.total = data.data.total;
         })
         .catch(err => err)
-      // return
-      // global.get(api.roleAndUser, { params: vm.listQuery }, res => {
-      //   // console.log('-------获取到数据：',JSON.stringify(res) )
-      //   const data = res.body;
-      //   if (data.resultCode == 0) {
-      //     vm.list = data.data.data;
-      //     console.log('列表数据：', vm.list);
-      //     vm.listQuery.currPage = data.data.currPage;
-      //     vm.listQuery.count = data.data.count;
-      //     vm.total = data.data.total;
-
-      //     vm.listLoading = false;
-      //   } else {
-      //     // alert(res.body.resultMsg)
-      //     Message({
-      //       showClose: true,
-      //       message: res.body.resultMsg,
-      //       type: 'error'
-      //     });
-      //     vm.listLoading = false;
-      //   }
-      // }, res => {
-      //   vm.listLoading = false;
-      // }, false)
       vm.listLoading = false
     },
     // 获取列表数据总数
@@ -809,6 +777,12 @@ export default {
           })
         }).catch(err => err)
       }).catch(() => this.$message.info('已取消删除'));
+    },
+    // 学科类型
+    subjectLabel(item) {
+      const name = item.name || ''
+      const type = this.typeOptions[item.type] ? this.typeOptions[item.type] + ' / ' : ''
+      return name + type
     },
     // 搜索
     handleFilter() {

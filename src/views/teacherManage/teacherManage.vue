@@ -676,19 +676,9 @@ export default {
         .catch(err => console.log(err))
     },
     subjectLabel(item) {
-      // console.log(item)
       const name = item.name || ''
       const type = this.typeOptions[item.type]
       return name + ' / ' + type
-    },
-    setUser() {
-      const vm = this
-
-      vm.$message({
-        showClose: true,
-        message: '设置成员未完成，逻辑参照设置权限即可！',
-        type: 'warning'
-      })
     },
     handleSelectionChange(val) {
       this.multipleSelection = val

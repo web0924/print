@@ -1034,13 +1034,13 @@ export default {
         if (!this.isCheck(currentRow)) {
           this.cancleSelection(currentRow)
 
-          if (document.getElementsByClassName('el-message--warning').length === 0) this.$message.warning('订单状态不可选')
+          if (document.getElementsByClassName('el-message--warning').length === 0) this.$message.warning(' 该订单还未上架')
           return
         }
         if (!this.isSameUser(rows, currentRow)) {
           this.cancleSelection(currentRow)
 
-          if (document.getElementsByClassName('el-message--warning').length === 0) this.$message('只能选择相同的教职工订单')
+          if (document.getElementsByClassName('el-message--warning').length === 0) this.$message('您只能选择相同的教职工')
           return
         }
       }
@@ -1049,7 +1049,7 @@ export default {
         for (let i = 0; i < nrows.length; i++) {
           if (!this.isCheck(nrows[i])) {
             this.$refs.tableListRef.clearSelection();
-            if (document.getElementsByClassName('el-message--warning').length === 0) this.$message.warning('订单状态不可选')
+            if (document.getElementsByClassName('el-message--warning').length === 0) this.$message.warning(' 该订单还未上架')
             return
           }
         }
@@ -1057,7 +1057,7 @@ export default {
         for (let i = 0; i < nrows.length; i++) {
           if (!this.isSameUser(nrows, nrows[i])) {
             this.$refs.tableListRef.clearSelection();
-            if (document.getElementsByClassName('el-message--warning').length === 0) this.$message('只能选择相同的教职工订单')
+            if (document.getElementsByClassName('el-message--warning').length === 0) this.$message('您只能选择相同的教职工')
             return
           }
         }
@@ -1840,14 +1840,14 @@ export default {
       //   setTimeout(() => {
       //     this.cancleSelection(currentRow)
       //   }, 10)
-      //   if (document.getElementsByClassName('el-message--warning').length === 0) this.$message.warning('订单状态不可选')
+      //   if (document.getElementsByClassName('el-message--warning').length === 0) this.$message.warning(' 该订单还未上架')
       //   return
       // }
       // if (!this.isSameUser(rows, currentRow)) {
       //   setTimeout(() => {
       //     this.cancleSelection(currentRow)
       //   }, 10)
-      //   if (document.getElementsByClassName('el-message--warning').length === 0) this.$message('只能选择相同的教职工订单')
+      //   if (document.getElementsByClassName('el-message--warning').length === 0) this.$message('您只能选择相同的教职工')
       //   return
       // }
       this.receiveGroupData = rows
