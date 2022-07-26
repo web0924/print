@@ -1141,43 +1141,43 @@ export default {
           })
         }, 0)
       }
-    },
-    receiveGroupData(nrows, orows) {
-      if (nrows.length - orows.length === 1) {
-        const currentRow = nrows[nrows.length - 1]
-
-        if (!this.isCheck(currentRow)) {
-          this.cancleSelection(currentRow)
-
-          if (document.getElementsByClassName('el-message--warning').length === 0) this.$message.warning('订单还未上架')
-          return
-        }
-        if (!this.isSameUser(rows, currentRow)) {
-          this.cancleSelection(currentRow)
-
-          if (document.getElementsByClassName('el-message--warning').length === 0) this.$message('您只能选择相同的教职工')
-          return
-        }
-      }
-      if (nrows.length - orows.length > 1) {
-        // 判断是都有不可选的订单
-        for (let i = 0; i < nrows.length; i++) {
-          if (!this.isCheck(nrows[i])) {
-            this.$refs.tableListRef.clearSelection();
-            if (document.getElementsByClassName('el-message--warning').length === 0) this.$message.warning('该订单还未上架')
-            return
-          }
-        }
-        // 判断user是否一样
-        for (let i = 0; i < nrows.length; i++) {
-          if (!this.isSameUser(nrows, nrows[i])) {
-            this.$refs.tableListRef.clearSelection();
-            if (document.getElementsByClassName('el-message--warning').length === 0) this.$message('您只能选择相同的教职工')
-            return
-          }
-        }
-      }
     }
+    // receiveGroupData(nrows, orows) {
+    //   if (nrows.length - orows.length === 1) {
+    //     const currentRow = nrows[nrows.length - 1]
+
+    //     if (!this.isCheck(currentRow)) {
+    //       this.cancleSelection(currentRow)
+
+    //       if (document.getElementsByClassName('el-message--warning').length === 0) this.$message.warning('订单还未上架')
+    //       return
+    //     }
+    //     if (!this.isSameUser(rows, currentRow)) {
+    //       this.cancleSelection(currentRow)
+
+    //       if (document.getElementsByClassName('el-message--warning').length === 0) this.$message('您只能选择相同的教职工')
+    //       return
+    //     }
+    //   }
+    //   if (nrows.length - orows.length > 1) {
+    //     // 判断是都有不可选的订单
+    //     for (let i = 0; i < nrows.length; i++) {
+    //       if (!this.isCheck(nrows[i])) {
+    //         this.$refs.tableListRef.clearSelection();
+    //         if (document.getElementsByClassName('el-message--warning').length === 0) this.$message.warning('该订单还未上架')
+    //         return
+    //       }
+    //     }
+    //     // 判断user是否一样
+    //     for (let i = 0; i < nrows.length; i++) {
+    //       if (!this.isSameUser(nrows, nrows[i])) {
+    //         this.$refs.tableListRef.clearSelection();
+    //         if (document.getElementsByClassName('el-message--warning').length === 0) this.$message('您只能选择相同的教职工')
+    //         return
+    //       }
+    //     }
+    //   }
+    // }
   },
   activated() {
     this.editView()
@@ -1207,7 +1207,8 @@ export default {
     },
     // 是否可勾选
     selectableHandle(row) {
-      return row.status === 'YiShangJia'
+      // return row.status === 'YiShangJia'
+      return true
     },
 
     // 获取列表数据
@@ -1915,6 +1916,7 @@ export default {
     async groupReceiveByIc() {
       if (this.receiveGroupData.length < 1) return this.$message.warning('请勾选')
       const lingQuRen = await this.lingqurenPrompt()
+      if (!lingQuRen) return
 
       this.Connect()
       setTimeout(() => {
@@ -1951,6 +1953,7 @@ export default {
     async groupReceiveByauto() {
       if (this.receiveGroupData.length < 1) return this.$message.warning('请勾选')
       const lingQuRen = await this.lingqurenPrompt()
+      if (!lingQuRen) return
 
       const params = {
         orderIds: this.receiveGroupData.map(item => item.id).join(','),
