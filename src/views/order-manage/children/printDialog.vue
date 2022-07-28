@@ -1,6 +1,7 @@
 <template>
   <el-dialog :visible.sync="visible"
              title="打印通知单">
+
     <div class="print">
       <div class="prin-item">
         <span class="print-label"> 单号：</span>
@@ -99,9 +100,16 @@
     </div>
     <span slot="footer"
           class="dialog-footer">
-      <el-button @click="visible = false">取 消</el-button>
-      <el-button type="primary"
-                 @click="printHandle">打印</el-button>
+      <el-form class="small-space"
+               label-position="left"
+               label-width="120px">
+        <el-form-item :disabled="false"
+                      label=" ">
+          <el-button @click="visible = false">取 消</el-button>
+          <el-button type="primary"
+                     @click="printHandle">打印</el-button>
+        </el-form-item>
+      </el-form>
     </span>
   </el-dialog>
 

@@ -449,6 +449,11 @@ export default {
     this.icTips()
     // console.log(this.onResult)
   },
+  activated() {
+    this.editView()
+    this.getList()
+    this.getListLen()
+  },
   methods: {
     // 获取年级数据
     getgradeList() {

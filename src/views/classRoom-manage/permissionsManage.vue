@@ -562,6 +562,11 @@ export default {
       receiveGroupData: []
     }
   },
+  activated() {
+    this.editView()
+    this.getList()
+    this.getListLen()
+  },
   mounted() {
     const vm = this
 

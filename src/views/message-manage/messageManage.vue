@@ -108,6 +108,11 @@ export default {
     vm.getList()
     this.getListLen()
   },
+  activated() {
+    this.editView()
+    this.getList()
+    this.getListLen()
+  },
   methods: {
     // 获取列表数据
     getList() {

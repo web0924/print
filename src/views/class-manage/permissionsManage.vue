@@ -289,6 +289,11 @@ export default {
   //     return this.list.map(item => item.num)
   //   }
   // },
+  activated() {
+    this.editView()
+    this.getList()
+    this.getListLen()
+  },
   mounted() {
     const vm = this
 
@@ -367,7 +372,7 @@ export default {
     // 排序
     sortIptChange(row) {
       axios.post(
-      '/smartprint/print-room/grade/update-grade',
+        '/smartprint/print-room/grade/update-grade',
         qs.stringify({ gradeId: row.id, num: row.num })
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)

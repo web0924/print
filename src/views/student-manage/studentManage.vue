@@ -150,7 +150,8 @@
             <el-input v-model="roleTemp.userAccount"></el-input>
           </el-form-item>
           <el-form-item label="密码">
-            <el-input placeholder="初始密码为：123456" v-model="roleTemp.userPwd"></el-input>
+            <el-input placeholder="初始密码为：123456"
+                      v-model="roleTemp.userPwd"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary"
@@ -313,6 +314,11 @@ export default {
     // this.getclassList()
     this.getsubjectList()
     // this.getofficeList()
+  },
+  activated() {
+    this.editView()
+    this.getList()
+    this.getListLen()
   },
   methods: {
     // 获取年级数据

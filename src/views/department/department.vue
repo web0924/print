@@ -281,6 +281,11 @@ export default {
       viewType: 0 // 0 | add | edit
     }
   },
+  activated() {
+    this.editView()
+    this.getList()
+    this.getListLen()
+  },
   mounted() {
     const vm = this
 
