@@ -176,6 +176,7 @@
       <!-- @selection-change="handleSelectionChange" -->
       <el-table :data="list"
                 v-loading.body="listLoading"
+                :row-class-name="tableRowClassName"
                 ref="tableListRef"
                 element-loading-text=""
                 @selection-change="selectionTableChange"
@@ -255,6 +256,11 @@
         </el-table-column> -->
         <el-table-column label="订单时间"
                          prop="createTime"
+                         sortable="custom"
+                         width="200">
+        </el-table-column>
+        <el-table-column label="使用时间"
+                         prop="useTime"
                          sortable="custom"
                          width="200">
         </el-table-column>
@@ -1087,6 +1093,11 @@ export default {
     this.getAccountInfo()
   },
   methods: {
+    // row高亮
+    tableRowClassName({ row, rowIndex }) {
+      if (row.isFinished === 0) return 'danger-row';
+      return '';
+    },
     // 是否可勾选
     selectableHandle(row) {
       // return row.status === 'YiShangJia'
@@ -2324,6 +2335,7 @@ export default {
 } */
 
 /* form 输入框 宽度 */
+
 .form-item-width {
   width: 400px;
 }

@@ -195,6 +195,7 @@
                 element-loading-text=""
                 @sort-change="tableSortChange"
                 @selection-change="selectionTableChange"
+                :row-class-name="tableRowClassName"
                 border
                 fit
                 highlight-current-row>
@@ -1201,6 +1202,11 @@ export default {
     this.getAccountInfo()
   },
   methods: {
+    // row高亮
+    tableRowClassName({ row, rowIndex }) {
+      if (row.isFinished === 0) return 'danger-row';
+      return '';
+    },
     lastLevelChange(boo) {
       // alert(boo)
       this.isShowPrice = boo
