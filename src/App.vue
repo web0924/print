@@ -15,8 +15,8 @@ export default {
 .el-loading-mask {
   background: rgba(0, 0, 0, 0.5);
 }
-.el-table .danger-row {
-  background: #f56c6c;
+.el-table .danger-cell {
+  color: #f56c6c;
 }
 span {
   font-size: 15px;

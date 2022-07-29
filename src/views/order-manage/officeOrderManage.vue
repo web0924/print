@@ -195,7 +195,7 @@
                 element-loading-text=""
                 @sort-change="tableSortChange"
                 @selection-change="selectionTableChange"
-                :row-class-name="tableRowClassName"
+                :cell-class-name="tableCellClassName"
                 border
                 fit
                 highlight-current-row>
@@ -274,6 +274,10 @@
                          prop="createTime"
                          sortable="custom"
                          width="">
+        </el-table-column>
+        <el-table-column label="使用时间"
+                         prop="useTime"
+                         width="200">
         </el-table-column>
         <el-table-column label="是否关账">
           <template slot-scope="scope">
@@ -1203,8 +1207,10 @@ export default {
   },
   methods: {
     // row高亮
-    tableRowClassName({ row, rowIndex }) {
-      if (row.isFinished === 0) return 'danger-row';
+    tableCellClassName({ row, column, rowIndex, columnIndex }) {
+      if (row.isFinished === 0) {
+        if (column.property === 'useTime') return 'danger-cell'
+      }
       return '';
     },
     lastLevelChange(boo) {
