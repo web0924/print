@@ -204,7 +204,7 @@ export default {
         .then(res => {
           if (res.data.code === 20) {
             // 退出登录
-            this.loginOut()
+            this.logout()
           } else if (res.data.code === 0) {
             this.accountInfo = res.data.data.login.user
           }

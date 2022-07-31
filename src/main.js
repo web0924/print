@@ -89,7 +89,7 @@ router.beforeEach((to, from, next) => {
     } else {
       // 避免F5刷新时，vex数据全无，所以需要重新获取一次数据
       if (!store.getters.userInfo) { // 判断是否有用户信息 把token换成userInfo
-        console.log('未获取到用户信息', store.getters.userInfo)
+        // console.log('未获取到用户信息', store.getters.userInfo)
 
         store.dispatch('GetInfo').then(res => { // 拉取user_info
           // console.log('已获取到用户信息', store.getters.userInfo)

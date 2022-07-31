@@ -180,6 +180,7 @@ export default {
   },
   computed: {
     randomID() {
+      // console.log(this.routes)
       if (this.$route.name) return +new Date().getTime()
     }
   },

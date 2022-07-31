@@ -95,16 +95,14 @@
 
 <script>
 // import { mapGetters } from 'vuex';
-import md5 from 'blueimp-md5';
-import { global } from 'src/global/global';
-import { api } from 'src/global/api';
+import md5 from 'blueimp-md5'
+import { global } from 'src/global/global'
+import { api } from 'src/global/api'
 import axios from 'axios'
 import qs from 'qs'
 
-
 import vccode from '../../components/vccode'
 // import { getQueryObject } from 'utils';
-
 
 export default {
   name: 'login',
@@ -114,11 +112,11 @@ export default {
   data() {
     const validateEmail = (rule, value, callback) => {
       if (!value) {
-        callback(new Error('请输入账号/手机号'));
+        callback(new Error('请输入账号/手机号'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     // const validateAccount = (rule, value, callback) => {
     //   if (value !== '81438234@qq.com') {
     //     callback(new Error('帐号不存在！'));
@@ -128,11 +126,11 @@ export default {
     // };
     const validatePass = (rule, value, callback) => {
       if (!value) {
-        callback(new Error('请输入验证码/密码'));
+        callback(new Error('请输入验证码/密码'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     // const validatePass2 = (rule, value, callback) => {
     //   if (md5('@lss' + value) !== md5('@lss123456')) {
     //     callback(new Error('密码错误！'));
@@ -154,9 +152,7 @@ export default {
         account: [
           { required: true, trigger: 'blur', validator: validateEmail }
         ],
-        pwd: [
-          { required: true, trigger: 'blur', validator: validatePass }
-        ]
+        pwd: [{ required: true, trigger: 'blur', validator: validatePass }]
       },
       loading: false,
       showDialog: false
@@ -175,40 +171,42 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.loading = true;
-          const par = JSON.parse(JSON.stringify(this.loginForm));
-          par.pwd = md5(md5(par.pwd));
-          axios.post(
-            '/smartprint/print-room/login-by-pwd', qs.stringify(par))
+          this.loading = true
+          const par = JSON.parse(JSON.stringify(this.loginForm))
+          par.pwd = md5(md5(par.pwd))
+          axios
+            .post('/smartprint/print-room/login-by-pwd', qs.stringify(par))
             .then(response => {
-              this.loading = false;
-              if (response.data.code !== 0) return this.$message.error(response.data.msg);
-              axios.post(
-                '/smartprint/print-room/me/refresh').then(res2 => {
-                  if (res2.data.code !== 0) return vm.$message.error(res2.data.msg)
+              this.loading = false
+              if (response.data.code !== 0)
+                return this.$message.error(response.data.msg)
+              axios
+                .post('/smartprint/print-room/me/refresh')
+                .then(res2 => {
+                  if (res2.data.code !== 0)
+                    return vm.$message.error(res2.data.msg)
                   this.$store.dispatch('LoginByEmail', par).then(() => {
-                    this.loading = false;
-                    this.$router.push({ path: '/orderManage/orderManage' });
-                    // this.$store.commit('SET_ACCOUNTINFO', res2.data.login.user);
-                    // this.showDialog = true;
+                    this.loading = false
+                    // this.$router.push({ path: '/orderManage/orderManage' });
+                    this.$router.push({ path: '/' });
                   })
-                }).catch(err => err)
+                })
+                .catch(err => err)
 
                 .catch(err => {
-                  this.$message.error(err);
-                  this.loading = false;
-                });
+                  this.$message.error(err)
+                  this.loading = false
+                })
             })
             .catch(error => {
               console.log('错误信息')
-              console.log(error);
+              console.log(error)
             })
           // this.$store.dispatch('LoginByEmail', par).then(() => {
           //   this.loading = false;
 
           //   console.log('登陆成功即将跳转--------')
           //   this.$router.push({ path: '/schoolManage/permissionsManage' });
-
 
           //   // this.showDialog = true;
           // })
@@ -217,14 +215,12 @@ export default {
           //     this.loading = false;
           //   });
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
-    handleLoginBysms() {
-
-    },
+    handleLoginBysms() {},
     afterQRScan() {
       // const hash = window.location.hash.slice(1);
       // const hashObj = getQueryObject(hash);
@@ -255,7 +251,7 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-@import "src/assets/css/mixin.scss";
+@import 'src/assets/css/mixin.scss';
 .tips {
   font-size: 14rem;
   color: #fff;
@@ -266,7 +262,7 @@ export default {
   height: 100vh;
   /*background-color: #2d3a4b;*/
 
-  background: url("../../assets/img/login_bg.png") no-repeat;
+  background: url('../../assets/img/login_bg.png') no-repeat;
   background-size: cover;
   // background-size: 100% auto;
   background-position: center center;

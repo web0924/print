@@ -80,7 +80,6 @@ Vue.use(Router);
  * noDropdown : true 不显示子菜单
  * meta : { role: ['admin'] }  will control the page role
  **/
-
 const constantRouterMap = [
   { path: '/login', component: Login, hidden: true },
   { path: '/authredirect', component: authRedirect, hidden: true },
@@ -92,7 +91,7 @@ const constantRouterMap = [
     path: '/',
     // component: Layout,
     // redirect: '/index/readme',  // 重定向到默认首页
-    redirect: '/orderManage/orderManage',  // 重定向到默认首页
+    redirect: '/accountInfoManage/accountInfoManage',  // 重定向到默认首页
     hidden: true
   },
   {
