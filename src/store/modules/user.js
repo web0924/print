@@ -13,7 +13,7 @@ const user = {
     uid: Cookies.get('userId'),
     token: Cookies.get('printToken'),
     userInfo: null,
-    scrollTop: 0,
+    scrollTop: 0
   },
 
   mutations: {
@@ -32,7 +32,7 @@ const user = {
 
     LOGIN_SUCCESS: () => {
       console.log('login success')
-    },
+    }
     // LOGOUT_USER: state => {
     //   state.user = '';
     // }
@@ -49,7 +49,7 @@ const user = {
         global.get(
           api.login,
           { params: userInfo },
-          (res) => {
+          res => {
             // 登录接口，可只返回token 和 uid 。然后可根据uid 查询用户信息
             console.log('-------获取到登录返回信息：', JSON.stringify(res))
             if (res.body.resultCode == 0) {
@@ -68,11 +68,11 @@ const user = {
               Message({
                 showClose: true,
                 message: res.body.resultMsg,
-                type: 'error',
+                type: 'error'
               })
             }
           },
-          (res) => {
+          res => {
             reject(res)
           },
         )
@@ -85,61 +85,61 @@ const user = {
     GetInfo({ dispatch, commit, state }) {
       // 不需要权限的公共路由表
       const commonRoute = {
-        '/errorpage/404': false, //false意为不展示在侧边栏
+        '/errorpage/404': false, // false意为不展示在侧边栏
         '/messageManage/messageManage': true,
-        '/accountInfoManage/accountInfoManage': true,
+        '/accountInfoManage/accountInfoManage': true
       }
       // 本地路由表
       const routerMap = [
         {
           moduleId: '7',
           moduleName: '学科管理',
-          path: '/subject/subject',
+          path: '/subject/subject'
         },
         {
           moduleId: '6',
           moduleName: '订单管理',
-          path: ['/orderManage/orderManage', '/orderManage/officeOrderManage'],
+          path: ['/orderManage/orderManage', '/orderManage/officeOrderManage']
         },
         {
           moduleId: '1',
           moduleName: '年级管理',
-          path: '/orderManage/officeOrderManage',
+          path: '/orderManage/officeOrderManage'
         },
         {
           moduleId: '2',
           moduleName: '班级管理',
-          path: '/classRoomManage/permissionsManage',
+          path: '/classRoomManage/permissionsManage'
         },
         {
           moduleId: '4',
           moduleName: '学生管理',
-          path: '/studentManage/studentManage',
+          path: '/studentManage/studentManage'
         },
         {
           moduleId: '5',
           moduleName: '科室管理',
-          path: '/department/department',
+          path: '/department/department'
         },
         {
           moduleId: '3',
           moduleName: '教职工管理',
-          path: '/teacherManage/teacherManage',
-        },
+          path: '/teacherManage/teacherManage'
+        }
       ]
       // 由服务端返回ID生成本地路由
       function setRouterById(ids) {
-        let moduleIds = ids.split(',')
-        let permissions = {}
-        let fRouter = routerMap.filter(
-          (item) => moduleIds.indexOf(item.moduleId) > -1,
+        const moduleIds = ids.split(',')
+        const permissions = {}
+        const fRouter = routerMap.filter(
+          item => moduleIds.indexOf(item.moduleId) > -1,
         )
 
         for (let i = 0; i < fRouter.length; i++) {
           if (typeof fRouter[i].path == 'string') {
             permissions[fRouter[i].path] = true
           } else {
-            fRouter[i].path.forEach((item) => {
+            fRouter[i].path.forEach(item => {
               permissions[item] = true
             })
           }
@@ -148,20 +148,20 @@ const user = {
       }
       return axios
         .post('/smartprint/print-room/me/refresh')
-        .then((res) => {
+        .then(res => {
           if (res.data.code === 20) {
             this.$store.dispatch('LogOut').then(() => {
               location.reload() // 为了重新实例化vue-router对象 避免bug
             })
           } else if (res.data.code === 0) {
-            let accountInfo = res.data.data.login.user
+            const accountInfo = res.data.data.login.user
             commit('SET_TOKEN', accountInfo.no)
             commit('SET_USERINFO', accountInfo)
             dispatch('GenerateRoutes', setRouterById(accountInfo.moduleIds))
-            this.$router.push({ path: setRouterById(accountInfo.moduleIds)[keys][0] })//获取路由表中的第一个路由作为登录跳转路由
+            this.$router.push({ path: setRouterById(accountInfo.moduleIds)[keys][0] })// 获取路由表中的第一个路由作为登录跳转路由
           }
         })
-        .catch((err) => err)
+        .catch(err => err)
       // return new Promise((resolve, reject) => {
       //   global.get(
       //     api.getUserInfo,
@@ -209,12 +209,12 @@ const user = {
           state.code,
           state.auth_type,
         )
-          .then((response) => {
+          .then(response => {
             commit('SET_TOKEN', response.data.token)
             Cookies.set('printToken', response.data.token)
             resolve()
           })
-          .catch((error) => {
+          .catch(error => {
             reject(error)
           })
       })
@@ -239,14 +239,14 @@ const user = {
 
     // 动态修改权限
     ChangeRole({ commit }, role) {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         // commit('SET_ROLES', [role]);
         // store.dispatch('GenerateRoutes', res.permissions);
         dispatch('GenerateRoutes', res.permissions)
         resolve()
       })
-    },
-  },
+    }
+  }
 }
 
 export default user

@@ -178,17 +178,63 @@ export default {
             .post('/smartprint/print-room/login-by-pwd', qs.stringify(par))
             .then(response => {
               this.loading = false
-              if (response.data.code !== 0)
-                return this.$message.error(response.data.msg)
+              if (response.data.code !== 0) { return this.$message.error(response.data.msg) }
               axios
                 .post('/smartprint/print-room/me/refresh')
                 .then(res2 => {
-                  if (res2.data.code !== 0)
-                    return vm.$message.error(res2.data.msg)
+                  if (res2.data.code !== 0) { return vm.$message.error(res2.data.msg) }
                   this.$store.dispatch('LoginByEmail', par).then(() => {
                     this.loading = false
                     // this.$router.push({ path: '/orderManage/orderManage' });
-                    this.$router.push({ path: '/' });
+                    const moduleIds = res2.data.data.login.user.moduleIds
+                    this.$router.push({ path: loginToPath(moduleIds) });
+                    // 登陆后的跳转
+                    function loginToPath(ids) {
+                      const path = '/'
+
+                      // 本地路由表
+                      const routerMap = [
+                        {
+                          moduleId: '7',
+                          moduleName: '学科管理',
+                          path: '/subject/subject'
+                        },
+                        {
+                          moduleId: '6',
+                          moduleName: '订单管理',
+                          path: ['/orderManage/orderManage', '/orderManage/officeOrderManage']
+                        },
+                        {
+                          moduleId: '1',
+                          moduleName: '年级管理',
+                          path: '/orderManage/officeOrderManage'
+                        },
+                        {
+                          moduleId: '2',
+                          moduleName: '班级管理',
+                          path: '/classRoomManage/permissionsManage'
+                        },
+                        {
+                          moduleId: '4',
+                          moduleName: '学生管理',
+                          path: '/studentManage/studentManage'
+                        },
+                        {
+                          moduleId: '5',
+                          moduleName: '科室管理',
+                          path: '/department/department'
+                        },
+                        {
+                          moduleId: '3',
+                          moduleName: '教职工管理',
+                          path: '/teacherManage/teacherManage'
+                        }
+                      ]
+
+                      if (!ids) return path
+                      const fistRoutes = ids.split(',')[0]
+                      return routerMap.filter(item => item.moduleId == fistRoutes)[0].path
+                    }
                   })
                 })
                 .catch(err => err)
@@ -220,7 +266,8 @@ export default {
         }
       })
     },
-    handleLoginBysms() {},
+
+    handleLoginBysms() { },
     afterQRScan() {
       // const hash = window.location.hash.slice(1);
       // const hashObj = getQueryObject(hash);
@@ -251,7 +298,7 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-@import 'src/assets/css/mixin.scss';
+@import "src/assets/css/mixin.scss";
 .tips {
   font-size: 14rem;
   color: #fff;
@@ -262,7 +309,7 @@ export default {
   height: 100vh;
   /*background-color: #2d3a4b;*/
 
-  background: url('../../assets/img/login_bg.png') no-repeat;
+  background: url("../../assets/img/login_bg.png") no-repeat;
   background-size: cover;
   // background-size: 100% auto;
   background-position: center center;
