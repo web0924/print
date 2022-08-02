@@ -11,7 +11,8 @@ const getters = {
   permission_routers: state =>
     // 对应permission.js中的state.routers
 
-     state.permission.routers,
+    state.permission.routers,
+  roles: state => state.permission.roles,
   addRouters: state => state.permission.addRouters
 };
 export default getters

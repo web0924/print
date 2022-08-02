@@ -168,7 +168,8 @@
         </div>
       </div>
       <div style="min-height:80px;width:100%;background:#F5F5F5;margin:0">
-        <el-button @click="exportAll"
+        <el-button v-permission="['8']"
+                   @click="exportAll"
                    style="margin-top:20px; background:#09BB07;color:#FFF">全部导出</el-button>
         <el-button @click="exportProducting"
                    style="margin-top:20px; background:#09BB07;color:#FFF">导出生产通知单</el-button>

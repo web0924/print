@@ -158,7 +158,8 @@ const user = {
             commit('SET_TOKEN', accountInfo.no)
             commit('SET_USERINFO', accountInfo)
             dispatch('GenerateRoutes', setRouterById(accountInfo.moduleIds))
-            this.$router.push({ path: setRouterById(accountInfo.moduleIds)[keys][0] })// 获取路由表中的第一个路由作为登录跳转路由
+            dispatch('GenerateRoles', accountInfo.moduleIds && accountInfo.moduleIds.split(','))
+            // this.$router.push({ path: setRouterById(accountInfo.moduleIds)[keys][0] })// 获取路由表中的第一个路由作为登录跳转路由
           }
         })
         .catch(err => err)

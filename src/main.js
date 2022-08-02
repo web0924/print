@@ -30,6 +30,12 @@ import Cookies from 'js-cookie';
 import Viewer from 'v-viewer'
 import 'viewerjs/dist/viewer.css'
 
+
+
+import permission from './directive/permission.index'
+
+Vue.use(permission)
+
 Vue.use(Viewer)
 Viewer.setDefaults({
   // 需要配置的属性 注意属性并没有引号
