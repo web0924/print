@@ -1723,9 +1723,11 @@ export default {
     handlePreview(file) {
       console.log(file)
       if (file.response) {
-        window.open('https://view.officeapps.live.com/op/view.aspx?src=https://dev.renx.cc/' + file.response.data.url)
+        // window.open('https://view.officeapps.live.com/op/view.aspx?src=https://dev.renx.cc/' + file.response.data.url)
+        window.open('https://dev.renx.cc/' + file.response.data.url)
       } else {
-        window.open('https://view.officeapps.live.com/op/view.aspx?src=https://dev.renx.cc/' + file.url)
+        // window.open('https://view.officeapps.live.com/op/view.aspx?src=https://dev.renx.cc/' + file.url)
+        window.open('https://dev.renx.cc/' + file.url)
       }
     },
     handleExceed(files, fileList) {
