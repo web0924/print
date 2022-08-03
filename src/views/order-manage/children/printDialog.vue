@@ -1,102 +1,93 @@
 <template>
-  <el-dialog :visible.sync="visible"
+  <el-dialog width="95%"
+             :visible.sync="visible"
              title="打印通知单">
 
     <div class="print">
-      <div class="prin-item">
-        <span class="print-label"> 单号：</span>
-        <span>{{orderData.id}}</span>
-      </div>
-      <div class="prin-item">
-        <span class="print-label">日期：</span>
-        <span> {{orderData.createTime}}</span>
-      </div>
-      <div class="prin-item">
-        <span class="print-label">班级：</span>
-        <span>
-          {{(orderData.gradeName||'')+(orderData.className||'')}}
-        </span>
-      </div>
-      <div class="prin-item">
-        <span class="print-label">文印内容：</span>
-        <span> {{orderData.title}}</span>
-      </div>
-      <div class="prin-item">
-        <div style="width:40%">
-          <span class="print-label">
-            单版：
-          </span>
-          <span>{{orderData.jiaoYingDanBanShu}}</span>
-        </div>
-        <div>
-          <span class="print-label">
-            份：
-          </span>
-          <span>{{orderData.jiaoYingDanFenShu}}</span>
-        </div>
-      </div>
-      <div class="prin-item">
-        <div style="width:40%">
-          <span class="print-label">双版：</span>
-          <span> {{orderData.jiaoYingShuangBanShu}}</span>
-        </div>
-        <div>
-          <span class="print-label"> 份：</span>
-          <span> {{orderData.jiaoYingShuangFenShu}}</span>
-        </div>
-      </div>
-      <div class="prin-item">
-        <div style="width:40%">
-          <span class="print-label">答单版：</span>
-          <span> {{orderData.jiaoYingDaDanBanShu}}</span>
-        </div>
-        <div>
-          <span class="print-label"> 份：</span>
-          <span> {{orderData.jiaoYingDaDanFenShu}}</span>
-        </div>
-      </div>
-      <div class="prin-item">
-        <div style="width:40%">
-          <span class="print-label">答双版：</span>
-          <span> {{orderData.jiaoYingDaShuangBanShu}}</span>
-        </div>
-        <div>
-          <span class="print-label"> 份：</span>
-          <span> {{orderData.jiaoYingDaShuangFenShu}}</span>
-        </div>
-      </div>
-      <div class="prin-item">
-        <span class="print-label">要求：</span>
-        <span> {{orderData.yinShuaYaoQiu}}</span>
-      </div>
-      <div class="prin-item">
-        <span class="print-label">交货时间：</span>
-        <span> {{orderData.jiaoHuoShiJian}}</span>
-      </div>
-      <div class="prin-item">
-        <span class="print-label">经办：</span>
-        <span>{{orderData.jingBan}}</span>
-      </div>
-      <div class="prin-item">
-        <span class="print-label"> 接单：</span>
-        <span> {{orderData.jieDan}}</span>
-      </div>
-      <div class="prin-item">
-        <span class="print-label">制版：</span>
-        <span> {{orderData.zhiBan}}</span>
-      </div>
-      <div class="prin-item">
-        <span class="print-label"> 分拣：</span>
-        <span>{{orderData.fenJian}}</span>
-      </div>
-      <div class="prin-item">
-        <span class="print-label"> 印刷人：</span>
-        <span> {{orderData.yinShuaRen }}</span>
-      </div>
-      <div class="prin-item">
-        <span class="print-label"> 印刷费：</span>
-        <span> {{orderData.yinShuaFei}}</span>
-      </div>
+      <el-table border
+                size="medium"
+                :data="orderDataMap"
+                style="width: 100%">
+        <el-table-column align="center"
+                         label="印刷生产通知单">
+          <el-table-column prop="createTime"
+                           label="日期">
+          </el-table-column>
+
+          <el-table-column label="文印班级"
+                           width="120">
+            <template slot-scope="scope">
+              {{(scope.row.gradeName||'')+(scope.row.className||'')}}
+            </template>
+          </el-table-column>
+          <el-table-column prop="title"
+                           label="文印内容及规格">
+          </el-table-column>
+          <el-table-column>
+            <el-table-column prop="jiaoYingDanBanShu"
+                             width="50"
+                             align="center"
+                             label="单">
+            </el-table-column>
+            <el-table-column prop="jiaoYingShuangBanShu"
+                             width="50"
+                             align="center"
+                             label="双">
+            </el-table-column>
+            <el-table-column prop="jiaoYingDaDanBanShu"
+                             width="50"
+                             align="center"
+                             label="答单">
+            </el-table-column>
+            <el-table-column prop="jiaoYingDaShuangBanShu"
+                             width="50"
+                             align="center"
+                             label="答双">
+            </el-table-column>
+            <el-table-column prop="count"
+                             width="50"
+                             align="center"
+                             label="份数">
+            </el-table-column>
+          </el-table-column>
+          <el-table-column prop="jingBan"
+                           width="80"
+                           align="center"
+                           label="经办">
+          </el-table-column>
+          <el-table-column prop="jieDan"
+                           width="80"
+                           align="center"
+                           label="接单">
+          </el-table-column>
+          <el-table-column prop="zhiBan"
+                           width="80"
+                           align="center"
+                           label="制版">
+          </el-table-column>
+          <el-table-column prop="fenJian"
+                           width="80"
+                           align="center"
+                           label="分拣">
+          </el-table-column>
+          <el-table-column prop="jiaoHuoShiJian"
+                           label="交货时间">
+          </el-table-column>
+          <el-table-column prop="yinShuaYaoQiu"
+                           label="要求">
+          </el-table-column>
+          <el-table-column prop="id"
+                           width="50"
+                           align="center"
+                           label="单号">
+          </el-table-column>
+          <el-table-column prop="yinShuaRen"
+                           width="80"
+                           align="center"
+                           label="印刷人">
+          </el-table-column>
+        </el-table-column>
+      </el-table>
     </div>
     <span slot="footer"
           class="dialog-footer">
@@ -116,32 +107,65 @@
 </template>
 
 <script>
+/**
+ * 宽：`纸张宽 / 25.41 * DPI`
+   高：`纸张高 / 25.41 * DPI`
+
+   A4：尺寸：210mm × 297mm
+   A3：尺寸：297mm × 420mm
+
+   1英寸 = 25.41mm 换算
+
+   第一步：先转换成英尺
+   A4：8.264 × 11.688
+   A3：11.688 × 16.529
+
+   第二步：然后转换成像素(px)
+   A4：793 × 1122
+   A3：1122 × 1587
+ * **/
+
+
 export default {
   data() {
     return {
       visible: false,
       elinputWidth: '90%',
-      orderData: {}
+      orderData: {},
+      DPI: ''
     }
   },
   computed: {
-    // danFenShu() {
-    //   return (this.orderData.jiaoYingDanBanShu || 0) * (this.orderData.jiaoYingDanFenShu || 0)
-    // },
-    // shuangFenShu() {
-    //   return (this.orderData.jiaoYingShuangBanShu || 0) * (this.orderData.jiaoYingShuangFenShu || 0)
-    // },
-    // daDanFenShu() {
-    //   return (this.orderData.jiaoYingDaDanBanShu || 0) * (this.orderData.jiaoYingDaDanFenShu || 0)
-    // },
-    // daShuangnFenShu() {
-    //   return (this.orderData.jiaoYingDaShuangBanShu || 0) * (this.orderData.jiaoYingDaShuangFenShu || 0)
-    // }
-
+    orderDataMap() {
+      return [this.orderData]
+    },
+    A4Wid() {
+      // A4：8.264 × 11.688
+      return 8.264 * this.DPI
+    }
+  },
+  mounted() {
+    this.js_getDPI()
   },
   methods: {
     printHandle() {
       window.print()
+    },
+    // 获取 DPI
+    js_getDPI() {
+      const arrDPI = new Array();
+      if (window.screen.deviceXDPI != undefined) {
+        arrDPI[0] = window.screen.deviceXDPI;
+        arrDPI[1] = window.screen.deviceYDPI;
+      } else {
+        const tmpNode = document.createElement('DIV');
+        tmpNode.style.cssText = 'width:1in;height:1in;position:absolute;left:0px;top:0px;z-index:99;visibility:hidden';
+        document.body.appendChild(tmpNode);
+        arrDPI[0] = parseInt(tmpNode.offsetWidth);
+        arrDPI[1] = parseInt(tmpNode.offsetHeight);
+        tmpNode.parentNode.removeChild(tmpNode);
+      }
+      this.DPI = arrDPI[0];
     }
   }
 }
@@ -168,6 +192,9 @@ export default {
 </style>
 
 <style scoped lang="scss">
+/deep/ .el-table tbody{
+  font-size: 16px;
+}
 .prin-item {
   display: flex;
   align-items: center;
