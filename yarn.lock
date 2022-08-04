@@ -6470,7 +6470,7 @@ pretty-error@^2.0.2:
 
 print-js@^1.6.0:
   version "1.6.0"
-  resolved "https://registry.npmmirror.com/print-js/-/print-js-1.6.0.tgz#692b046cf31992b46afa6c6d8a9db1c69d431d1f"
+  resolved "https://registry.yarnpkg.com/print-js/-/print-js-1.6.0.tgz#692b046cf31992b46afa6c6d8a9db1c69d431d1f"
   integrity sha512-BfnOIzSKbqGRtO4o0rnj/K3681BSd2QUrsIZy/+WdCIugjIswjmx3lDEZpXB2ruGf9d4b3YNINri81+J0FsBWg==
 
 private@^0.1.6, private@^0.1.8:
