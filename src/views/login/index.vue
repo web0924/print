@@ -1,28 +1,30 @@
 <template>
   <div class="login-container">
+      <!-- :rules="loginRules" -->
     <el-form autoComplete="on"
              :model="loginForm"
-             :rules="loginRules"
+           
              ref="loginForm"
              label-position="left"
              label-width="0rem"
              class="card-box login-form">
       <p class="title"
-         style="font-size:28rem;color:#000">欢迎登录</p>
+         style="font-size:28rem;color:#FFF">欢迎登录</p>
       <h2 class="title"
-          style="font-size:38rem;color:#0053b5">文印室管理系统</h2>
-      <p style="text-align:center;font-size: 16rem;margin-top: 30rem;">{{loginType===1?'密码登录':'验证码登录'}}</p>
+          style="font-size:38rem;color:#FFF">文印室管理系统</h2>
+      <p style="text-align:center;font-size: 16rem;color: #FFF; margin-top: 30rem;">{{loginType===1?'密码登录':'验证码登录'}}</p>
       <div v-if="loginType===1">
         <el-form-item prop="account">
-          <div style="font-size: 16rem;">账号</div>
+          <div style="color:#FFF; font-size: 16rem;">账号</div>
           <el-input name="account"
                     type="text"
                     v-model="loginForm.account"
                     autoComplete="off"
+                    style="color:#FFF"
                     placeholder="请输入您的账号/手机号"></el-input>
         </el-form-item>
         <el-form-item prop="pwd">
-          <div style="font-size: 16rem;">密码</div>
+          <div style="font-size: 16rem;color:#FFF;">密码</div>
           <el-input name="pwd"
                     type="password"
                     v-model="loginForm.pwd"
@@ -31,7 +33,7 @@
         </el-form-item>
         <el-form-item style="margin-top: 50rem;">
           <el-button type="primary"
-                     style="width:100%"
+                     style="width:100%;background-color: #FFB577;border: none;outline: none;"
                      :loading="loading"
                      @click.native.prevent="handleLogin">
             登录
@@ -39,7 +41,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="text"
-                     style="width:100%;color:#000;border: 1rem solid #333333;"
+                     style="width:100%;background-color: #FFF; color:#000;border: none;"
                      @click.native.prevent="loginType=2">
             验证码登录
           </el-button>
@@ -47,7 +49,7 @@
       </div>
       <div v-if="loginType===2">
         <el-form-item prop="account">
-          <div style="font-size: 16rem;">手机号</div>
+          <div style="font-size: 16rem;color: #FFF;">手机号</div>
           <el-input name="account"
                     type="text"
                     v-model="loginForm.phone"
@@ -55,7 +57,7 @@
                     placeholder="请输入您的手机号"></el-input>
         </el-form-item>
         <el-form-item prop="vcode">
-          <div style="font-size: 16rem;">验证码</div>
+          <div style="font-size: 16rem;color: #FFF;">验证码</div>
           <el-input style="width:60%"
                     name="vcode"
                     type="vcode"
@@ -63,12 +65,13 @@
                     autoComplete="off"
                     placeholder="请输入验证码"></el-input>
           <div style="display:inline-block;width:30%">
-            <vccode :phone="loginForm.phone" />
+            <vccode color="#FFF"
+                    :phone="loginForm.phone" />
           </div>
         </el-form-item>
         <el-form-item style="margin-top: 50rem;">
           <el-button type="primary"
-                     style="width:100%;"
+                     style="width:100%;background-color: #FFB577;border: none;outline: none;"
                      :loading="loading"
                      @click.native.prevent="handleLoginBysms">
             登录
@@ -76,18 +79,12 @@
         </el-form-item>
         <el-form-item>
           <el-button type="text"
-                     style="width:100%;color:#000;border: 1rem solid #333333;"
+                     style="width:100%;color:#000;background-color: #FFF;"
                      @click.native.prevent="loginType=1">
             密码登录
           </el-button>
         </el-form-item>
       </div>
-      <!-- <div class='tips'>测试帐号为:81438234@qq.com 密码：123456</div> -->
-
-      <!-- <router-link to="/sendpwd"
-                   class="forget-pwd">
-        忘记密码?(或首次登录)
-      </router-link> -->
     </el-form>
 
   </div>
@@ -96,8 +93,6 @@
 <script>
 // import { mapGetters } from 'vuex';
 import md5 from 'blueimp-md5'
-import { global } from 'src/global/global'
-import { api } from 'src/global/api'
 import axios from 'axios'
 import qs from 'qs'
 
@@ -266,25 +261,90 @@ export default {
         }
       })
     },
+    // 验证码登录
+    handleLoginBysms() {
+      this.$refs.loginForm.validate(valid => {
+        if (valid) {
+          this.loading = true
+          const par = JSON.parse(JSON.stringify(this.loginForm))
+          // par.pwd = md5(md5(par.pwd))
+          axios
+            .post('/smartprint/print-room/login-by-sms', qs.stringify(par))
+            .then(response => {
+              this.loading = false
+              if (response.data.code !== 0) { return this.$message.error(response.data.msg) }
+              axios
+                .post('/smartprint/print-room/me/refresh')
+                .then(res2 => {
+                  if (res2.data.code !== 0) { return vm.$message.error(res2.data.msg) }
+                  this.$store.dispatch('LoginByEmail', par).then(() => {
+                    this.loading = false
+                    // this.$router.push({ path: '/orderManage/orderManage' });
+                    const moduleIds = res2.data.data.login.user.moduleIds
+                    this.$router.push({ path: loginToPath(moduleIds) });
+                    // 登陆后的跳转
+                    function loginToPath(ids) {
+                      const path = '/'
 
-    handleLoginBysms() { },
-    afterQRScan() {
-      // const hash = window.location.hash.slice(1);
-      // const hashObj = getQueryObject(hash);
-      // const originUrl = window.location.origin;
-      // history.replaceState({}, '', originUrl);
-      // const codeMap = {
-      //   wechat: 'code',
-      //   tencent: 'code'
-      // };
-      // const codeName = hashObj[codeMap[this.auth_type]];
-      // if (!codeName) {
-      //   alert('第三方登录失败');
-      // } else {
-      //   this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-      //     this.$router.push({ path: '/' });
-      //   });
-      // }
+                      // 本地路由表
+                      const routerMap = [
+                        {
+                          moduleId: '7',
+                          moduleName: '学科管理',
+                          path: '/subject/subject'
+                        },
+                        {
+                          moduleId: '6',
+                          moduleName: '订单管理',
+                          path: ['/orderManage/orderManage', '/orderManage/officeOrderManage']
+                        },
+                        {
+                          moduleId: '1',
+                          moduleName: '年级管理',
+                          path: '/orderManage/officeOrderManage'
+                        },
+                        {
+                          moduleId: '2',
+                          moduleName: '班级管理',
+                          path: '/classRoomManage/permissionsManage'
+                        },
+                        {
+                          moduleId: '4',
+                          moduleName: '学生管理',
+                          path: '/studentManage/studentManage'
+                        },
+                        {
+                          moduleId: '5',
+                          moduleName: '科室管理',
+                          path: '/department/department'
+                        },
+                        {
+                          moduleId: '3',
+                          moduleName: '教职工管理',
+                          path: '/teacherManage/teacherManage'
+                        }
+                      ]
+
+                      if (!ids) return path
+                      const fistRoutes = ids.split(',')[0]
+                      return routerMap.filter(item => item.moduleId == fistRoutes)[0].path
+                    }
+                  })
+                })
+                .catch(err => {
+                  this.$message.error(err)
+                  this.loading = false
+                })
+            })
+            .catch(error => {
+              console.log('错误信息')
+              console.log(error)
+            })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     }
   },
   created() {
@@ -299,6 +359,25 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss">
 @import "src/assets/css/mixin.scss";
+.login-container .el-input__inner::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+/* 谷歌 */
+.login-container .el-input__inner::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+/* 火狐 */
+.login-container .el-input__inner:-moz-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+/*ie*/
+.login-container .el-input__inner:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+.login-container .el-form-item__error {
+  color: rgb(239, 51, 51);
+}
+
 .tips {
   font-size: 14rem;
   color: #fff;
@@ -326,7 +405,7 @@ export default {
     -webkit-appearance: none;
     border-radius: 0rem;
     padding: 0rem;
-    color: #333;
+    color: #fff;
     height: 30rem;
   }
   .el-input {

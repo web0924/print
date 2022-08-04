@@ -22,18 +22,18 @@ export const global = {
   /**
    * 切换主题函数
    */
-  changeTheme(themeValue) {
+  changeTheme(printThemeValue) {
     const that = this;
-    // console.log('切换主题颜色值：',themeValue,that.staticPath,JSON.stringify(themeArray) );
+    // console.log('切换主题颜色值：',printThemeValue,that.staticPath,JSON.stringify(themeArray) );
     // 需要移到单独的文件存放
     const cssArray = themeArray;
     removeCss()
     for (let i = 0, len = cssArray.length; i < len; i++) {
-      const itemPath = that.staticPath + '/theme/' + themeValue + '/' + cssArray[i].toLowerCase() + '.css';
+      const itemPath = that.staticPath + '/theme/' + printThemeValue + '/' + cssArray[i].toLowerCase() + '.css';
       loadCss(itemPath)
     }
 
-    localStorage.setItem('themeValue', themeValue)
+    localStorage.setItem('printThemeValue', printThemeValue)
 
     function loadCss(path) {
       const head = document.getElementsByTagName('head')[0];

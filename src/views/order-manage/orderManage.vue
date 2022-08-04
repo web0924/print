@@ -609,8 +609,6 @@
             <el-upload :show-file-list="false"
                        action="#"
                        :on-preview="handlePreview"
-                       :on-remove="handleRemove"
-                       :before-remove="beforeRemove"
                        multiple
                        :limit="10"
                        :http-request="uploadHttpRequest"
@@ -680,12 +678,11 @@
               <div style="border:1px solid #E2E2E2;padding:20px">
                 <el-upload action="/smartprint/upload-file"
                            :on-preview="handlePreview"
-                           :on-remove="handleRemove"
                            :before-remove="beforeRemove"
+                           :on-remove="handleSimpalRemove"
                            :on-success="succcessHandle"
                            multiple
                            :limit="10"
-                           :on-exceed="handleExceed"
                            :file-list="fileList">
                   <el-button size="small"
                              style="background:#67C23A;color:#FFF">上传</el-button>
@@ -1362,7 +1359,7 @@ export default {
 
             if (this.roleTemp.sampleFiles) {
               if (this.fileList.length > 0) this.fileList = []
-              this.roleTemp.samples = ''
+              this.samples = ''
               this.roleTemp.sampleFiles.forEach((item, index) => {
                 this.fileList.push({ name: item.originalName, url: item.url })
               })
@@ -1467,6 +1464,9 @@ export default {
 
     // 编辑上传
     submitHandle() {
+      console.log(this.samples)
+      console.log(this.fileList)
+      // return
       const {
         id,
         title,
@@ -1550,7 +1550,8 @@ export default {
         yinShuaYaoQiu,
         yinShuaRen,
         yinShuaFei, // 通知单配置end
-        samples: this.samples + ',' + this.fileList.join(','),
+        samples: this.samples + ',' + this.fileList.map(item => item.url).join(','),
+        // samples: this.samples,
         attachments:
           this.roleTemp.attachmentFiles &&
           this.roleTemp.attachmentFiles.map(item => item.url).join(','),
@@ -1717,8 +1718,11 @@ export default {
     succcessHandle(response) {
       this.samples ? this.samples += ',' + response.data.url : this.samples = response.data.url
     },
-    handleRemove(file, fileList) {
-      console.log(file, fileList)
+
+    handleSimpalRemove(file, fileList) {
+      console.log(fileList)
+      // console.log(this.fileList)
+      this.fileList = fileList
     },
     handlePreview(file) {
       console.log(file)
@@ -1753,21 +1757,6 @@ export default {
             : []
           this.roleTemp.attachmentFiles.push(res.data.data)
           this.$forceUpdate()
-        })
-    },
-    // 覆盖element的默认上传文件
-    uploadHttpRequestOfSamples(param) {
-      // 获取上传的文件名
-      const file = param.file
-      // 发送请求的参数格式为FormData
-      const formData = new FormData()
-      formData.append('file', file)
-      axios.post(
-        '/smartprint/upload-file', formData).then(res => {
-          if (res.data.code !== 0) {
-            return this.$message.error(res.data.msg)
-          }
-          this.samples = res.data.data.url + ',' + this.samples
         })
     },
     // 领取成功回调

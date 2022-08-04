@@ -763,7 +763,7 @@
                 <!-- :http-request="uploadHttpRequestOfSamples" -->
                 <el-upload action="/smartprint/upload-file"
                            :on-preview="handlePreview"
-                           :on-remove="handleRemove"
+                           :on-remove="handleSimpalRemove"
                            :before-remove="beforeRemove"
                            :on-success="succcessHandle"
                            multiple
@@ -1601,6 +1601,9 @@ export default {
     },
     // 编辑上传
     submitHandle() {
+      console.log(this.samples)
+      console.log(this.fileList)
+      return
       const {
         id,
         title,
@@ -1686,7 +1689,8 @@ export default {
         yinShuaYaoQiu,
         yinShuaRen,
         yinShuaFei, // 通知单配置end
-        samples: this.samples + ',' + this.fileList.join(','),
+        // samples: this.samples + ',' + this.fileList.join(','),
+        samples: this.samples + ',' + this.fileList.map(item => item.url).join(','),
         printSetType: this.tabsIndex == 1 ? 'System' : 'School',
         // printSetPrices: this.priceData,
         attachments:
@@ -1838,15 +1842,21 @@ export default {
     succcessHandle(response) {
       this.samples ? this.samples += ',' + response.data.url : this.samples = response.data.url
     },
+
+    handleSimpalRemove(file, fileList) {
+      this.fileList = fileList
+    },
     handleRemove(file, fileList) {
       console.log(file, fileList)
     },
     handlePreview(file) {
       console.log(file)
       if (file.response) {
-        window.open('https://view.officeapps.live.com/op/view.aspx?src=https://dev.renx.cc/' + file.response.data.url)
+        // window.open('https://view.officeapps.live.com/op/view.aspx?src=https://dev.renx.cc/' + file.response.data.url)
+        window.open('https://dev.renx.cc/' + file.response.data.url)
       } else {
-        window.open('https://view.officeapps.live.com/op/view.aspx?src=https://dev.renx.cc/' + file.url)
+        // window.open('https://view.officeapps.live.com/op/view.aspx?src=https://dev.renx.cc/' + file.url)
+        window.open('https://dev.renx.cc/' + file.url)
       }
     },
     handleExceed(files, fileList) {

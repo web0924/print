@@ -34,6 +34,9 @@ import 'viewerjs/dist/viewer.css'
 
 import permission from './directive/permission.index'
 
+import printJS from 'print-js'
+Vue.prototype.$printJS = printJS
+
 Vue.use(permission)
 
 Vue.use(Viewer)
@@ -59,8 +62,8 @@ Object.keys(filters).forEach(key => {
 });
 
 // 加载用户主题
-if (localStorage.getItem('themeValue')) {
-  global.changeTheme(localStorage.getItem('themeValue'));
+if (localStorage.getItem('printThemeValue')) {
+  global.changeTheme(localStorage.getItem('printThemeValue'));
 }
 
 

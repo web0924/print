@@ -24,6 +24,7 @@
         <img style="width:15px;height:13px;position:relative;top:2px"
              src="../../assets/img/login_out.png">
       </el-button>
+      <!-- <el-button @click="dialogVisible = true">切换主题</el-button> -->
       <!-- <el-dropdown class="avatar-container"
                    trigger="click">
         <div class="avatar-wrapper">
@@ -106,7 +107,7 @@
 
         <el-form-item label="请选择主题颜色："
                       prop="resource">
-          <el-radio-group v-model="themeValue">
+          <el-radio-group v-model="printThemeValue">
             <el-radio label="blue">蓝色</el-radio>
             <el-radio label="green">绿色</el-radio>
             <el-radio label="red">红色</el-radio>
@@ -169,8 +170,8 @@ export default {
       log: errLogStore.state.errLog,
       dialogVisible: false,
       dialogFormVisible: false,
-      themeValue: localStorage.getItem('themeValue')
-        ? localStorage.getItem('themeValue')
+      printThemeValue: localStorage.getItem('printThemeValue')
+        ? localStorage.getItem('printThemeValue')
         : 'blue',
       passwordForm: {
         oldPassword: '',
@@ -218,7 +219,7 @@ export default {
     // 换肤
     handleChangeTheme() {
       const vm = this
-      global.changeTheme(vm.themeValue)
+      global.changeTheme(vm.printThemeValue)
       this.dialogVisible = false
     },
     handlePwdModifySubmit(formName) {
@@ -310,7 +311,7 @@ export default {
   height: 50px;
   line-height: 50px;
   border-radius: 0px !important;
-  background: #0053b5 !important;
+  background: #E76D33 !important;
   .bars-title {
     position: absolute;
     left: 54px;

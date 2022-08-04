@@ -1,93 +1,70 @@
 <template>
-  <el-dialog width="95%"
+  <el-dialog width="100%"
              :visible.sync="visible"
              title="打印通知单">
 
     <div class="print">
-      <el-table border
-                size="medium"
-                :data="orderDataMap"
-                style="width: 100%">
-        <el-table-column align="center"
-                         label="印刷生产通知单">
-          <el-table-column prop="createTime"
-                           label="日期">
-          </el-table-column>
+      <table cellpadding="10px"
+             style="width:100%"
+             border="1px">
+        <thead>
+          <tr>
+            <th colspan="16">印刷生产通知单</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>日期</th>
+            <th>文印班级</th>
+            <th>文印内容及规格</th>
+            <th>单</th>
+            <th>双</th>
+            <th>答单</th>
+            <th>答双</th>
+            <th>份数</th>
+            <th>经办</th>
+            <th>接单</th>
+            <th>制版</th>
+            <th>分检</th>
+            <th>交货时间</th>
+            <th>要求</th>
+            <th>单号</th>
+            <th>印刷人</th>
+          </tr>
+          <tr>
+            <td>{{orderData.createTime}}</td>
+            <td>{{(orderData.gradeName||'')+(orderData.className||'')}}</td>
 
-          <el-table-column label="文印班级"
-                           width="120">
-            <template slot-scope="scope">
-              {{(scope.row.gradeName||'')+(scope.row.className||'')}}
-            </template>
-          </el-table-column>
-          <el-table-column prop="title"
-                           label="文印内容及规格">
-          </el-table-column>
-          <el-table-column>
-            <el-table-column prop="jiaoYingDanBanShu"
-                             width="50"
-                             align="center"
-                             label="单">
-            </el-table-column>
-            <el-table-column prop="jiaoYingShuangBanShu"
-                             width="50"
-                             align="center"
-                             label="双">
-            </el-table-column>
-            <el-table-column prop="jiaoYingDaDanBanShu"
-                             width="50"
-                             align="center"
-                             label="答单">
-            </el-table-column>
-            <el-table-column prop="jiaoYingDaShuangBanShu"
-                             width="50"
-                             align="center"
-                             label="答双">
-            </el-table-column>
-            <el-table-column prop="count"
-                             width="50"
-                             align="center"
-                             label="份数">
-            </el-table-column>
-          </el-table-column>
-          <el-table-column prop="jingBan"
-                           width="80"
-                           align="center"
-                           label="经办">
-          </el-table-column>
-          <el-table-column prop="jieDan"
-                           width="80"
-                           align="center"
-                           label="接单">
-          </el-table-column>
-          <el-table-column prop="zhiBan"
-                           width="80"
-                           align="center"
-                           label="制版">
-          </el-table-column>
-          <el-table-column prop="fenJian"
-                           width="80"
-                           align="center"
-                           label="分拣">
-          </el-table-column>
-          <el-table-column prop="jiaoHuoShiJian"
-                           label="交货时间">
-          </el-table-column>
-          <el-table-column prop="yinShuaYaoQiu"
-                           label="要求">
-          </el-table-column>
-          <el-table-column prop="id"
-                           width="50"
-                           align="center"
-                           label="单号">
-          </el-table-column>
-          <el-table-column prop="yinShuaRen"
-                           width="80"
-                           align="center"
-                           label="印刷人">
-          </el-table-column>
-        </el-table-column>
-      </el-table>
+            <td>{{orderData.title}}</td>
+
+            <td>{{orderData.jiaoYingDanBanShu}}</td>
+
+            <td>{{orderData.jiaoYingShuangBanShu}}</td>
+
+            <td>{{orderData.jiaoYingDaDanBanShu}}</td>
+
+            <td>{{orderData.jiaoYingDaShuangBanShu}}</td>
+
+            <td>{{orderData.count}}</td>
+
+            <td>{{orderData.jingBan}}</td>
+
+            <td>{{orderData.jieDan}}</td>
+
+            <td>{{orderData.zhiBan}}</td>
+
+            <td>{{orderData.fenJian}}</td>
+
+            <td>{{orderData.jiaoHuoShiJian}}</td>
+
+            <td>{{orderData.yinShuaYaoQiu}}</td>
+
+            <td>{{orderData.id}}</td>
+
+            <td>{{orderData.yinShuaRen}}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <span slot="footer"
           class="dialog-footer">
@@ -136,9 +113,6 @@ export default {
     }
   },
   computed: {
-    orderDataMap() {
-      return [this.orderData]
-    },
     A4Wid() {
       // A4：8.264 × 11.688
       return 8.264 * this.DPI
@@ -150,6 +124,7 @@ export default {
   methods: {
     printHandle() {
       window.print()
+      // this.$printJS({ printable: 'print', type: 'html', maxWidth: 800 })
     },
     // 获取 DPI
     js_getDPI() {
@@ -176,24 +151,36 @@ export default {
   height: 100%;
 }
 @media print {
+  @page {
+    margin: 0;
+  }
   body * {
     visibility: hidden;
+    margin: 0;
+    /* border: 1px solid #999; */
+  }
+  table {
+    table-layout: auto !important;
+    page-break-inside: avoid;
+
+    page-break-after: avoid;
+
+    page-break-before: avoid;
   }
   .print,
   .print * {
     visibility: visible;
+    padding: 0;
+    margin: 0;
   }
-  /* .print {
-    position: fixed;
-    left: 0;
-    top: 0;
-  } */
 }
 </style>
 
 <style scoped lang="scss">
-/deep/ .el-table tbody{
+td,th {
+  height: 40px;
   font-size: 16px;
+  text-align: center;
 }
 .prin-item {
   display: flex;
