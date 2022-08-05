@@ -1,9 +1,8 @@
 <template>
   <div class="login-container">
-      <!-- :rules="loginRules" -->
+    <!-- :rules="loginRules" -->
     <el-form autoComplete="on"
              :model="loginForm"
-           
              ref="loginForm"
              label-position="left"
              label-width="0rem"
@@ -182,7 +181,8 @@ export default {
                     this.loading = false
                     // this.$router.push({ path: '/orderManage/orderManage' });
                     const moduleIds = res2.data.data.login.user.moduleIds
-                    this.$router.push({ path: loginToPath(moduleIds) });
+                    // this.$router.push({ path: loginToPath(moduleIds) });
+                    this.$router.push({ path: '/' });
                     // 登陆后的跳转
                     function loginToPath(ids) {
                       const path = '/'
@@ -228,6 +228,7 @@ export default {
 
                       if (!ids) return path
                       const fistRoutes = ids.split(',')[0]
+                      // console.log('第一个ID为' + fistRoutes)
                       return routerMap.filter(item => item.moduleId == fistRoutes)[0].path
                     }
                   })
@@ -281,7 +282,8 @@ export default {
                     this.loading = false
                     // this.$router.push({ path: '/orderManage/orderManage' });
                     const moduleIds = res2.data.data.login.user.moduleIds
-                    this.$router.push({ path: loginToPath(moduleIds) });
+                    // this.$router.push({ path: loginToPath(moduleIds) });
+                    this.$router.push({ path: '/' });
                     // 登陆后的跳转
                     function loginToPath(ids) {
                       const path = '/'
