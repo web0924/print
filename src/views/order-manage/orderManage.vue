@@ -801,16 +801,16 @@ const GFUNC = {
   M1_decrement: 7,
   M1_readVal: 8,
   M1_updateKey: 9
-};
+}
 
-const g_device = '00'; // 设备句柄号
-let g_isOpen = false;
-let g_blockAddr = 2;
-let g_blockData;
+const g_device = '00' // 设备句柄号
+let g_isOpen = false
+let g_blockAddr = 2
+let g_blockData
 const g_key = 'FFFFFFFFFFFF'
-const g_keyType = 60;
-let g_vale;
-let g_wantFunc = 0;
+const g_keyType = 60
+let g_vale
+let g_wantFunc = 0
 
 export default {
   name: 'orderList',
@@ -891,8 +891,7 @@ export default {
       multipleSelectionSouce: [],
 
       staffList: [],
-      currentStaff: {
-      },
+      currentStaff: {},
       userInfoName: '',
       receiveGroupData: [] // 批量领取数据
     }
@@ -1086,7 +1085,7 @@ export default {
     this.getOfficeList()
     this.getSubjectList()
     this.getStaffList()
-    $Reader.createSocket()// 页面加载创建新的socket
+    $Reader.createSocket() // 页面加载创建新的socket
     this.icTips()
     this.getAccountInfo()
   },
@@ -1096,7 +1095,7 @@ export default {
       if (row.isFinished === 0) {
         if (column.property === 'useTime') return 'danger-cell'
       }
-      return '';
+      return ''
     },
     // 是否可勾选
     selectableHandle(row) {
@@ -1136,7 +1135,7 @@ export default {
       axios
         .post('/smartprint/print-room/order/get-orders', qs.stringify(params))
         .then(res => {
-          this.total = res.data.data.sum.count
+          this.total = (res.data.data.sum && res.data.data.sum.count) || 0
           // console.log(this.total)
         })
         .catch(err => console.log(err))
@@ -1153,8 +1152,10 @@ export default {
     // 导出
     exportAll() {
       if (!this.listQuery.gradeId) return this.$message.warning('请选择年级')
-      if (!this.listQuery.startTime) return this.$message.warning('请选择开始时间')
-      if (!this.listQuery.endTime) return this.$message.warning('请选择结束时间')
+      if (!this.listQuery.startTime)
+        return this.$message.warning('请选择开始时间')
+      if (!this.listQuery.endTime)
+        return this.$message.warning('请选择结束时间')
       axios
         .post(
           '/smartprint/print-room/order/export-bill',
@@ -1169,8 +1170,10 @@ export default {
     // 导出生产中通知单
     exportProducting() {
       if (!this.listQuery.gradeId) return this.$message.warning('请选择年级')
-      if (!this.listQuery.startTime) return this.$message.warning('请选择开始时间')
-      if (!this.listQuery.endTime) return this.$message.warning('请选择结束时间')
+      if (!this.listQuery.startTime)
+        return this.$message.warning('请选择开始时间')
+      if (!this.listQuery.endTime)
+        return this.$message.warning('请选择结束时间')
       axios
         .post(
           '/smartprint/print-room/order/export-sheng-chan-tong-zhi-dan',
@@ -1255,7 +1258,10 @@ export default {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.staffList = res.data.data.staffs || []
           if (this.staffList) {
-            this.currentStaff = this.staffList.filter(item => item.userId == this.roleTemp.userId)[0] || {}
+            this.currentStaff =
+              this.staffList.filter(
+                item => item.userId == this.roleTemp.userId
+              )[0] || {}
             // console.log(this.currentStaff)
           }
         })
@@ -1348,12 +1354,12 @@ export default {
             if (res.data.code !== 0) return this.$message.error(res.data.msg)
             this.roleTemp = res.data.data.order
             this.roleTemp.classes
-              ? this.roleTemp.classes = this.roleTemp.classes.map(item => {
-                item.id = item.classId
-                item.name = item.className
-                return item
-              })
-              : this.roleTemp.classes = []
+              ? (this.roleTemp.classes = this.roleTemp.classes.map(item => {
+                  item.id = item.classId
+                  item.name = item.className
+                  return item
+                }))
+              : (this.roleTemp.classes = [])
 
             this.multipleSelection = this.roleTemp.classes
 
@@ -1382,7 +1388,8 @@ export default {
     // 修改table订单状态
     tableOrderStatuHandle(status, row, index) {
       if (status === 'DaiQueRen') {
-        if (!this.checkSkuIsComplte(row)) return this.$message.warning('请补充文印配置项')
+        if (!this.checkSkuIsComplte(row))
+          return this.$message.warning('请补充文印配置项')
       }
       const { id } = row
       const _this = this
@@ -1412,11 +1419,22 @@ export default {
         .catch(err => err)
     },
     // 判断是否为胶印
-    checkIsJiaoYin({ jiaoYingDanBanShu, jiaoYingShuangBanShu, jiaoYingDaDanBanShu, jiaoYingDaShuangBanShu }) {
-      return (jiaoYingDanBanShu > 0) || (jiaoYingShuangBanShu > 0) || (jiaoYingDaDanBanShu > 0) || (jiaoYingDaShuangBanShu > 0)
+    checkIsJiaoYin({
+      jiaoYingDanBanShu,
+      jiaoYingShuangBanShu,
+      jiaoYingDaDanBanShu,
+      jiaoYingDaShuangBanShu
+    }) {
+      return (
+        jiaoYingDanBanShu > 0 ||
+        jiaoYingShuangBanShu > 0 ||
+        jiaoYingDaDanBanShu > 0 ||
+        jiaoYingDaShuangBanShu > 0
+      )
     },
     // 给用户确认时判断配置项是否填写完整
-    checkSkuIsComplte({ count,
+    checkSkuIsComplte({
+      count,
       jiaoYingDanBanShu,
       jiaoYingDanFenShu,
       jiaoYingShuangBanShu,
@@ -1433,19 +1451,45 @@ export default {
       daBanShu,
       otherSetName,
       otherSetCount,
-      otherSetUnitPrice }) {
-      return count && (jiaoYingDanBanShu || jiaoYingDanFenShu || jiaoYingShuangBanShu || jiaoYingShuangFenShu || jiaoYingDaDanBanShu || jiaoYingDaDanFenShu || jiaoYingDaShuangBanShu || jiaoYingDaShuangFenShu || fuYingB5Shu || fuYingB4Shu || fuYingA4Shu || fuYingA3Shu || daYingShu || daBanShu || otherSetName || otherSetCount || otherSetUnitPrice)
+      otherSetUnitPrice
+    }) {
+      return (
+        count &&
+        (jiaoYingDanBanShu ||
+          jiaoYingDanFenShu ||
+          jiaoYingShuangBanShu ||
+          jiaoYingShuangFenShu ||
+          jiaoYingDaDanBanShu ||
+          jiaoYingDaDanFenShu ||
+          jiaoYingDaShuangBanShu ||
+          jiaoYingDaShuangFenShu ||
+          fuYingB5Shu ||
+          fuYingB4Shu ||
+          fuYingA4Shu ||
+          fuYingA3Shu ||
+          daYingShu ||
+          daBanShu ||
+          otherSetName ||
+          otherSetCount ||
+          otherSetUnitPrice)
+      )
     },
     // 修改订单状态
     ensureOrderHnadle(status) {
       if (status === 'DaiQueRen') {
-        if (!this.checkSkuIsComplte(this.roleTemp)) return this.$message.warning('请补充文印配置项')
+        if (!this.checkSkuIsComplte(this.roleTemp))
+          return this.$message.warning('请补充文印配置项')
       }
       const { id } = this.roleTemp
       axios
         .post(
           '/smartprint/print-room/order/update-order',
-          qs.stringify({ orderId: id, lingQuRen: this.lingQuRen, lingQuFangShi: 'IC', status })
+          qs.stringify({
+            orderId: id,
+            lingQuRen: this.lingQuRen,
+            lingQuFangShi: 'IC',
+            status
+          })
         )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
@@ -1511,7 +1555,8 @@ export default {
         jiaoHuoShiJian,
         yinShuaYaoQiu,
         yinShuaRen,
-        yinShuaFei } = this.$refs.noticeTableRef.params
+        yinShuaFei
+      } = this.$refs.noticeTableRef.params
       const params = {
         orderId: id,
         title,
@@ -1550,7 +1595,8 @@ export default {
         yinShuaYaoQiu,
         yinShuaRen,
         yinShuaFei, // 通知单配置end
-        samples: this.samples + ',' + this.fileList.map(item => item.url).join(','),
+        samples:
+          this.samples + ',' + this.fileList.map(item => item.url).join(','),
         // samples: this.samples,
         attachments:
           this.roleTemp.attachmentFiles &&
@@ -1588,10 +1634,7 @@ export default {
       params.orderId = row.id
       params.status = 'YiCheXiao'
       axios
-        .post(
-          '/smartprint/print-room/order/delete-order',
-          qs.stringify(params)
-        )
+        .post('/smartprint/print-room/order/delete-order', qs.stringify(params))
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('撤销成功')
@@ -1675,16 +1718,17 @@ export default {
     },
     handleSelectionChange(val) {
       if (this.roleTemp.type == 'Class') {
-        this.multipleSelectionSouce = [val[0]];
+        this.multipleSelectionSouce = [val[0]]
         if (val.length > 1) {
-          this.$refs.multipleTable.clearSelection();
-          this.$refs.multipleTable.toggleRowSelection(val.pop());
+          this.$refs.multipleTable.clearSelection()
+          this.$refs.multipleTable.toggleRowSelection(val.pop())
         }
       } else {
         this.multipleSelectionSouce = val
       }
     },
     handleSearch() {
+      this.listQuery.start = 1 //每次搜索重置页码
       this.getList()
       this.getListLen()
     },
@@ -1708,7 +1752,10 @@ export default {
       // this.multipleSelection.splice(index, 1)
 
       if (this.$refs.multipleTable) {
-        this.$refs.multipleTable.toggleRowSelection(this.multipleSelection[index], false)
+        this.$refs.multipleTable.toggleRowSelection(
+          this.multipleSelection[index],
+          false
+        )
         this.multipleSelection.splice(index, 1)
       } else {
         this.multipleSelection.splice(index, 1)
@@ -1716,7 +1763,9 @@ export default {
     },
     // 上传相关
     succcessHandle(response) {
-      this.samples ? this.samples += ',' + response.data.url : this.samples = response.data.url
+      this.samples
+        ? (this.samples += ',' + response.data.url)
+        : (this.samples = response.data.url)
     },
 
     handleSimpalRemove(file, fileList) {
@@ -1747,17 +1796,16 @@ export default {
       // 发送请求的参数格式为FormData
       const formData = new FormData()
       formData.append('file', file)
-      axios.post(
-        '/smartprint/upload-file', formData).then(res => {
-          if (res.data.code !== 0) {
-            return this.$message.error(res.data.msg)
-          }
-          this.roleTemp.attachmentFiles = this.roleTemp.attachmentFiles
-            ? this.roleTemp.attachmentFiles
-            : []
-          this.roleTemp.attachmentFiles.push(res.data.data)
-          this.$forceUpdate()
-        })
+      axios.post('/smartprint/upload-file', formData).then(res => {
+        if (res.data.code !== 0) {
+          return this.$message.error(res.data.msg)
+        }
+        this.roleTemp.attachmentFiles = this.roleTemp.attachmentFiles
+          ? this.roleTemp.attachmentFiles
+          : []
+        this.roleTemp.attachmentFiles.push(res.data.data)
+        this.$forceUpdate()
+      })
     },
     // 领取成功回调
     validSuccessCallback(index) {
@@ -1787,7 +1835,8 @@ export default {
     },
     // IC卡批量领取
     async groupReceiveByIc() {
-      if (this.receiveGroupData.length < 1) return this.$message.warning('请勾选')
+      if (this.receiveGroupData.length < 1)
+        return this.$message.warning('请勾选')
       const lingQuRen = await this.lingqurenPrompt()
       if (!lingQuRen) return
 
@@ -1805,10 +1854,11 @@ export default {
             lingQuFangShi: 'IC',
             lingQuRen: lingQuRen || ''
           }
-          axios.post(
-            '/smartprint/print-room/order/batch-recieve',
-            qs.stringify(params)
-          )
+          axios
+            .post(
+              '/smartprint/print-room/order/batch-recieve',
+              qs.stringify(params)
+            )
             .then(res => {
               if (res.data.code !== 0) return this.$message.error(res.data.msg)
               this.$message.success('领取成功')
@@ -1827,12 +1877,14 @@ export default {
       return this.$prompt('请输入领取人', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
-      }).then(({ value }) => Promise.resolve(value))
+      })
+        .then(({ value }) => Promise.resolve(value))
         .catch(() => Promise.resolve(false))
     },
     // 批量直接领取
     async groupReceiveByauto() {
-      if (this.receiveGroupData.length < 1) return this.$message.warning('请勾选')
+      if (this.receiveGroupData.length < 1)
+        return this.$message.warning('请勾选')
       const lingQuRen = await this.lingqurenPrompt()
       if (!lingQuRen) return
 
@@ -1841,10 +1893,11 @@ export default {
         lingQuFangShi: 'Direct',
         lingQuRen: lingQuRen || ''
       }
-      axios.post(
-        '/smartprint/print-room/order/batch-recieve',
-        qs.stringify(params)
-      )
+      axios
+        .post(
+          '/smartprint/print-room/order/batch-recieve',
+          qs.stringify(params)
+        )
         .then(res => {
           if (res.data.code !== 0) return this.$message.error(res.data.msg)
           this.$message.success('领取成功')
@@ -1880,7 +1933,7 @@ export default {
         for (let j = 0; j < copyRow.length; j++) {
           if (this.receiveGroupData[i].id == copyRow[j].id) {
             copyRow.splice(j, 1)
-            break;
+            break
           }
         }
       }
@@ -1900,21 +1953,28 @@ export default {
     },
     // 取消勾选
     cancleSelection(row) {
-      this.$refs.tableListRef.toggleRowSelection(row);
+      this.$refs.tableListRef.toggleRowSelection(row)
     },
     // 直接领取
     unValidICTable(row) {
       if (!this.lingQuRen) return this.$message.warning('请输入领取人')
-      axios.post(
-        '/smartprint/print-room/order/update-order',
-        qs.stringify({ orderId: row.id, lingQuRen: this.lingQuRen, lingQuFangShi: 'Direct', status: 'YiLingQu' })
-      ).then(res => {
-        if (res.data.code !== 0) return this.$message.error(res.data.msg)
-        this.$message.success('操作成功')
-        this.editView()
-        this.getList()
-        this.lingQuRen = ''
-      })
+      axios
+        .post(
+          '/smartprint/print-room/order/update-order',
+          qs.stringify({
+            orderId: row.id,
+            lingQuRen: this.lingQuRen,
+            lingQuFangShi: 'Direct',
+            status: 'YiLingQu'
+          })
+        )
+        .then(res => {
+          if (res.data.code !== 0) return this.$message.error(res.data.msg)
+          this.$message.success('操作成功')
+          this.editView()
+          this.getList()
+          this.lingQuRen = ''
+        })
         .catch(err => err)
     },
     // dialog直接领取
@@ -1947,7 +2007,7 @@ export default {
       setTimeout(() => {
         const cardData = parseInt(this.tfBlockData + '')
         const userId = this.roleTemp.userId
-        this.lingQuRen = this.roleId.userName// 领取人只能是下单人
+        this.lingQuRen = this.roleId.userName // 领取人只能是下单人
         if (cardData == userId) {
           this.tips = '身份验证成功！'
           this.ensureOrderHnadle('YiLingQu')
@@ -1968,38 +2028,41 @@ export default {
           case '0007': // Sys_Open
             if (rData.strStatus != '00') {
               // this.tips = 'Failed to connect device ! ' + 'Error code: 0x' + rData.strStatus;
-              this.tips = 'Failed to connect device ! ' + 'Error code: 0x' + rData.strStatus;
+              this.tips =
+                'Failed to connect device ! ' +
+                'Error code: 0x' +
+                rData.strStatus
             } else {
-              g_isOpen = true;
+              g_isOpen = true
               // this.tips = 'Reader connected successfully !';
-              this.tips = 'Reader connected successfully !';
+              this.tips = 'Reader connected successfully !'
             }
-            break;
+            break
 
           case '0009': // Sys_Close
             if (rData.strStatus != '00') {
-              this.tips = 'Failed to disconnect device !';
+              this.tips = 'Failed to disconnect device !'
             } else {
-              this.tips = 'Reader disconnected successfully !';
+              this.tips = 'Reader disconnected successfully !'
             }
-            break;
+            break
 
           case '0106': // Sys_SetBuzzer
-            break;
+            break
 
           case '0105': // Sys_GetSnr
             if (rData.strStatus != '00') {
-              this.tips = 'Sys_GetSnr faild !';
+              this.tips = 'Sys_GetSnr faild !'
             } else {
-              this.tips = rData.strData;
-              this.tips = 'Get device serial number successfully !';
+              this.tips = rData.strData
+              this.tips = 'Get device serial number successfully !'
             }
-            break;
+            break
 
           case '1001': // TyA_Request
             if (rData.strStatus != '00') {
-              this.tips = 'TyA_Request faild !';
-              return;
+              this.tips = 'TyA_Request faild !'
+              return
             }
 
             switch (g_wantFunc) {
@@ -2012,23 +2075,23 @@ export default {
               case GFUNC.M1_decrement:
               case GFUNC.M1_readVal:
               case GFUNC.M1_updateKey:
-                $Reader.send(g_device + '1002'); // TyA_Anticollision
-                break;
+                $Reader.send(g_device + '1002') // TyA_Anticollision
+                break
             }
 
-            break;
+            break
 
           case '1002': // TyA_Anticollision
             if (rData.strStatus != '00') {
-              this.tips = 'TyA_Anticollision faild !';
-              return;
+              this.tips = 'TyA_Anticollision faild !'
+              return
             }
 
             switch (g_wantFunc) {
               case GFUNC.M1_findCard:
                 // document.getElementById('tfUID').value = rData.strData;
-                this.tfUID = rData.strData;
-                this.tips = 'Found card !';
+                this.tfUID = rData.strData
+                this.tips = 'Found card !'
               case GFUNC.M1_authentication:
               case GFUNC.M1_read:
               case GFUNC.M1_write:
@@ -2037,16 +2100,16 @@ export default {
               case GFUNC.M1_decrement:
               case GFUNC.M1_readVal:
               case GFUNC.M1_updateKey:
-                $Reader.send(g_device + '1003' + rData.strData); // TyA_Select
-                break;
+                $Reader.send(g_device + '1003' + rData.strData) // TyA_Select
+                break
             }
 
-            break;
+            break
 
           case '1003': // TyA_Select
             if (rData.strStatus != '00') {
-              this.tips = 'TyA_Select faild !';
-              return;
+              this.tips = 'TyA_Select faild !'
+              return
             }
 
             switch (g_wantFunc) {
@@ -2058,130 +2121,146 @@ export default {
               case GFUNC.M1_decrement:
               case GFUNC.M1_readVal:
               case GFUNC.M1_updateKey:
-                $Reader.send(g_device + '100A' + g_keyType + g_blockAddr + g_key); // TyA_CS_Authentication2
-                break;
+                $Reader.send(
+                  g_device + '100A' + g_keyType + g_blockAddr + g_key
+                ) // TyA_CS_Authentication2
+                break
             }
 
-            break;
+            break
 
           case '100A': // TyA_CS_Authentication2
             if (rData.strStatus != '00') {
-              this.tips = 'TyA_CS_Authentication2 faild !';
-              return;
+              this.tips = 'TyA_CS_Authentication2 faild !'
+              return
             }
 
             switch (g_wantFunc) {
               case GFUNC.M1_read:
-                $Reader.send(g_device + '100B' + g_blockAddr); // TyA_CS_Read
-                break;
+                $Reader.send(g_device + '100B' + g_blockAddr) // TyA_CS_Read
+                break
 
               case GFUNC.M1_write:
-                $Reader.send(g_device + '100C' + g_blockAddr + g_blockData);
-                break;
+                $Reader.send(g_device + '100C' + g_blockAddr + g_blockData)
+                break
 
               case GFUNC.M1_initVal:
-                $Reader.send(g_device + '100D' + g_blockAddr + g_value);
-                break;
+                $Reader.send(g_device + '100D' + g_blockAddr + g_value)
+                break
 
               case GFUNC.M1_readVal:
-                $Reader.send(g_device + '100E' + g_blockAddr);
-                break;
+                $Reader.send(g_device + '100E' + g_blockAddr)
+                break
 
               case GFUNC.M1_decrement:
-                $Reader.send(g_device + '100F' + g_blockAddr + g_value);
-                break;
+                $Reader.send(g_device + '100F' + g_blockAddr + g_value)
+                break
 
               case GFUNC.M1_increment:
-                $Reader.send(g_device + '1010' + g_blockAddr + g_value);
-                break;
+                $Reader.send(g_device + '1010' + g_blockAddr + g_value)
+                break
             }
 
-            break;
+            break
 
           case '100B': // TyA_CS_Read
             if (rData.strStatus != '00') {
-              this.tips = 'TyA_CS_Read faild !';
+              this.tips = 'TyA_CS_Read faild !'
             } else {
               // document.getElementById('tfBlockData').value = rData.strData;
-              this.tfBlockData = rData.strData;
-              this.tips = 'Read block successfully !';
+              this.tfBlockData = rData.strData
+              this.tips = 'Read block successfully !'
             }
-            break;
+            break
 
           case '100C': // TyA_CS_Write
             if (rData.strStatus != '00') {
-              this.tips = 'TyA_CS_Write faild !';
+              this.tips = 'TyA_CS_Write faild !'
             } else {
-              this.tips = 'Write block successfully !';
+              this.tips = 'Write block successfully !'
             }
-            break;
+            break
 
           case '100D': // TyA_CS_InitValue
             if (rData.strStatus != '00') {
-              this.tips = 'TyA_CS_InitValue faild !';
+              this.tips = 'TyA_CS_InitValue faild !'
             } else {
-              this.tips = 'Initialize the wallet value successfully !';
+              this.tips = 'Initialize the wallet value successfully !'
             }
-            break;
+            break
 
           case '100E': // TyA_CS_ReadValue
             if (rData.strStatus != '00') {
-              this.tips = 'TyA_CS_ReadValue faild !';
+              this.tips = 'TyA_CS_ReadValue faild !'
             } else {
-              let hexValue = rData.strData;
-              hexValue = hexValue.substr(6, 2) + hexValue.substr(4, 2) + hexValue.substr(2, 2) + hexValue.substr(0, 2); // Reverse sorting of high and low bytes (高低字节反过来排序)
-              const decValue = parseInt(hexValue, 16); // Convert hexadecimal string to decimal string (十六进制字符串转换为十进制字符串)
-              document.getElementById('tfValue').value = decValue; // Show wallet balance (显示电子钱包余额)
-              this.tips = 'Read value successfully !';
+              let hexValue = rData.strData
+              hexValue =
+                hexValue.substr(6, 2) +
+                hexValue.substr(4, 2) +
+                hexValue.substr(2, 2) +
+                hexValue.substr(0, 2) // Reverse sorting of high and low bytes (高低字节反过来排序)
+              const decValue = parseInt(hexValue, 16) // Convert hexadecimal string to decimal string (十六进制字符串转换为十进制字符串)
+              document.getElementById('tfValue').value = decValue // Show wallet balance (显示电子钱包余额)
+              this.tips = 'Read value successfully !'
             }
-            break;
+            break
 
           case '100F': // TyA_CS_Decrement
             if (rData.strStatus != '00') {
-              this.tips = 'TyA_CS_Decrement faild !';
+              this.tips = 'TyA_CS_Decrement faild !'
             } else {
-              this.tips = 'Decrement value successfully !';
+              this.tips = 'Decrement value successfully !'
             }
-            break;
+            break
 
           case '1010': // TyA_CS_Increment
             if (rData.strStatus != '00') {
-              this.tips = 'TyA_CS_Increment faild !';
+              this.tips = 'TyA_CS_Increment faild !'
             } else {
-              this.tips = 'Increment value successfully !';
+              this.tips = 'Increment value successfully !'
             }
-            break;
+            break
         }
       })
     },
     next2() {
-      if (this.active == 0) {  // 连接设备
+      if (this.active == 0) {
+        // 连接设备
         this.Connect()
       }
-      if (this.active == 1) { // 读取设备卡号
+      if (this.active == 1) {
+        // 读取设备卡号
         this.getCardId()
       }
-      if (this.active == 2) { // 读取卡内数据
+      if (this.active == 2) {
+        // 读取卡内数据
         this.ReadBlock()
       }
-      if (this.active == 3) { // 查询可领取订单
+      if (this.active == 3) {
+        // 查询可领取订单
         const cardData = parseInt(this.tfBlockData + '')
-        const filterBycardIdList = this.list.filter(item => item.userId == cardData)
+        const filterBycardIdList = this.list.filter(
+          item => item.userId == cardData
+        )
         console.log(filterBycardIdList)
       }
       this.active += 1
     },
     next() {
-      if (this.active == 0) { // 连接设备
+      if (this.active == 0) {
+        // 连接设备
         this.Connect()
       }
-      if (this.active == 1) { // 读取设备卡号
+      if (this.active == 1) {
+        // 读取设备卡号
         this.getCardId()
       }
-      if (this.active == 2) { // 读取卡内数据
+      if (this.active == 2) {
+        // 读取卡内数据
         this.ReadBlock()
       }
-      if (this.active == 3) { // 验证身份
+      if (this.active == 3) {
+        // 验证身份
         const cardData = parseInt(this.tfBlockData + '')
         const userId = this.roleTemp.userId
         // return
@@ -2194,30 +2273,30 @@ export default {
       }
     },
     /**
- * Turn on the green light
- * (亮绿灯)
-**/
+     * Turn on the green light
+     * (亮绿灯)
+     **/
     LedGreen() {
-      $Reader.send(g_device + '0107' + '02');
+      $Reader.send(g_device + '0107' + '02')
     },
 
     /**
      * Turn on the red light
      * (亮红灯)
-    **/
+     **/
     LedRed() {
-      $Reader.send(g_device + '0107' + '01');
+      $Reader.send(g_device + '0107' + '01')
     },
     /**
-    * 连接设备
-    *
-    * **/
+     * 连接设备
+     *
+     * **/
     Connect() {
-      $Reader.send(g_device + '0007' + '00'); // Open the USB device with index number 0. (打开索引号为0的USB设备)
-      $Reader.send(g_device + '0109' + '41'); // Set to ISO14443a working mode. (设置为ISO14443A工作模式)
-      $Reader.send(g_device + '0108' + '01'); // Turn on the $Reader antenna. (打开读卡器天线)
-      this.LedGreen();
-      setTimeout(this.LedRed(), 200);
+      $Reader.send(g_device + '0007' + '00') // Open the USB device with index number 0. (打开索引号为0的USB设备)
+      $Reader.send(g_device + '0109' + '41') // Set to ISO14443a working mode. (设置为ISO14443A工作模式)
+      $Reader.send(g_device + '0108' + '01') // Turn on the $Reader antenna. (打开读卡器天线)
+      this.LedGreen()
+      setTimeout(this.LedRed(), 200)
       this.active += 1
       // $Reader.send(g_device + '0106' + '10'); // Beeps. (蜂鸣提示)
     },
@@ -2240,50 +2319,50 @@ export default {
         .catch(err => err)
     },
     /**
- * 获取卡号
- *
- * **/
+     * 获取卡号
+     *
+     * **/
     getCardId() {
       // Check whether the reader is opened or not.
       if (g_isOpen != true) {
-        this.tips = 'Please connect the device first !';
+        this.tips = 'Please connect the device first !'
         this.active = 0
-        return;
+        return
       }
       // Clear UID edit box
-      this.tfUID = '';
+      this.tfUID = ''
 
       // Start read UID
-      $Reader.send(g_device + '1001' + '52'); // TyA_Request
-      g_wantFunc = GFUNC.M1_findCard;
+      $Reader.send(g_device + '1001' + '52') // TyA_Request
+      g_wantFunc = GFUNC.M1_findCard
     },
     /**
      * Read a block of M1 card
      * (读M1卡的一个块)
-    **/
+     **/
     ReadBlock() {
       // Check whether the reader is opened or not.
       if (g_isOpen != true) {
-        this.tips = 'Please connect the device first !';
+        this.tips = 'Please connect the device first !'
         this.active = 0
-        return;
+        return
       }
 
       // Clear block data
-      this.tfBlockData = '';
+      this.tfBlockData = ''
 
       // Get block address
       // g_blockAddr = document.getElementById('tfBlock').value;
       if (g_blockAddr == '') {
-        this.tips = 'Please enter  block address !';
-        return;
+        this.tips = 'Please enter  block address !'
+        return
       }
-      g_blockAddr = this.DecStrToHexStr(g_blockAddr, 2);
+      g_blockAddr = this.DecStrToHexStr(g_blockAddr, 2)
 
       // Get key
       if (g_key.length != 12) {
-        this.tips = 'Please enter a 12-digit key !';
-        return;
+        this.tips = 'Please enter a 12-digit key !'
+        return
       }
 
       // Get key type
@@ -2294,8 +2373,8 @@ export default {
       // }
 
       // Start read block
-      $Reader.send(g_device + '1001' + '52'); // TyA_Request
-      g_wantFunc = GFUNC.M1_read;
+      $Reader.send(g_device + '1001' + '52') // TyA_Request
+      g_wantFunc = GFUNC.M1_read
     },
     /**
     * Function：Converts a decimal string to a hexadecimal string with a specified number of digits.
@@ -2305,9 +2384,9 @@ export default {
     * Return：Hexadecimal string. (十六进制字符串)
     **/
     DecStrToHexStr(decimalStr, length) {
-      const num = Number(decimalStr);
-      const str = (Array(length).join('0') + num.toString(16)).slice(-length);
-      return str;
+      const num = Number(decimalStr)
+      const str = (Array(length).join('0') + num.toString(16)).slice(-length)
+      return str
     },
     // 处理下单人某一项为空的情
     staffLabelReset(item) {
