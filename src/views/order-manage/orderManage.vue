@@ -1701,7 +1701,7 @@ export default {
       }
       this.getList()
       this.getListLen()
-      this.receiveGroupCancle()
+      // this.receiveGroupCancle()
     },
     deleteClass(index) {
       this.deleteClassIds.push(this.multipleSelection[index].id)
