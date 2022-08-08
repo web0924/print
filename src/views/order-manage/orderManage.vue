@@ -692,7 +692,8 @@
           </div>
           <div class="module-title need-print">通知单</div>
           <div style="margin-top:20px"></div>
-          <noticeTable ref="noticeTableRef" />
+          <noticeTable :url="exportUrl"
+                       ref="noticeTableRef" />
         </el-form>
       </div>
     </div>
@@ -825,6 +826,7 @@ export default {
       dialogICVisible: false,
       receiveGroupVisible: true,
       ensureDialogVisible: false,
+      exportUrl: '/smartprint/print-room/order/export-sheng-chan-tong-zhi-dan',
       active: 0,
       tips: '', // 提示
       tfUID: '', // 卡号
@@ -2296,8 +2298,14 @@ export default {
     // 打印通知单
     printHandle(params) {
       // window.print()
-      this.$refs.printDialogRef.visible = true
-      this.$refs.printDialogRef.orderData = params
+      // this.$refs.printDialogRef.visible = true
+      // this.$refs.printDialogRef.orderData = params
+      axios.post(
+        this.exportUrl, qs.stringify({ orderId: params.id, withPrice: 0 })
+      ).then(res => {
+        if (res.data.code !== 0) return this.$message.error(res.data.msg)
+        window.open('https://dev.renx.cc/' + res.data.data.url)
+      }).catch(err => err)
     },
     // 获取账号信息
     getAccountInfo() {

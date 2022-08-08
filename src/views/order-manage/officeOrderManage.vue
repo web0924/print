@@ -778,7 +778,8 @@
           </div>
           <div class="module-title">通知单</div>
           <div style="margin-top:20px"></div>
-          <noticeTable ref="noticeTableRef" />
+          <noticeTable :url="exportUrl"
+                       ref="noticeTableRef" />
         </el-form>
       </div>
     </div>
@@ -937,6 +938,7 @@ export default {
       receiveGroupVisible: true,
       dialogICVisible: false,
       ensureDialogVisible: false,
+      exportUrl: '/smartprint/print-room/order/export-office-sheng-chan-tong-zhi-dan',
       active: 0,
       tips: '', // 提示
       tfUID: '', // 卡号
@@ -1238,7 +1240,7 @@ export default {
       axios
         .post('/smartprint/print-room/order/get-orders', qs.stringify(params))
         .then(res => {
-         this.total = (res.data.data.sum && res.data.data.sum.count) || 0
+          this.total = (res.data.data.sum && res.data.data.sum.count) || 0
           console.log(this.total)
         })
         .catch(err => console.log(err))
@@ -1253,10 +1255,8 @@ export default {
     },
     // 导出
     exportAll() {
-      if (!this.listQuery.startTime)
-        return this.$message.warning('请选择开始时间')
-      if (!this.listQuery.endTime)
-        return this.$message.warning('请选择结束时间')
+      if (!this.listQuery.startTime) { return this.$message.warning('请选择开始时间') }
+      if (!this.listQuery.endTime) { return this.$message.warning('请选择结束时间') }
       axios
         .post(
           '/smartprint/print-room/order/export-office-bill',
@@ -1271,10 +1271,8 @@ export default {
     // 导出生产中通知单
     exportProducting() {
       if (!this.listQuery.officeId) return this.$message.warning('请选择科室')
-      if (!this.listQuery.startTime)
-        return this.$message.warning('请选择开始时间')
-      if (!this.listQuery.endTime)
-        return this.$message.warning('请选择结束时间')
+      if (!this.listQuery.startTime) { return this.$message.warning('请选择开始时间') }
+      if (!this.listQuery.endTime) { return this.$message.warning('请选择结束时间') }
       axios
         .post(
           '/smartprint/print-room/order/export-office-sheng-chan-tong-zhi-dan',
@@ -1481,12 +1479,12 @@ export default {
             // this.roleTemp.allGrades == 1 ? this.roleTemp.grade = 'allGrades' : this.roleTemp.grade = this.roleTemp.grades[0].gradeId
             // this.roleTemp.allClasses == 1 ? this.classval = 'allClasses' : this.classval = 'diy'
             this.roleTemp.classes
-              ? (this.roleTemp.classes = this.roleTemp.classes.map(item => {
-                  item.id = item.classId
-                  item.name = item.className
-                  return item
-                }))
-              : (this.roleTemp.classes = [])
+              ? this.roleTemp.classes = this.roleTemp.classes.map(item => {
+                item.id = item.classId
+                item.name = item.className
+                return item
+              })
+              : this.roleTemp.classes = []
 
             this.multipleSelection = this.roleTemp.classes
 
@@ -1532,8 +1530,7 @@ export default {
     // 修改table订单状态
     tableOrderStatuHandle(status, row, index) {
       if (status === 'DaiQueRen') {
-        if (!this.checkSkuIsComplte(row))
-          return this.$message.warning('请补充文印配置项')
+        if (!this.checkSkuIsComplte(row)) { return this.$message.warning('请补充文印配置项') }
       }
       const { id } = row
       const _this = this
@@ -1566,14 +1563,19 @@ export default {
     // 打印通知单
     printHandle(params) {
       // window.print()
-      this.$refs.printDialogRef.visible = true
-      this.$refs.printDialogRef.orderData = params
+      // this.$refs.printDialogRef.visible = true
+      // this.$refs.printDialogRef.orderData = params
+      axios.post(
+        this.exportUrl, qs.stringify({ orderId: params.id, withPrice: 0 })
+      ).then(res => {
+        if (res.data.code !== 0) return this.$message.error(res.data.msg)
+        window.open('https://dev.renx.cc/' + res.data.data.url)
+      }).catch(err => err)
     },
     // 修改订单状态
     ensureOrderHnadle(status) {
       if (status === 'DaiQueRen') {
-        if (!this.checkSkuIsComplte(this.roleTemp))
-          return this.$message.warning('请补充文印配置项')
+        if (!this.checkSkuIsComplte(this.roleTemp)) { return this.$message.warning('请补充文印配置项') }
       }
       const { id } = this.roleTemp
       axios
@@ -1846,8 +1848,8 @@ export default {
     // 上传相关
     succcessHandle(response) {
       this.samples
-        ? (this.samples += ',' + response.data.url)
-        : (this.samples = response.data.url)
+        ? this.samples += ',' + response.data.url
+        : this.samples = response.data.url
     },
 
     handleSimpalRemove(file, fileList) {
@@ -1943,8 +1945,7 @@ export default {
     },
     // IC卡批量领取
     async groupReceiveByIc() {
-      if (this.receiveGroupData.length < 1)
-        return this.$message.warning('请勾选')
+      if (this.receiveGroupData.length < 1) { return this.$message.warning('请勾选') }
       const lingQuRen = await this.lingqurenPrompt()
       if (!lingQuRen) return
 
@@ -1982,8 +1983,7 @@ export default {
     },
     // 批量直接领取
     async groupReceiveByauto() {
-      if (this.receiveGroupData.length < 1)
-        return this.$message.warning('请勾选')
+      if (this.receiveGroupData.length < 1) { return this.$message.warning('请勾选') }
       const lingQuRen = await this.lingqurenPrompt()
       if (!lingQuRen) return
 

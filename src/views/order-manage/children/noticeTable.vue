@@ -139,6 +139,11 @@ export default {
   components: {
     printDialog
   },
+  props: {
+    url: {
+      default: ''
+    }
+  },
   data() {
     return {
       fenJianRens: [],
@@ -259,7 +264,7 @@ export default {
     },
     printHandle() {
       axios.post(
-        '/smartprint/print-room/order/export-sheng-chan-tong-zhi-dan', qs.stringify({ orderId: this.params.id, withPrice: 0 })
+        this.$props.url, qs.stringify({ orderId: this.params.id, withPrice: 0 })
       ).then(res => {
         if (res.data.code !== 0) return this.$message.error(res.data.msg)
         window.open('https://dev.renx.cc/' + res.data.data.url)
