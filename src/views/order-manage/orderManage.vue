@@ -1152,10 +1152,8 @@ export default {
     // 导出
     exportAll() {
       if (!this.listQuery.gradeId) return this.$message.warning('请选择年级')
-      if (!this.listQuery.startTime)
-        return this.$message.warning('请选择开始时间')
-      if (!this.listQuery.endTime)
-        return this.$message.warning('请选择结束时间')
+      if (!this.listQuery.startTime) { return this.$message.warning('请选择开始时间') }
+      if (!this.listQuery.endTime) { return this.$message.warning('请选择结束时间') }
       axios
         .post(
           '/smartprint/print-room/order/export-bill',
@@ -1170,10 +1168,8 @@ export default {
     // 导出生产中通知单
     exportProducting() {
       if (!this.listQuery.gradeId) return this.$message.warning('请选择年级')
-      if (!this.listQuery.startTime)
-        return this.$message.warning('请选择开始时间')
-      if (!this.listQuery.endTime)
-        return this.$message.warning('请选择结束时间')
+      if (!this.listQuery.startTime) { return this.$message.warning('请选择开始时间') }
+      if (!this.listQuery.endTime) { return this.$message.warning('请选择结束时间') }
       axios
         .post(
           '/smartprint/print-room/order/export-sheng-chan-tong-zhi-dan',
@@ -1354,12 +1350,12 @@ export default {
             if (res.data.code !== 0) return this.$message.error(res.data.msg)
             this.roleTemp = res.data.data.order
             this.roleTemp.classes
-              ? (this.roleTemp.classes = this.roleTemp.classes.map(item => {
-                  item.id = item.classId
-                  item.name = item.className
-                  return item
-                }))
-              : (this.roleTemp.classes = [])
+              ? this.roleTemp.classes = this.roleTemp.classes.map(item => {
+                item.id = item.classId
+                item.name = item.className
+                return item
+              })
+              : this.roleTemp.classes = []
 
             this.multipleSelection = this.roleTemp.classes
 
@@ -1388,8 +1384,7 @@ export default {
     // 修改table订单状态
     tableOrderStatuHandle(status, row, index) {
       if (status === 'DaiQueRen') {
-        if (!this.checkSkuIsComplte(row))
-          return this.$message.warning('请补充文印配置项')
+        if (!this.checkSkuIsComplte(row)) { return this.$message.warning('请补充文印配置项') }
       }
       const { id } = row
       const _this = this
@@ -1477,8 +1472,7 @@ export default {
     // 修改订单状态
     ensureOrderHnadle(status) {
       if (status === 'DaiQueRen') {
-        if (!this.checkSkuIsComplte(this.roleTemp))
-          return this.$message.warning('请补充文印配置项')
+        if (!this.checkSkuIsComplte(this.roleTemp)) { return this.$message.warning('请补充文印配置项') }
       }
       const { id } = this.roleTemp
       axios
@@ -1728,7 +1722,7 @@ export default {
       }
     },
     handleSearch() {
-      this.listQuery.start = 1 //每次搜索重置页码
+      this.listQuery.start = 1 // 每次搜索重置页码
       this.getList()
       this.getListLen()
     },
@@ -1764,8 +1758,8 @@ export default {
     // 上传相关
     succcessHandle(response) {
       this.samples
-        ? (this.samples += ',' + response.data.url)
-        : (this.samples = response.data.url)
+        ? this.samples += ',' + response.data.url
+        : this.samples = response.data.url
     },
 
     handleSimpalRemove(file, fileList) {
@@ -1835,8 +1829,7 @@ export default {
     },
     // IC卡批量领取
     async groupReceiveByIc() {
-      if (this.receiveGroupData.length < 1)
-        return this.$message.warning('请勾选')
+      if (this.receiveGroupData.length < 1) { return this.$message.warning('请勾选') }
       const lingQuRen = await this.lingqurenPrompt()
       if (!lingQuRen) return
 
@@ -1883,8 +1876,7 @@ export default {
     },
     // 批量直接领取
     async groupReceiveByauto() {
-      if (this.receiveGroupData.length < 1)
-        return this.$message.warning('请勾选')
+      if (this.receiveGroupData.length < 1) { return this.$message.warning('请勾选') }
       const lingQuRen = await this.lingqurenPrompt()
       if (!lingQuRen) return
 

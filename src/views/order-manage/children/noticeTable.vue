@@ -7,7 +7,7 @@
         <el-form-item :disabled="false"
                       label=" ">
           <el-button style="color:#FFF; background: #09bb07;"
-                     @click="printHandle">打印通知单</el-button>
+                     @click="printHandle">导出通知单</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -258,9 +258,15 @@ export default {
       }
     },
     printHandle() {
+      axios.post(
+        '/smartprint/print-room/order/export-sheng-chan-tong-zhi-dan', qs.stringify({ orderId: this.params.id, withPrice: 0 })
+      ).then(res => {
+        if (res.data.code !== 0) return this.$message.error(res.data.msg)
+        window.open('https://dev.renx.cc/' + res.data.data.url)
+      }).catch(err => err)
       // window.print()
-      this.$refs.printDialogRef.visible = true
-      this.$refs.printDialogRef.orderData = this.params
+      // this.$refs.printDialogRef.visible = true
+      // this.$refs.printDialogRef.orderData = this.params
     },
     // 判断是否为胶印
     checkIsJiaoYin({ jiaoYingDanBanShu, jiaoYingShuangBanShu, jiaoYingDaDanBanShu, jiaoYingDaShuangBanShu }) {
