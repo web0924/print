@@ -1608,9 +1608,6 @@ export default {
     },
     // 编辑上传
     submitHandle() {
-      console.log(this.samples)
-      console.log(this.fileList)
-      return
       const {
         id,
         title,
@@ -1724,7 +1721,7 @@ export default {
       const vm = this
       const params = row
       params.orderId = row.id
-      params.status = 'YiCheXiao'
+      // params.status = 'YiCheXiao'
       axios
         .post('/smartprint/print-room/order/delete-order', qs.stringify(params))
         .then(res => {
@@ -1732,7 +1729,7 @@ export default {
           this.$message.success('撤销成功')
           this.getListLen()
           // 前端更新。
-          vm.list[index].status = 'YiCheXiao'
+          // vm.list[index].status = 'YiCheXiao'
           vm.list.splice(index, 1)
         })
         .then(err => err)
