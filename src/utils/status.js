@@ -1,11 +1,11 @@
 function Status() {
   this.all = [
     {
-      name: '待文印室接单',
+      name: '待接单',
       value: 'DaiJieDan'
     },
     {
-      name: '文印室已接单',
+      name: '已接单',
       value: 'YiJieDan'
     },
     {

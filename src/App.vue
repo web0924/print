@@ -11,6 +11,10 @@ export default {
 </script>
 
 <style>
+/* 修改element-ui  输入框disable 状态下的字体颜色 */
+.el-input.is-disabled .el-input__inner{
+  color: #000;
+}
 /*全局覆盖默认的loading样式*/
 .el-loading-mask {
   background: rgba(0, 0, 0, 0.5);

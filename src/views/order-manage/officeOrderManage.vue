@@ -1044,11 +1044,11 @@ export default {
     orderSelectStatus() {
       return [
         {
-          name: '待文印室接单',
+          name: '待接单',
           value: 'DaiJieDan'
         },
         {
-          name: '文印室已接单',
+          name: '已接单',
           value: 'YiJieDan'
         },
         {
@@ -1080,11 +1080,11 @@ export default {
     orderStatus() {
       return {
         DaiJieDan: {
-          name: '待文印室接单',
+          name: '待接单',
           color: '#FF5C00'
         },
         YiJieDan: {
-          name: '文印室已接单',
+          name: '已接单',
           color: '#333333'
         },
         DaiQueRen: {
