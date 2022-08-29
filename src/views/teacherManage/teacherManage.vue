@@ -1,7 +1,6 @@
 <template>
   <div class="app-container">
-    <div v-show="viewType===0"
-         style="padding-bottom:30px">
+    <div v-show="viewType === 0" style="padding-bottom:30px">
       <div style="height:120px;padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -10,94 +9,53 @@
         </div>
         <!-- 搜索条件 -->
         <div class="filter-container">
-          <el-input @keyup.enter.native="handleSearch"
-                    size="small"
-                    style="width: 280px;"
-                    class="filter-item"
-                    placeholder="输入关键字搜索"
-                    v-model="listQuery.kw">
+          <el-input @keyup.enter.native="handleSearch" size="small" style="width: 280px;" class="filter-item"
+            placeholder="输入关键字搜索" v-model="listQuery.kw">
           </el-input>
-          <el-select clearable
-                     class="filter-item"
-                     style="width: 280px"
-                     v-model="listQuery.officeId"
-                     size="small"
-                     placeholder="选择科室">
-            <el-option v-for="item in  officeList"
-                       :key="item.id"
-                       :label="item.name"
-                       :value="item.id">
+          <el-select clearable class="filter-item" style="width: 280px" v-model="listQuery.officeId" size="small"
+            placeholder="选择科室">
+            <el-option v-for="item in  officeList" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
 
-          <el-button class="filter-item"
-                     type="primary"
-                     @click="handleSearch"
-                     size="small"
-                     icon="edit">搜索</el-button>
-          <el-button class="filter-item"
-                     @click="handleReset"
-                     size="small"
-                     icon="edit">重置</el-button>
-          <el-button class="filter-item"
-                     style="position:absolute;right:280px;background:#000"
-                     type="primary"
-                     @click="handleImport"
-                     size="small"
-                     icon="edit">模板导入</el-button>
-          <el-button class="filter-item"
-                     @click="handleDowload"
-                     style="position:absolute;right:180px;background:#000"
-                     type="primary"
-                     size="small"
-                     icon="edit">下载模板</el-button>
-          <el-button class="filter-item"
-                     style="position:absolute;right:40px;background:#000"
-                     type="primary"
-                     @click="handleCreate"
-                     size="small"
-                     icon="edit">添加教职工</el-button>
+          <el-button class="filter-item" type="primary" @click="handleSearch" size="small" icon="edit">搜索</el-button>
+          <el-button class="filter-item" @click="handleReset" size="small" icon="edit">重置</el-button>
+          <el-button class="filter-item" style="position:absolute;right:280px;background:#000" type="primary"
+            @click="handleImport" size="small" icon="edit">模板导入</el-button>
+          <el-button class="filter-item" @click="handleDowload" style="position:absolute;right:180px;background:#000"
+            type="primary" size="small" icon="edit">下载模板</el-button>
+          <el-button class="filter-item" style="position:absolute;right:40px;background:#000" type="primary"
+            @click="handleCreate" size="small" icon="edit">添加教职工</el-button>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
 
       <!-- 表格 -->
-      <el-table ref="multipleTable"
-                @selection-change="handleSelectionChange"
-                :data="list"
-                v-loading.body="listLoading"
-                element-loading-text=""
-                border
-                fit
-                highlight-current-row>
+      <el-table ref="multipleTable" @selection-change="handleSelectionChange" :data="list" v-loading.body="listLoading"
+        element-loading-text="" border fit highlight-current-row>
         <!-- <el-table-column type="selection"
                        width="65">
       </el-table-column> -->
 
-        <el-table-column align="center"
-                         label='序号'
-                         width="100">
+        <el-table-column align="center" label='序号' width="100">
           <template slot-scope="scope">
-            {{scope.$index+1}}
+            {{ scope.$index + 1 }}
           </template>
         </el-table-column>
 
-        <el-table-column label="教职工名称"
-                         width="">
+        <el-table-column label="教职工名称" width="">
           <template slot-scope="scope">
-            {{scope.row.userName}}
+            {{ scope.row.userName }}
           </template>
         </el-table-column>
-        <el-table-column label="联系电话"
-                         width="">
+        <el-table-column label="联系电话" width="">
           <template slot-scope="scope">
-            {{scope.row.userPhone}}
+            {{ scope.row.userPhone }}
           </template>
         </el-table-column>
-        <el-table-column label="所属学科"
-                         width="">
+        <el-table-column label="所属学科" width="">
           <template slot-scope="scope">
-            {{scope.row.subjectName}}
+            {{ scope.row.subjectName }}
           </template>
         </el-table-column>
 
@@ -118,46 +76,28 @@
 
           </template>
         </el-table-column> -->
-        <!-- <el-table-column label="所属学科"
-                         width="">
+        <el-table-column label="账号" width="" prop="userAccount">
+        </el-table-column>
+        <el-table-column label="是否注册小程序" width="">
           <template slot-scope="scope">
             <template v-for="item in scope.row.userbaseinfoList">
-              <span :key="item">{{ item.identifierId  }} &nbsp; &nbsp;</span>
-            </template>
-
-          </template>
-        </el-table-column> -->
-        <el-table-column label="是否注册小程序"
-                         width="">
-          <template slot-scope="scope">
-            <template v-for="item in scope.row.userbaseinfoList">
-              <span :key="item">{{ item.identifierId  }} &nbsp; &nbsp;</span>
+              <span :key="item">{{  item.identifierId  }} &nbsp; &nbsp;</span>
             </template>
 
           </template>
         </el-table-column>
 
-        <el-table-column align="center"
-                         label="操作">
+        <el-table-column align="center" label="操作" width="300">
           <template slot-scope="scope">
             <!-- <el-button icon="edit"
                        size="small"
                        @click="setPermissions(scope.$index, scope.row)">设置权限</el-button> -->
-            <el-button icon="edit"
-                       size="small"
-                       type="success"
-                       plain
-                       @click="createICCard(scope.$index, scope.row)">制作IC卡</el-button>
-            <el-button icon="edit"
-                       size="small"
-                       @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button icon="edit" size="small" type="success" plain @click="createICCard(scope.$index, scope.row)">
+              制作IC卡</el-button>
+            <el-button icon="edit" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
             <template>
-              <el-popconfirm @confirm="handleDelete(scope.$index, scope.row)"
-                             title="确定删除吗？">
-                <el-button slot="reference"
-                           icon="delete"
-                           size="small"
-                           type="danger">删除</el-button>
+              <el-popconfirm @confirm="handleDelete(scope.$index, scope.row)" title="确定删除吗？">
+                <el-button slot="reference" icon="delete" size="small" type="danger">删除</el-button>
               </el-popconfirm>
             </template>
 
@@ -166,19 +106,14 @@
         </el-table-column>
       </el-table>
       <!-- 分页 -->
-      <div v-show="!listLoading"
-           class="pagination-container">
-        <el-pagination @size-change="handleSizeChange"
-                       @current-change="handleCurrentChange"
-                       :current-page.sync="listQuery.currPage"
-                       :page-sizes="[5,10,20,30, 50]"
-                       :page-size="listQuery.count"
-                       layout="total, sizes, prev, pager, next, jumper"
-                       :total="total">
+      <div v-show="!listLoading" class="pagination-container">
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+          :current-page.sync="listQuery.currPage" :page-sizes="[5, 10, 20, 30, 50]" :page-size="listQuery.count"
+          layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
       </div>
     </div>
-    <div v-show="viewType==='add'">
+    <div v-show="viewType === 'add'">
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -189,11 +124,8 @@
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
       <div style="padding:50px">
-        <el-form class="small-space"
-                 :model="roleTemp"
-                 label-position="left"
-                 label-width="120px"
-                 style='width: 400px; margin-left:50px;'>
+        <el-form class="small-space" :model="roleTemp" label-position="left" label-width="120px"
+          style='width: 400px; margin-left:50px;'>
 
           <el-form-item label="教职工名称">
             <el-input v-model="roleTemp.userName"></el-input>
@@ -202,35 +134,20 @@
             <el-input v-model="roleTemp.userPhone"></el-input>
           </el-form-item>
           <el-form-item label="所属年级">
-            <el-select clearable
-                       class="filter-item"
-                       v-model="roleTemp.gradeId">
-              <el-option v-for="item in  gradeList"
-                         :key="item.id"
-                         :label="item.name"
-                         :value="item.id">
+            <el-select clearable class="filter-item" v-model="roleTemp.gradeId">
+              <el-option v-for="item in  gradeList" :key="item.id" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="所属学科">
-            <el-select clearable
-                       class="filter-item"
-                       v-model="roleTemp.subjectId">
-              <el-option v-for="item in  subjectList"
-                         :key="item.id"
-                         :label="item.name"
-                         :value="item.id">
+            <el-select clearable class="filter-item" v-model="roleTemp.subjectId">
+              <el-option v-for="item in  subjectList" :key="item.id" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="所属科室">
-            <el-select clearable
-                       class="filter-item"
-                       v-model="roleTemp.officeId">
-              <el-option v-for="item in  officeList"
-                         :key="item.id"
-                         :label="item.name"
-                         :value="item.id">
+            <el-select clearable class="filter-item" v-model="roleTemp.officeId">
+              <el-option v-for="item in  officeList" :key="item.id" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -239,8 +156,7 @@
             <el-input v-model="roleTemp.userAccount"></el-input>
           </el-form-item>
           <el-form-item label="密码">
-            <el-input placeholder="初始密码为：123456"
-                      v-model="roleTemp.userPwd"></el-input>
+            <el-input placeholder="初始密码为：123456" v-model="roleTemp.userPwd"></el-input>
           </el-form-item>
           <!-- <el-form-item label="教职工层次">
             <el-input v-model="roleTemp.remark"></el-input>
@@ -249,13 +165,12 @@
             <el-input v-model="roleTemp.remark"></el-input>
           </el-form-item> -->
           <el-form-item>
-            <el-button type="primary"
-                       @click="onAddSubmit">上传</el-button>
+            <el-button type="primary" @click="onAddSubmit">上传</el-button>
           </el-form-item>
         </el-form>
       </div>
     </div>
-    <div v-show="viewType==='edit'">
+    <div v-show="viewType === 'edit'">
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -266,11 +181,8 @@
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
       <div style="padding:50px">
-        <el-form class="small-space"
-                 :model="roleTemp2"
-                 label-position="left"
-                 label-width="120px"
-                 style='width: 400px; margin-left:50px;'>
+        <el-form class="small-space" :model="roleTemp2" label-position="left" label-width="120px"
+          style='width: 400px; margin-left:50px;'>
 
           <el-form-item label="教职工名称">
             <el-input v-model="roleTemp2.userName"></el-input>
@@ -279,35 +191,20 @@
             <el-input v-model="roleTemp2.userPhone"></el-input>
           </el-form-item>
           <el-form-item label="所属年级">
-            <el-select clearable
-                       class="filter-item"
-                       v-model="roleTemp2.gradeId">
-              <el-option v-for="item in  gradeList"
-                         :key="item.id"
-                         :label="item.name"
-                         :value="item.id">
+            <el-select clearable class="filter-item" v-model="roleTemp2.gradeId">
+              <el-option v-for="item in  gradeList" :key="item.id" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="所属学科">
-            <el-select clearable
-                       class="filter-item"
-                       v-model="roleTemp2.subjectId">
-              <el-option v-for="item in  subjectList"
-                         :key="item.id"
-                         :label="subjectLabel(item)"
-                         :value="item.id">
+            <el-select clearable class="filter-item" v-model="roleTemp2.subjectId">
+              <el-option v-for="item in  subjectList" :key="item.id" :label="subjectLabel(item)" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="所属科室">
-            <el-select clearable
-                       class="filter-item"
-                       v-model="roleTemp2.officeId">
-              <el-option v-for="item in  officeList"
-                         :key="item.id"
-                         :label="item.name"
-                         :value="item.id">
+            <el-select clearable class="filter-item" v-model="roleTemp2.officeId">
+              <el-option v-for="item in  officeList" :key="item.id" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -316,9 +213,7 @@
             <el-input v-model="roleTemp2.userAccount"></el-input>
           </el-form-item>
           <el-form-item label="密码">
-            <el-input type="password"
-                      v-model="userPwd"
-                      :placeholder="roleTemp2.userPwd"></el-input>
+            <el-input type="password" v-model="userPwd" :placeholder="roleTemp2.userPwd"></el-input>
           </el-form-item>
           <!-- <el-form-item label="教职工层次">
             <el-input v-model="roleTemp.remark"></el-input>
@@ -327,31 +222,22 @@
             <el-input v-model="roleTemp.remark"></el-input>
           </el-form-item> -->
           <el-form-item>
-            <el-button type="primary"
-                       @click="onEditSubmit">上传</el-button>
+            <el-button type="primary" @click="onEditSubmit">上传</el-button>
           </el-form-item>
         </el-form>
       </div>
     </div>
-    <el-dialog title="制卡"
-               :visible.sync="dialogPermissionsVisible">
-      <p>{{this.tips}}</p>
-      <el-steps :active="active"
-                finish-status="success">
+    <el-dialog title="制卡" :visible.sync="dialogPermissionsVisible">
+      <p>{{ this.tips }}</p>
+      <el-steps :active="active" finish-status="success">
         <el-step title="连接设备"></el-step>
-        <el-step :description="tfUID"
-                 title="获取卡号"></el-step>
-        <el-step :description="tfBlockData"
-                 title="读取卡内数据"></el-step>
+        <el-step :description="tfUID" title="获取卡号"></el-step>
+        <el-step :description="tfBlockData" title="读取卡内数据"></el-step>
         <el-step title="写入完成"></el-step>
       </el-steps>
-      <el-button v-if="active<=3"
-                 style="margin-top: 12px;"
-                 @click="next">下一步</el-button>
-      <div slot="footer"
-           class="dialog-footer">
-        <el-button @click="dialogPermissionsVisible = false"
-                   type="primary">确 定</el-button>
+      <el-button v-if="active <= 3" style="margin-top: 12px;" @click="next">下一步</el-button>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogPermissionsVisible = false" type="primary">确 定</el-button>
       </div>
     </el-dialog>
   </div>

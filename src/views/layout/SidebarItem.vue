@@ -18,7 +18,7 @@
                      :to="'/orderManage/orderManage?randomID='+randomID"
                      v-if="routes['/orderManage/orderManage']">
           <el-menu-item index="/orderManage/orderManage">
-            学科订单
+            班级订单
           </el-menu-item>
         </router-link>
         <router-link class="menu-indent"
