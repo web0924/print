@@ -873,6 +873,7 @@ export default {
     // 获取列表数据总数
     getListLen() {
       const params = JSON.parse(JSON.stringify(this.listQueryReset))
+      params.start = 1
       params.isSum = 1
       axios
         .post('/smartprint/print-room/order/get-orders', qs.stringify(params))
@@ -1451,15 +1452,16 @@ export default {
       this.dialogPermissionsVisible = false
     },
     handleSelectionChange(val) {
-      if (this.roleTemp.type == 'Class') {
-        this.multipleSelectionSouce = [val[0]]
-        if (val.length > 1) {
-          this.$refs.multipleTable.clearSelection()
-          this.$refs.multipleTable.toggleRowSelection(val.pop())
-        }
-      } else {
-        this.multipleSelectionSouce = val
-      }
+      this.multipleSelectionSouce = val
+      // if (this.roleTemp.type == 'Class') {
+      //   this.multipleSelectionSouce = [val[0]]
+      //   if (val.length > 1) {
+      //     this.$refs.multipleTable.clearSelection()
+      //     this.$refs.multipleTable.toggleRowSelection(val.pop())
+      //   }
+      // } else {
+      //   this.multipleSelectionSouce = val
+      // }
     },
     handleSearch() {
       this.listQuery.start = 1 // 每次搜索重置页码

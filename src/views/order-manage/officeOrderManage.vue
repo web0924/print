@@ -990,6 +990,7 @@ export default {
     getListLen() {
       const params = JSON.parse(JSON.stringify(this.listQueryReset))
       params.isSum = 1
+      params.start = 1
       axios
         .post('/smartprint/print-room/order/get-orders', qs.stringify(params))
         .then(res => {

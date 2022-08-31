@@ -1,7 +1,6 @@
 <template>
   <div class="app-container">
-    <div v-show="viewType===0"
-         style="padding-bottom:30px">
+    <div v-show="viewType === 0" style="padding-bottom:30px">
       <div style="height:120px;padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -22,75 +21,43 @@
                        :value="item.id">
             </el-option>
           </el-select> -->
-          <el-input @keyup.enter.native="handleSearch"
-                    size="small"
-                    style="width: 280px;"
-                    class="filter-item"
-                    placeholder="输入关键字搜索"
-                    v-model="listQuery.kw">
+          <el-input @keyup.enter.native="handleSearch" size="small" style="width: 280px;" class="filter-item"
+            placeholder="输入关键字搜索" v-model="listQuery.kw">
           </el-input>
-          <el-button class="filter-item"
-                     type="primary"
-                     @click="handleSearch"
-                     size="small"
-                     icon="edit">搜索</el-button>
-          <el-button class="filter-item"
-                     @click="handleReset"
-                     size="small"
-                     icon="edit">重置</el-button>
-          <el-button class="filter-item"
-                     style="position:absolute;right:40px;background:#000"
-                     type="primary"
-                     @click="handleCreate"
-                     size="small"
-                     icon="edit">添加年级</el-button>
+          <el-button class="filter-item" type="primary" @click="handleSearch" size="small" icon="edit">搜索</el-button>
+          <el-button class="filter-item" @click="handleReset" size="small" icon="edit">重置</el-button>
+          <el-button class="filter-item" style="position:absolute;right:40px;background:#000" type="primary"
+            @click="handleCreate" size="small" icon="edit">添加年级</el-button>
         </div>
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
 
       <!-- 表格 -->
-      <el-table ref="multipleTable"
-                @selection-change="handleSelectionChange"
-                @sort-change="tableSortChange"
-                :data="list"
-                v-loading.body="listLoading"
-                element-loading-text=""
-                border
-                fit
-                highlight-current-row>
+      <el-table ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="tableSortChange"
+        :data="list" v-loading.body="listLoading" element-loading-text="" border fit highlight-current-row>
         <!-- <el-table-column type="selection"
                        width="65">
       </el-table-column> -->
 
-        <el-table-column align="center"
-                         label='序号'
-                         width="100">
+        <el-table-column align="center" label='序号' width="100">
           <template slot-scope="scope">
-            {{scope.$index+1}}
+            {{ scope.$index + 1 }}
           </template>
         </el-table-column>
 
-        <el-table-column label="年级名称"
-                         prop="name"
-                         width="">
+        <el-table-column label="年级名称" prop="name" width="">
           <!-- <template slot-scope="scope">
             {{scope.row.name}}
           </template> -->
         </el-table-column>
-        <el-table-column label="班级数量"
-                         prop="classesCount"
-                         width="">
+        <el-table-column label="班级数量" prop="classesCount" width="">
           <!-- <template slot-scope="scope">
             {{scope.row.classesCount}}
           </template> -->
         </el-table-column>
-        <el-table-column label="排序"
-                         prop="num"
-                         sortable="custom"
-                         width="">
+        <el-table-column label="排序" prop="num" sortable="custom" width="">
           <template slot-scope="scope">
-            <el-input @change="sortIptChange(scope.row)"
-                      v-model="scope.row.num"></el-input>
+            <el-input @change="sortIptChange(scope.row)" v-model="scope.row.num"></el-input>
             <!-- <el-select @change="sortChange(scope.row)"
                        class="filter-item"
                        v-model="scope.row.num"
@@ -103,19 +70,12 @@
             </el-select> -->
           </template>
         </el-table-column>
-        <el-table-column align="center"
-                         label="操作">
+        <el-table-column align="center" label="操作">
           <template slot-scope="scope">
-            <el-button icon="edit"
-                       size="small"
-                       @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button icon="edit" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
             <template>
-              <el-popconfirm @confirm="handleDelete(scope.$index, scope.row)"
-                             title="确定删除吗？">
-                <el-button slot="reference"
-                           icon="delete"
-                           size="small"
-                           type="danger">删除</el-button>
+              <el-popconfirm @confirm="handleDelete(scope.$index, scope.row)" title="确定删除吗？">
+                <el-button slot="reference" icon="delete" size="small" type="danger">删除</el-button>
               </el-popconfirm>
             </template>
 
@@ -124,19 +84,14 @@
         </el-table-column>
       </el-table>
       <!-- 分页 -->
-      <div v-show="!listLoading"
-           class="pagination-container">
-        <el-pagination @size-change="handleSizeChange"
-                       @current-change="handleCurrentChange"
-                       :current-page.sync="listQuery.currPage"
-                       :page-sizes="[5,10,20,30, 50]"
-                       :page-size="listQuery.count"
-                       layout="total, sizes, prev, pager, next, jumper"
-                       :total="total">
+      <div v-show="!listLoading" class="pagination-container">
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+          :current-page.sync="listQuery.currPage" :page-sizes="[5, 10, 20, 30, 50]" :page-size="listQuery.count"
+          layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
       </div>
     </div>
-    <div v-show="viewType==='add'">
+    <div v-show="viewType === 'add'">
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -147,11 +102,8 @@
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
       <div style="padding:50px">
-        <el-form class="small-space"
-                 :model="roleTemp"
-                 label-position="left"
-                 label-width="70px"
-                 style='width: 400px; margin-left:50px;'>
+        <el-form class="small-space" :model="roleTemp" label-position="left" label-width="70px"
+          style='width: 400px; margin-left:50px;'>
 
           <el-form-item label="年级名称">
             <el-input v-model="roleTemp.name"></el-input>
@@ -164,14 +116,13 @@
             <el-input v-model="roleTemp.remark"></el-input>
           </el-form-item> -->
           <el-form-item>
-            <el-button type="primary"
-                       @click="onAddSubmit">上传</el-button>
+            <el-button type="primary" @click="onAddSubmit">上传</el-button>
           </el-form-item>
 
         </el-form>
       </div>
     </div>
-    <div v-show="viewType==='edit'">
+    <div v-show="viewType === 'edit'">
       <div style="padding-left:20px">
         <div style="height:60px;display:flex;align-items:center">
           <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -182,11 +133,8 @@
       </div>
       <p style="height:15px;width:100%;background:#F5F5F5;margin:0"></p>
       <div style="padding:50px">
-        <el-form class="small-space"
-                 :model="roleTemp"
-                 label-position="left"
-                 label-width="70px"
-                 style='width: 400px; margin-left:50px;'>
+        <el-form class="small-space" :model="roleTemp" label-position="left" label-width="70px"
+          style='width: 400px; margin-left:50px;'>
 
           <el-form-item label="年级名称">
             <el-input v-model="roleTemp2.name"></el-input>
@@ -199,8 +147,7 @@
             <el-input v-model="roleTemp2.remark"></el-input>
           </el-form-item> -->
           <el-form-item>
-            <el-button type="primary"
-                       @click="onEditSubmit">上传</el-button>
+            <el-button type="primary" @click="onEditSubmit">上传</el-button>
           </el-form-item>
 
         </el-form>
@@ -208,31 +155,20 @@
     </div>
 
     <!-- 设置权限 -->
-    <el-dialog title="设置权限"
-               :visible.sync="dialogPermissionsVisible">
-      <el-form class="small-space"
-               :model="roleTemp"
-               label-position="left"
-               label-width="70px"
-               style='width: 100%; '>
+    <el-dialog title="设置权限" :visible.sync="dialogPermissionsVisible">
+      <el-form class="small-space" :model="roleTemp" label-position="left" label-width="70px" style='width: 100%; '>
 
         <!-- <el-checkbox-group v-model="smMenuBeanDtoList"> -->
-        <el-checkbox v-for="item in smMenuBeanDtoList"
-                     :key="item"
-                     label="item.url"
-                     name="type"
-                     style="margin:0 15px 15px 0;"
-                     v-model="item.set">{{ item.menuName }}</el-checkbox>
+        <el-checkbox v-for="item in smMenuBeanDtoList" :key="item" label="item.url" name="type"
+          style="margin:0 15px 15px 0;" v-model="item.set">{{  item.menuName  }}</el-checkbox>
 
         <!-- </el-checkbox-group> -->
 
       </el-form>
-      <div slot="footer"
-           class="dialog-footer">
+      <div slot="footer" class="dialog-footer">
         <el-button @click="dialogPermissionsVisible = false">取 消</el-button>
 
-        <el-button type="primary"
-                   @click="setPermissionsSubmit">确 定</el-button>
+        <el-button type="primary" @click="setPermissionsSubmit">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -357,6 +293,7 @@ export default {
     getListLen() {
       const params = JSON.parse(JSON.stringify(this.listQuery))
       params.isSum = 1
+      params.start = 1
       axios
         .post('/smartprint/print-room/grade/get-grades', qs.stringify(params))
         .then(res => {

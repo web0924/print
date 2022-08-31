@@ -345,6 +345,7 @@ export default {
     getListLen() {
       const params = JSON.parse(JSON.stringify(this.listQuery))
       params.isSum = 1
+      params.start = 1
       axios
         .post(
           '/smartprint/print-room/subject/get-subjects',
